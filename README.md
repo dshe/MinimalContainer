@@ -1,4 +1,4 @@
-## InternalContainer
+## InternalContainer.cs
 A simple IOC container as a single C# file.
 - **no dependencies**
 - **portable** library compatibility: Windows 10, Framework 4.6, ASP.NET Core 5
