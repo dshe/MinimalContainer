@@ -131,5 +131,7 @@ var container = new Container(log:Console.WriteLine);
 ```
 #### diagnostic
 ```csharp
-IList<Map> dump = container.Dump();
+IList<Map> maps = container.Dump();
+foreach (var map in maps)
+  Debug.WriteLine(map.ToString());
 ```
