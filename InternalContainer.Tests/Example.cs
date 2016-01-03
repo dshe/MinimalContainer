@@ -7,14 +7,13 @@ namespace InternalContainer.Tests
 {
     public class Example
     {
+        public interface IClassA { }
+        public class ClassA : IClassA { }
         private readonly ITestOutputHelper output;
         public Example(ITestOutputHelper output)
         {
             this.output = output;
         }
-
-        public interface IClassA { }
-        public class ClassA : IClassA { }
 
         [Fact]
         public void Test_Usage()
