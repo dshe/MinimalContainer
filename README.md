@@ -127,12 +127,7 @@ In the example above, the complete object graph is created and the application s
 
 #### logging
 ```csharp
-using System.Reactive.Subjects;
-
-var subject = new Subject<string>();
-subject.Subscribe(Console.WriteLine);
-
-var container = new Container(observer:subject);
+var container = new Container(log:Console.WriteLine);
 ```
 #### diagnostic
 ```csharp
