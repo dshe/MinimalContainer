@@ -1,5 +1,5 @@
 ## InternalContainer.cs
-A simple IOC container as a single C# 6.0 file.
+A simple IOC container in a single C# 6.0 source file.
 - **no dependencies**
 - **portable** library compatibility: Windows 10, Framework 4.6, ASP.NET Core 5
 - supports public and **internal** constructor dependency injection
@@ -134,3 +134,5 @@ var container = new Container(log:Console.WriteLine);
 foreach (var map in container.Maps())
   Debug.WriteLine(map.ToString());
 ```
+#### contribution
+Please sign the <a href="https://www.clahub.com/agreements/dshe/InternalContainer.cs">Contributor License Agreement</a>. 
