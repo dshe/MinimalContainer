@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using Xunit;
@@ -11,7 +10,7 @@ namespace InternalContainer.Tests.Performance
     public class Performance
     {
         private readonly Stopwatch sw = new Stopwatch();
-        private readonly Container container = new Container();
+        private readonly Container container = new Container(log:Console.WriteLine);
         private readonly ITestOutputHelper output;
         public Performance(ITestOutputHelper output)
         {

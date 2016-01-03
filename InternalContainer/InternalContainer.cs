@@ -15,6 +15,10 @@ namespace InternalContainer
         internal Lifestyle Lifestyle;
         internal bool AutoRegistered;
         internal int Instances;
+        public override string ToString()
+        {
+            return $"{SuperTypeInfo.Name} <- {ConcreteTypeInfo.Name}, {Lifestyle}, AutoRegistered={AutoRegistered}, Instances={Instances}.";
+        }
     }
 
     internal sealed class Container : IDisposable
@@ -22,13 +26,13 @@ namespace InternalContainer
         private readonly Lifestyle autoLifestyle;
         private readonly List<Map> maps = new List<Map>();
         private readonly Stack<TypeInfo> typeStack = new Stack<TypeInfo>();
-        private readonly IObserver<string> observer;
+        private readonly Action<string> log;
         private readonly Lazy<List<TypeInfo>> concreteTypes;
 
-        internal Container(Lifestyle autoLifestyle = Lifestyle.AutoRegisterDisabled, IObserver<string> observer = null, Assembly assembly = null)
+        internal Container(Lifestyle autoLifestyle = Lifestyle.AutoRegisterDisabled, Action<string> log = null, Assembly assembly = null)
         {
             this.autoLifestyle = autoLifestyle;
-            this.observer = observer;
+            this.log = log;
             Observe("Creating Container.");
             concreteTypes = new Lazy<List<TypeInfo>>(() => (assembly ?? this.GetType().GetTypeInfo().Assembly)
                 .DefinedTypes.Where(t => !t.IsAbstract).ToList());
@@ -208,7 +212,7 @@ namespace InternalContainer
             return constructor.Invoke(parameters.ToArray());
         }
 
-        internal IList<Map> Dump() // diagnostic
+        internal IList<Map> Maps() // diagnostic
         {
             lock (maps)
                 return maps.ToList();
@@ -233,7 +237,7 @@ namespace InternalContainer
         {
             if (string.IsNullOrEmpty(message))
                 return message;
-            observer?.OnNext(message);
+            log?.Invoke(message);
             return message + "\n";
         }
     }

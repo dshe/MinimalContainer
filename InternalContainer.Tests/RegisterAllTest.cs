@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reactive.Subjects;
 using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
@@ -8,19 +7,16 @@ namespace InternalContainer.Tests
 {
     public class RegisterAllTest
     {
-        private readonly Container container;
-
-        public RegisterAllTest(ITestOutputHelper output)
-        {
-            var subject = new Subject<string>();
-            subject.Subscribe(output.WriteLine);
-            container = new Container(observer: subject, assembly:Assembly.GetExecutingAssembly());
-        }
-
         public interface INotUsed { }
         public interface ISomeClass { }
         public class SomeClass1 : ISomeClass { }
         public class SomeClass2 : ISomeClass { }
+        private readonly Container container;
+
+        public RegisterAllTest(ITestOutputHelper output)
+        {
+            container = new Container(log: output.WriteLine, assembly:Assembly.GetExecutingAssembly());
+        }
 
         [Fact]
         public void Test_Register_Error_Null()

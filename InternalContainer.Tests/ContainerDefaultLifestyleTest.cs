@@ -13,7 +13,7 @@ namespace InternalContainer.Tests
         {
             var c = new Container(Lifestyle.Singleton);
             var instance1 = c.GetInstance<SomeClass>();
-            var map = c.Dump().Single();
+            var map = c.Maps().Single();
             Assert.Equal(Lifestyle.Singleton, map.Lifestyle);
             Assert.Equal(1, map.Instances);
             var instance2 = c.GetInstance<SomeClass>();
@@ -25,7 +25,7 @@ namespace InternalContainer.Tests
         {
             var c = new Container(Lifestyle.Transient);
             var instance1 = c.GetInstance<SomeClass>();
-            var map = c.Dump().Single();
+            var map = c.Maps().Single();
             Assert.Equal(Lifestyle.Transient, map.Lifestyle);
             Assert.Equal(1, map.Instances);
             var instance2 = c.GetInstance<SomeClass>();

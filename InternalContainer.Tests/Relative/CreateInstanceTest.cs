@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reactive.Subjects;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -26,9 +25,7 @@ namespace InternalContainer.Tests.Relative
 
         public CreateInstanceTest(ITestOutputHelper output)
         {
-            var subject = new Subject<string>();
-            subject.Subscribe(output.WriteLine);
-            container = new Container(Lifestyle.Singleton, observer: subject);
+            container = new Container(Lifestyle.Singleton, log: output.WriteLine);
         }
 
         [Fact]

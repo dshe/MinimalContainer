@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Reactive.Subjects;
 using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
@@ -9,20 +8,16 @@ namespace InternalContainer.Tests
 {
     public class RegisterTest
     {
+        public interface ISomeClass { }
+        public class SomeClass : ISomeClass { }
         private readonly Container container;
-
         private readonly ITestOutputHelper output;
 
         public RegisterTest(ITestOutputHelper output)
         {
             this.output = output;
-            var subject = new Subject<string>();
-            subject.Subscribe(output.WriteLine);
-            container = new Container(observer:subject);
+            container = new Container(log: output.WriteLine);
         }
-
-        public interface ISomeClass { }
-        public class SomeClass : ISomeClass { }
 
         [Fact]
         public void Test01_Null_SuperType()
@@ -62,7 +57,7 @@ namespace InternalContainer.Tests
         public void Test_Register_Singleton()
         {
             container.RegisterSingleton<SomeClass>();
-            var map = container.Dump().Single();
+            var map = container.Maps().Single();
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), map.SuperTypeInfo);
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), map.ConcreteTypeInfo);
             Assert.Equal(null, map.Factory);
@@ -73,7 +68,7 @@ namespace InternalContainer.Tests
         public void Test_Register_Transient()
         {
             container.RegisterTransient<SomeClass>();
-            var map = container.Dump().Single();
+            var map = container.Maps().Single();
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), map.SuperTypeInfo);
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), map.ConcreteTypeInfo);
             Assert.Equal(null, map.Factory);
@@ -84,7 +79,7 @@ namespace InternalContainer.Tests
         public void Test_Register_Singleton_Iface()
         {
             container.RegisterSingleton<ISomeClass, SomeClass>();
-            var map = container.Dump().Single();
+            var map = container.Maps().Single();
             Assert.Equal(typeof(ISomeClass).GetTypeInfo(), map.SuperTypeInfo);
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), map.ConcreteTypeInfo);
             Assert.Equal(null, map.Factory);
@@ -95,7 +90,7 @@ namespace InternalContainer.Tests
         public void Test_Register_Transient_Iface()
         {
             container.RegisterTransient<ISomeClass, SomeClass>();
-            var map = container.Dump().Single();
+            var map = container.Maps().Single();
             Assert.Equal(typeof(ISomeClass).GetTypeInfo(), map.SuperTypeInfo);
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), map.ConcreteTypeInfo);
             Assert.Equal(null, map.Factory);
@@ -107,7 +102,7 @@ namespace InternalContainer.Tests
         {
             var instance = new SomeClass();
             container.RegisterInstance(instance);
-            var map = container.Dump().Single();
+            var map = container.Maps().Single();
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), map.SuperTypeInfo);
             Assert.Equal(instance, map.Factory());
             Assert.Equal(instance, map.Factory());
@@ -119,7 +114,7 @@ namespace InternalContainer.Tests
         {
             var instance = new SomeClass();
             container.RegisterInstance<ISomeClass>(instance);
-            var map = container.Dump().Single();
+            var map = container.Maps().Single();
             Assert.Equal(typeof(ISomeClass).GetTypeInfo(), map.SuperTypeInfo);
             Assert.Equal(instance, map.Factory());
             Assert.Equal(Lifestyle.Singleton, map.Lifestyle);
@@ -129,7 +124,7 @@ namespace InternalContainer.Tests
         public void Test_Register_Transient_Factory()
         {
             container.RegisterFactory(() => new SomeClass());
-            var map = container.Dump().Single();
+            var map = container.Maps().Single();
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), map.SuperTypeInfo);
             Assert.Equal(null, map.ConcreteTypeInfo);
             Assert.NotEqual(null, map.Factory);
@@ -140,7 +135,7 @@ namespace InternalContainer.Tests
         public void Test_Register_Transient_Factory_Iface()
         {
             container.RegisterFactory<ISomeClass>(() => new SomeClass());
-            var map = container.Dump().Single();
+            var map = container.Maps().Single();
             Assert.Equal(typeof(ISomeClass).GetTypeInfo(), map.SuperTypeInfo);
             Assert.Equal(null, map.ConcreteTypeInfo);
             Assert.NotEqual(null, map.Factory);

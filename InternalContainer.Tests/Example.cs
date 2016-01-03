@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reactive.Subjects;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -18,16 +17,16 @@ namespace InternalContainer.Tests
         [Fact]
         public void Test_Usage()
         {
-            var subject = new Subject<string>();
-            subject.Subscribe(output.WriteLine);
-
-            var container = new Container(observer:subject);
+            var container = new Container(log:output.WriteLine);
 
             container.RegisterSingleton<IClassA, ClassA>();
 
             var instance = container.GetInstance<IClassA>();
             Assert.IsType<ClassA>(instance);
             Assert.Equal(instance, container.GetInstance<IClassA>());
+
+            foreach (var map in container.Maps())
+                output.WriteLine(map.ToString());
 
             container.Dispose();
         }

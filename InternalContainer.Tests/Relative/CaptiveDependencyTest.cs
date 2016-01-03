@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reactive.Subjects;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -18,9 +17,7 @@ namespace InternalContainer.Tests.Relative
 
         public CaptiveDependencyTests(ITestOutputHelper output)
         {
-            var subject = new Subject<string>();
-            subject.Subscribe(output.WriteLine);
-            container = new Container(observer: subject);
+            container = new Container(log: output.WriteLine);
         }
 
         [Fact]
@@ -29,7 +26,7 @@ namespace InternalContainer.Tests.Relative
             container.RegisterSingleton<ClassA>();
             container.RegisterTransient<ClassB>();
             Assert.Throws<TypeAccessException>(() => container.GetInstance<ClassA>());
-            Assert.Equal(2, container.Dump().Count);
+            Assert.Equal(2, container.Maps().Count);
         }
 
         [Fact]
@@ -38,7 +35,7 @@ namespace InternalContainer.Tests.Relative
             container.RegisterTransient<ClassA>();
             container.RegisterSingleton<ClassB>();
             container.GetInstance<ClassA>();
-            Assert.Equal(2, container.Dump().Count);
+            Assert.Equal(2, container.Maps().Count);
         }
 
         [Fact]
@@ -47,7 +44,7 @@ namespace InternalContainer.Tests.Relative
             container.RegisterSingleton<ClassA>();
             container.RegisterSingleton<ClassB>();
             container.GetInstance<ClassA>();
-            Assert.Equal(2, container.Dump().Count);
+            Assert.Equal(2, container.Maps().Count);
         }
 
         [Fact]
@@ -56,7 +53,7 @@ namespace InternalContainer.Tests.Relative
             container.RegisterTransient<ClassA>();
             container.RegisterTransient<ClassB>();
             container.GetInstance<ClassA>();
-            Assert.Equal(2, container.Dump().Count);
+            Assert.Equal(2, container.Maps().Count);
         }
     }
 
