@@ -8,7 +8,8 @@ Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
-limitations under the License.*/
+limitations under the License.
+*/
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -44,7 +45,7 @@ namespace InternalContainer
         {
             this.autoLifestyle = autoLifestyle;
             this.log = log;
-            Observe("Creating Container.");
+            Log("Creating Container.");
             concreteTypes = new Lazy<List<TypeInfo>>(() => (assembly ?? this.GetType().GetTypeInfo().Assembly)
                 .DefinedTypes.Where(t => !t.IsAbstract).ToList());
         }
@@ -74,11 +75,11 @@ namespace InternalContainer
             lock (maps)
             {
                 if (factory == null)
-                    Observe($"Registering {lifestyle} type '{concreteType.Name}'{(superType == concreteType ? "" : "->'" + superType.Name + "'")}.");
+                    Log($"Registering {lifestyle} type '{concreteType.Name}'{(superType == concreteType ? "" : "->'" + superType.Name + "'")}.");
                 else if (concreteType != null)
-                    Observe($"Registering instance of type {(superType != concreteType ? "'" + concreteType.Name + "'->" : "")}'{superType.Name}'.");
+                    Log($"Registering instance of type {(superType != concreteType ? "'" + concreteType.Name + "'->" : "")}'{superType.Name}'.");
                 else
-                    Observe($"Registering type '{superType.Name}' factory.");
+                    Log($"Registering type '{superType.Name}' factory.");
                 if (concreteType != null)
                 {
                     var superTypes = maps.Where(m => Equals(m.ConcreteTypeInfo, concreteTypeInfo)).Select(m => m.SuperTypeInfo).Distinct().ToList(); // slow
@@ -103,8 +104,8 @@ namespace InternalContainer
             {
                 var assignables = concreteTypes.Value.Where(superType.GetTypeInfo().IsAssignableFrom).ToList();
                 if (!assignables.Any())
-                    throw new ArgumentException(Observe($"No types found assignable to '{superType.Name}'."));
-                Observe($"Registering {assignables.Count} type(s) assignable to '{superType.Name}'.");
+                    throw new ArgumentException(Log($"No types found assignable to '{superType.Name}'."));
+                Log($"Registering {assignables.Count} type(s) assignable to '{superType.Name}'.");
                 return assignables.Select(t => Register(superType, t.AsType(), null, lifestyle)).ToList();
             }
         }
@@ -116,7 +117,7 @@ namespace InternalContainer
                 throw new ArgumentNullException(nameof(type));
             lock (maps)
             {
-                Observe($"Getting instance of type '{type.Name}'.");
+                Log($"Getting instance of type '{type.Name}'.");
                 typeStack.Clear();
                 try
                 {
@@ -125,7 +126,7 @@ namespace InternalContainer
                 catch (TypeAccessException ex)
                 {
                     var message = $"Could not get instance of type '{string.Join("->", typeStack.Select(t => t.Name))}'.\n";
-                    Observe(message + ex.Message);
+                    Log(message + ex.Message);
                     throw new TypeAccessException(message, ex);
                 }
             }
@@ -154,7 +155,7 @@ namespace InternalContainer
                     assignableMaps = RegisterAll(genericTypeInfo.AsType(), autoLifestyle);
                 if (!assignableMaps.Any())
                     throw new TypeAccessException($"No types found assignable to '{genericTypeArg.Name}'.");
-                Observe($"{assignableMaps.Count} registered types found assignable to '{genericTypeArg.Name}'.");
+                Log($"{assignableMaps.Count} registered types found assignable to '{genericTypeArg.Name}'.");
                 foreach (var assignableMap in assignableMaps)
                 {
                     typeStack.Push(assignableMap.ConcreteTypeInfo);
@@ -219,7 +220,7 @@ namespace InternalContainer
             var constructor = constructors.Single();
             var parameters = constructor.GetParameters()
                 .Select(p => p.HasDefaultValue ? p.DefaultValue : GetInstance(p.ParameterType.GetTypeInfo(), map)).ToList();
-            Observe($"Constructing {map.Lifestyle} instance of type '{type.Name}({string.Join(", ", parameters.Select(p => p.GetType().Name))})'.");
+            Log($"Constructing {map.Lifestyle} instance of type '{type.Name}({string.Join(", ", parameters.Select(p => p.GetType().Name))})'.");
             return constructor.Invoke(parameters.ToArray());
         }
 
@@ -236,15 +237,15 @@ namespace InternalContainer
                 foreach (var instance in maps.Where(m => m.Lifestyle == Lifestyle.Singleton && m.Factory != null)
                     .Select(m => m.Factory()).OfType<IDisposable>())
                 {
-                    Observe($"Disposing type '{instance.GetType().Name}'.");
+                    Log($"Disposing type '{instance.GetType().Name}'.");
                     instance.Dispose();
                 }
                 maps.Clear();
             }
-            Observe("Container disposed.");
+            Log("Container disposed.");
         }
 
-        private string Observe(string message)
+        private string Log(string message)
         {
             if (string.IsNullOrEmpty(message))
                 return message;
