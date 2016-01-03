@@ -1,5 +1,5 @@
 ## InternalContainer.cs
-A simple IOC container as a single C# file.
+A simple IOC container as a single C# 6.0 file.
 - **no dependencies**
 - **portable** library compatibility: Windows 10, Framework 4.6, ASP.NET Core 5
 - supports public and **internal** constructor dependency injection
@@ -127,14 +127,10 @@ In the example above, the complete object graph is created and the application s
 
 #### logging
 ```csharp
-using System.Reactive.Subjects;
-
-var subject = new Subject<string>();
-subject.Subscribe(Console.WriteLine);
-
-var container = new Container(observer:subject);
+var container = new Container(log:Console.WriteLine);
 ```
 #### diagnostic
 ```csharp
-IList<Map> dump = container.Dump();
+foreach (var map in container.Maps())
+  Debug.WriteLine(map.ToString());
 ```
