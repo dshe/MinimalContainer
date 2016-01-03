@@ -1,5 +1,5 @@
 ## InternalContainer.cs
-A simple IOC container as a single C# file.
+A simple IOC container as a single C# 6.0 file.
 - **no dependencies**
 - **portable** library compatibility: Windows 10, Framework 4.6, ASP.NET Core 5
 - supports public and **internal** constructor dependency injection
