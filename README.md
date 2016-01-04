@@ -89,10 +89,11 @@ A list of instances of registered types which are assignable to `TSuper` is retu
 #### automatic registration
 ```csharp
 var container = new Container(Lifestyle.Singleton);
+//container.RegisterSingleton<TConcrete>();
 TConcrete instance = container.GetInstance<TConcrete>();
 Assert.Equal(instance, container.GetInstance<TConcrete>());
 ```
-To enable automatic registration and resolution, pass the desired lifestyle to be used for automatic registration (singleton or transient) in the container's constructor.  
+To enable automatic registration and resolution, pass the desired lifestyle (singleton or transient) to be used for automatic registration in the container's constructor.
 The following graphic illustrates the strategy used to automatically resolve types:
 
 ![Image of Resolution Strategy](https://github.com/dshe/InternalContainer/blob/master/InternalContainer/TypeResolutionFlowChart.png)
