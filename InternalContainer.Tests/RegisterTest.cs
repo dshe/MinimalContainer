@@ -58,8 +58,8 @@ namespace InternalContainer.Tests
         {
             container.RegisterSingleton<SomeClass>();
             var map = container.Maps().Single();
-            Assert.Equal(typeof(SomeClass).GetTypeInfo(), map.SuperTypeInfo);
-            Assert.Equal(typeof(SomeClass).GetTypeInfo(), map.ConcreteTypeInfo);
+            Assert.Equal(typeof(SomeClass).GetTypeInfo(), map.SuperType);
+            Assert.Equal(typeof(SomeClass).GetTypeInfo(), map.ConcreteType);
             Assert.Equal(null, map.Factory);
             Assert.Equal(Lifestyle.Singleton, map.Lifestyle);
         }
@@ -69,8 +69,8 @@ namespace InternalContainer.Tests
         {
             container.RegisterTransient<SomeClass>();
             var map = container.Maps().Single();
-            Assert.Equal(typeof(SomeClass).GetTypeInfo(), map.SuperTypeInfo);
-            Assert.Equal(typeof(SomeClass).GetTypeInfo(), map.ConcreteTypeInfo);
+            Assert.Equal(typeof(SomeClass).GetTypeInfo(), map.SuperType);
+            Assert.Equal(typeof(SomeClass).GetTypeInfo(), map.ConcreteType);
             Assert.Equal(null, map.Factory);
             Assert.Equal(Lifestyle.Transient, map.Lifestyle);
         }
@@ -80,8 +80,8 @@ namespace InternalContainer.Tests
         {
             container.RegisterSingleton<ISomeClass, SomeClass>();
             var map = container.Maps().Single();
-            Assert.Equal(typeof(ISomeClass).GetTypeInfo(), map.SuperTypeInfo);
-            Assert.Equal(typeof(SomeClass).GetTypeInfo(), map.ConcreteTypeInfo);
+            Assert.Equal(typeof(ISomeClass).GetTypeInfo(), map.SuperType);
+            Assert.Equal(typeof(SomeClass).GetTypeInfo(), map.ConcreteType);
             Assert.Equal(null, map.Factory);
             Assert.Equal(Lifestyle.Singleton, map.Lifestyle);
         }
@@ -91,8 +91,8 @@ namespace InternalContainer.Tests
         {
             container.RegisterTransient<ISomeClass, SomeClass>();
             var map = container.Maps().Single();
-            Assert.Equal(typeof(ISomeClass).GetTypeInfo(), map.SuperTypeInfo);
-            Assert.Equal(typeof(SomeClass).GetTypeInfo(), map.ConcreteTypeInfo);
+            Assert.Equal(typeof(ISomeClass).GetTypeInfo(), map.SuperType);
+            Assert.Equal(typeof(SomeClass).GetTypeInfo(), map.ConcreteType);
             Assert.Equal(null, map.Factory);
             Assert.Equal(Lifestyle.Transient, map.Lifestyle);
         }
@@ -103,7 +103,7 @@ namespace InternalContainer.Tests
             var instance = new SomeClass();
             container.RegisterInstance(instance);
             var map = container.Maps().Single();
-            Assert.Equal(typeof(SomeClass).GetTypeInfo(), map.SuperTypeInfo);
+            Assert.Equal(typeof(SomeClass).GetTypeInfo(), map.SuperType);
             Assert.Equal(instance, map.Factory());
             Assert.Equal(instance, map.Factory());
             Assert.Equal(Lifestyle.Singleton, map.Lifestyle);
@@ -115,7 +115,7 @@ namespace InternalContainer.Tests
             var instance = new SomeClass();
             container.RegisterInstance<ISomeClass>(instance);
             var map = container.Maps().Single();
-            Assert.Equal(typeof(ISomeClass).GetTypeInfo(), map.SuperTypeInfo);
+            Assert.Equal(typeof(ISomeClass).GetTypeInfo(), map.SuperType);
             Assert.Equal(instance, map.Factory());
             Assert.Equal(Lifestyle.Singleton, map.Lifestyle);
         }
@@ -125,8 +125,8 @@ namespace InternalContainer.Tests
         {
             container.RegisterFactory(() => new SomeClass());
             var map = container.Maps().Single();
-            Assert.Equal(typeof(SomeClass).GetTypeInfo(), map.SuperTypeInfo);
-            Assert.Equal(null, map.ConcreteTypeInfo);
+            Assert.Equal(typeof(SomeClass).GetTypeInfo(), map.SuperType);
+            Assert.Equal(null, map.ConcreteType);
             Assert.NotEqual(null, map.Factory);
             Assert.Equal(Lifestyle.Transient, map.Lifestyle);
         }
@@ -136,8 +136,8 @@ namespace InternalContainer.Tests
         {
             container.RegisterFactory<ISomeClass>(() => new SomeClass());
             var map = container.Maps().Single();
-            Assert.Equal(typeof(ISomeClass).GetTypeInfo(), map.SuperTypeInfo);
-            Assert.Equal(null, map.ConcreteTypeInfo);
+            Assert.Equal(typeof(ISomeClass).GetTypeInfo(), map.SuperType);
+            Assert.Equal(null, map.ConcreteType);
             Assert.NotEqual(null, map.Factory);
             Assert.Equal(Lifestyle.Transient, map.Lifestyle);
         }

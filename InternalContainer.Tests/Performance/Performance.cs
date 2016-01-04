@@ -10,7 +10,7 @@ namespace InternalContainer.Tests.Performance
     public class Performance
     {
         private readonly Stopwatch sw = new Stopwatch();
-        private readonly Container container = new Container(log:Console.WriteLine);
+        private readonly Container container = new Container();
         private readonly ITestOutputHelper output;
         public Performance(ITestOutputHelper output)
         {
