@@ -21,7 +21,8 @@ var instance = container.GetInstance<TSuper>();
 
 container.Dispose();
 ```
-`TSuper` is a superType of `TConcrete`. Often often an interface, it could also be an abstract class or possibly a concrete type which is assignable from `TConcrete`.   
+`TSuper` is a superType of `TConcrete`. Often an interface, it could also be an abstract class or possibly a concrete type which is assignable from `TConcrete`.  
+
 Disposing the container will dispose any disposable singleton instances.
 
 #### manual registration of single types
@@ -94,6 +95,7 @@ TConcrete instance = container.GetInstance<TConcrete>();
 Assert.Equal(instance, container.GetInstance<TConcrete>());
 ```
 To enable automatic registration and resolution, pass the desired lifestyle (singleton or transient) to be used for automatic registration in the container's constructor.
+
 The following graphic illustrates the strategy used to automatically resolve types:
 
 ![Image of Resolution Strategy](https://github.com/dshe/InternalContainer/blob/master/InternalContainer/TypeResolutionFlowChart.png)
