@@ -10,7 +10,7 @@ namespace InternalContainer.Tests.Performance
     public class Performance
     {
         private readonly Stopwatch sw = new Stopwatch();
-        private readonly Container container = new Container();
+        private readonly Container container = new Container(Lifestyle.Singleton);
         private readonly ITestOutputHelper output;
         public Performance(ITestOutputHelper output)
         {
@@ -43,6 +43,7 @@ namespace InternalContainer.Tests.Performance
             sw.Stop();
             rate = types.Count / sw.Elapsed.TotalSeconds;
             output.WriteLine($"{rate,10:####,###} singleton instances/second ({types.Count} types).");
+            container.Dispose();
 
             Assert.True(true);
         }

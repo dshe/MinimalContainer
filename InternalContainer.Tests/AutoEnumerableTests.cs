@@ -9,6 +9,7 @@ namespace InternalContainer.Tests
 {
     public class EnumerableTest
     {
+        public interface INotUsed { }
         public interface IMarker { }
         public class ClassA : IMarker { }
         public class ClassB : IMarker { }
@@ -20,21 +21,31 @@ namespace InternalContainer.Tests
         }
 
         [Fact]
-        public void Test_Register_Enumerable()
+        public void Test_Get_Enumerable_Concrete()
         {
-            container.RegisterSingleton<IMarker, ClassA>();
-            container.RegisterSingleton<IMarker, ClassB>();
+            var list = container.GetInstance<IList<ClassA>>();
+            Assert.Equal(1, list.Count);
+        }
 
-            Assert.Throws<TypeAccessException>(() => container.GetInstance<IMarker>());
-            Assert.Throws<TypeAccessException>(() => container.GetInstance<ClassA>());
+        [Fact]
+        public void Test_Get_Enumerable_Interface()
+        {
+            var list = container.GetInstance<IList<IMarker>>();
+            Assert.Equal(2, list.Count);
+        }
+
+        [Fact]
+        public void Test_List_Types()
+        {
+            container.GetInstance<IEnumerable<IMarker>>();
+            container.GetInstance<IList<IMarker>>();
+            container.GetInstance<List<IMarker>>();
         }
 
         [Fact]
         public void Test_RegisterAll_Enumerable()
         {
-            container.RegisterAll(typeof(IMarker), Lifestyle.Singleton);
-            var list = container.GetInstance<IEnumerable<IMarker>>();
-            Assert.Equal(2, list.Count());
+            container.GetInstance<IEnumerable<INotUsed>>();
         }
 
     }

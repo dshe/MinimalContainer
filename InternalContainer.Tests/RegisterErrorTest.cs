@@ -17,7 +17,7 @@ namespace InternalContainer.Tests
         public RegisterErrorTest(ITestOutputHelper output)
         {
             this.output = output;
-            container = new Container(log: output.WriteLine);
+            container = new Container(log: output.WriteLine,assembly:Assembly.GetExecutingAssembly());
         }
 
         [Fact]
@@ -34,10 +34,9 @@ namespace InternalContainer.Tests
         }
 
         [Fact]
-        public void Test02_Register_Error_Abstract()
+        public void Test03_Register_Error_Abstract()
         {
-            //Assert.Throws<ArgumentException>(() =>
-            //    container.RegisterSingleton<ISomeClass>());
+             container.RegisterSingleton<ISomeClass>();
         }
 
         [Fact]

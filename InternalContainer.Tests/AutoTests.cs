@@ -5,11 +5,11 @@ using Xunit.Abstractions;
 
 namespace InternalContainer.Tests
 {
-    public class GetInstanceTest
+    public class AutoTests
     {
         private readonly Container container;
 
-        public GetInstanceTest(ITestOutputHelper output)
+        public AutoTests(ITestOutputHelper output)
         {
             container = new Container(Lifestyle.Singleton, log:output.WriteLine);
         }
@@ -20,6 +20,8 @@ namespace InternalContainer.Tests
         [Fact]
         public void Test()
         {
+
+
         }
     }
 }
