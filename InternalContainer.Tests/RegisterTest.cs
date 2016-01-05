@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using InternalContainer.Tests.Utilities;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -20,40 +21,6 @@ namespace InternalContainer.Tests
         }
 
         [Fact]
-        public void Test01_Null_SuperType()
-        {
-            var ex = Assert.Throws<ArgumentNullException>(() => container.Register(null, typeof(SomeClass), () => new SomeClass(), Lifestyle.Singleton));
-            output.WriteLine(ex.Message);
-        }
-        [Fact]
-        public void Test02_Register_Error_Null()
-        {
-            var ex = Assert.Throws<ArgumentException>(() => container.Register(typeof(ISomeClass), typeof(SomeClass), null, Lifestyle.AutoRegisterDisabled));
-            output.WriteLine(ex.Message);
-            Assert.Throws<ArgumentException>(() => container.RegisterInstance<SomeClass>(null));
-        }
-
-        [Fact]
-        public void Test02_Register_Error_Abstract()
-        {
-            Assert.Throws<ArgumentException>(() => container.RegisterSingleton<ISomeClass>());
-        }
-
-        [Fact]
-        public void Test03_Register_Error_Duplicate()
-        {
-            container.RegisterTransient<SomeClass>();
-            Assert.Throws<ArgumentException>(() => container.RegisterSingleton<SomeClass>());
-            container.Dispose();
-
-            container.RegisterSingleton<ISomeClass, SomeClass>();
-            Assert.Throws<ArgumentException>(() => container.RegisterSingleton<ISomeClass, SomeClass>());
-            Assert.Throws<ArgumentException>(() => container.RegisterSingleton<SomeClass>());
-        }
-
-
-
-        [Fact]
         public void Test_Register_Singleton()
         {
             container.RegisterSingleton<SomeClass>();
@@ -62,17 +29,15 @@ namespace InternalContainer.Tests
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), map.ConcreteType);
             Assert.Equal(null, map.Factory);
             Assert.Equal(Lifestyle.Singleton, map.Lifestyle);
-        }
+            Assert.Equal(false, map.AutoRegistered);
+            Assert.Equal(0, map.InstancesCreated);
 
-        [Fact]
-        public void Test_Register_Transient()
-        {
-            container.RegisterTransient<SomeClass>();
-            var map = container.Maps().Single();
-            Assert.Equal(typeof(SomeClass).GetTypeInfo(), map.SuperType);
-            Assert.Equal(typeof(SomeClass).GetTypeInfo(), map.ConcreteType);
-            Assert.Equal(null, map.Factory);
-            Assert.Equal(Lifestyle.Transient, map.Lifestyle);
+            var instance = container.GetInstance<SomeClass>();
+            Assert.IsType<SomeClass>(instance);
+
+            Assert.Equal(instance, map.Factory());
+            Assert.Equal(instance, container.GetInstance(typeof(SomeClass)));
+            Assert.Single(container.Maps());
         }
 
         [Fact]
@@ -84,6 +49,23 @@ namespace InternalContainer.Tests
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), map.ConcreteType);
             Assert.Equal(null, map.Factory);
             Assert.Equal(Lifestyle.Singleton, map.Lifestyle);
+
+            var instance = container.GetInstance<ISomeClass>();
+            Assert.Equal(instance, map.Factory.Invoke());
+            Assert.Equal(container.GetInstance(typeof(ISomeClass)), map.Factory.Invoke());
+            Assert.Single(container.Maps());
+        }
+
+        [Fact]
+        public void Test_Register_Transient()
+        {
+            container.RegisterTransient<SomeClass>();
+            var map = container.Maps().Single();
+            Assert.Equal(typeof(SomeClass).GetTypeInfo(), map.SuperType);
+            Assert.Equal(typeof(SomeClass).GetTypeInfo(), map.ConcreteType);
+            Assert.Equal(null, map.Factory);
+            Assert.Equal(Lifestyle.Transient, map.Lifestyle);
+
         }
 
         [Fact]
@@ -95,10 +77,15 @@ namespace InternalContainer.Tests
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), map.ConcreteType);
             Assert.Equal(null, map.Factory);
             Assert.Equal(Lifestyle.Transient, map.Lifestyle);
+
+            var instance = container.GetInstance<ISomeClass>();
+            Assert.IsType<SomeClass>(instance);
+            Assert.NotEqual(instance, container.GetInstance<ISomeClass>());
+            Assert.Single(container.Maps());
         }
 
         [Fact]
-        public void Test_Register_Singleton_Instance()
+        public void Test_Register_Instance()
         {
             var instance = new SomeClass();
             container.RegisterInstance(instance);
@@ -107,10 +94,15 @@ namespace InternalContainer.Tests
             Assert.Equal(instance, map.Factory());
             Assert.Equal(instance, map.Factory());
             Assert.Equal(Lifestyle.Singleton, map.Lifestyle);
+
+            Assert.Throws<TypeAccessException>(() => container.GetInstance<ISomeClass>());
+            Assert.Equal(container.GetInstance<SomeClass>(), map.Factory.Invoke());
+            Assert.Equal(container.GetInstance(typeof(SomeClass)), map.Factory.Invoke());
+            Assert.Single(container.Maps());
         }
 
         [Fact]
-        public void Test_Register_Singleton_Instance_Iface()
+        public void Test_Register_Instance_Iface()
         {
             var instance = new SomeClass();
             container.RegisterInstance<ISomeClass>(instance);
@@ -118,10 +110,15 @@ namespace InternalContainer.Tests
             Assert.Equal(typeof(ISomeClass).GetTypeInfo(), map.SuperType);
             Assert.Equal(instance, map.Factory());
             Assert.Equal(Lifestyle.Singleton, map.Lifestyle);
+
+            Assert.Throws<TypeAccessException>(() => container.GetInstance<SomeClass>());
+            Assert.Equal(container.GetInstance<ISomeClass>(), map.Factory.Invoke());
+            Assert.Equal(container.GetInstance(typeof(ISomeClass)), map.Factory.Invoke());
+            Assert.Single(container.Maps());
         }
 
         [Fact]
-        public void Test_Register_Transient_Factory()
+        public void Test_Register_Factory()
         {
             container.RegisterFactory(() => new SomeClass());
             var map = container.Maps().Single();
@@ -132,7 +129,7 @@ namespace InternalContainer.Tests
         }
 
         [Fact]
-        public void Test_Register_Transient_Factory_Iface()
+        public void Test_Register_Factory_Iface()
         {
             container.RegisterFactory<ISomeClass>(() => new SomeClass());
             var map = container.Maps().Single();

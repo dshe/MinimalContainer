@@ -58,11 +58,13 @@
     <Compile Include="Performance\Performance.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegisterAllTest.cs" />
+    <Compile Include="RegisterErrorTest.cs" />
     <Compile Include="RegisterTest.cs" />
     <Compile Include="Relative\CaptiveDependencyTest.cs" />
     <Compile Include="Relative\CreateInstanceTest.cs" />
     <Compile Include="Relative\RecursionTest.cs" />
     <Compile Include="Relative\UniqueConcreteTest.cs" />
+    <Compile Include="Utilities\ExtensionMethods.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

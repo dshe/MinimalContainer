@@ -24,21 +24,21 @@ namespace InternalContainer.Tests.Relative
         public void Test_DuplicateRegistration()
         {
             container.RegisterSingleton<ClassA1>();
-            Assert.Throws<ArgumentException>(() => container.RegisterSingleton<ClassA1>());
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<ClassA1>());
 
             container.RegisterSingleton<IMarker1, ClassA2>();
-            Assert.Throws<ArgumentException>(() => container.RegisterSingleton<IMarker1, ClassA2>());
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<IMarker1, ClassA2>());
         }
         [Fact]
         public void Test_RegistrationConcrete()
         {
             container.RegisterSingleton<ClassA1>();
-            Assert.Throws<ArgumentException>(() => container.RegisterSingleton<IMarker1, ClassA1>());
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<IMarker1, ClassA1>());
 
             container.RegisterSingleton<IMarker1, ClassA2>();
-            Assert.Throws<ArgumentException>(() => container.RegisterSingleton<ClassA2>());
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<ClassA2>());
             //Assert.Throws<ArgumentException>(() => container.RegisterSingleton<IMarker1, ClassA3>());
-            Assert.Throws<ArgumentException>(() => container.RegisterSingleton<IMarker2, ClassA2>());
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<IMarker2, ClassA2>());
         }
 
         [Fact]
