@@ -37,7 +37,7 @@ namespace InternalContainer.Tests.Relative
 
             container.RegisterSingleton<IMarker1, ClassA2>();
             Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<ClassA2>());
-            //Assert.Throws<ArgumentException>(() => container.RegisterSingleton<IMarker1, ClassA3>());
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<IMarker1, ClassA3>());
             Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<IMarker2, ClassA2>());
         }
 

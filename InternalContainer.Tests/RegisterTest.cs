@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Reflection;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace InternalContainer.Tests
 {
@@ -8,7 +9,15 @@ namespace InternalContainer.Tests
     {
         public interface ISomeClass { }
         public class SomeClass : ISomeClass { }
-        private readonly Container container = new Container();
+
+        private readonly Container container;
+        private readonly ITestOutputHelper output;
+
+        public RegisterTest(ITestOutputHelper output)
+        {
+            this.output = output;
+            container = new Container(log: output.WriteLine);
+        }
 
         [Fact]
         public void Test_Register_Singleton()
@@ -20,13 +29,14 @@ namespace InternalContainer.Tests
             Assert.Equal(null, map.Factory);
             Assert.Equal(Lifestyle.Singleton, map.Lifestyle);
             Assert.Equal(false, map.AutoRegistered);
-            Assert.Equal(0, map.InstancesCreated);
+            Assert.Equal(0, map.Instances);
 
             var instance = container.GetInstance<SomeClass>();
             Assert.IsType<SomeClass>(instance);
             Assert.Equal(instance, container.GetInstance(typeof(SomeClass)));
             Assert.Single(container.Maps());
-            Assert.Equal(1, map.InstancesCreated);
+            Assert.Equal(1, map.Instances);
+            output.WriteLine(container.ToString());
         }
 
         [Fact]
@@ -43,7 +53,8 @@ namespace InternalContainer.Tests
             Assert.IsType<SomeClass>(instance);
             Assert.Equal(instance, container.GetInstance(typeof(ISomeClass)));
             Assert.Single(container.Maps());
-            Assert.Equal(1, map.InstancesCreated);
+            Assert.Equal(1, map.Instances);
+            output.WriteLine(container.ToString());
         }
 
         [Fact]
@@ -60,7 +71,8 @@ namespace InternalContainer.Tests
             Assert.IsType<SomeClass>(instance);
             Assert.NotEqual(instance, container.GetInstance(typeof(SomeClass)));
             Assert.Single(container.Maps());
-            Assert.Equal(2, map.InstancesCreated);
+            Assert.Equal(2, map.Instances);
+            output.WriteLine(container.ToString());
         }
 
         [Fact]
@@ -77,7 +89,8 @@ namespace InternalContainer.Tests
             Assert.IsType<SomeClass>(instance);
             Assert.NotEqual(instance, container.GetInstance<ISomeClass>());
             Assert.Single(container.Maps());
-            Assert.Equal(2, map.InstancesCreated);
+            Assert.Equal(2, map.Instances);
+            output.WriteLine(container.ToString());
         }
 
         [Fact]
@@ -94,7 +107,8 @@ namespace InternalContainer.Tests
             Assert.Equal(instance, container.GetInstance<SomeClass>());
             Assert.Equal(instance, map.Factory());
             Assert.Single(container.Maps());
-            Assert.Equal(0, map.InstancesCreated);
+            Assert.Equal(0, map.Instances);
+            output.WriteLine(container.ToString());
         }
 
         [Fact]
@@ -111,7 +125,8 @@ namespace InternalContainer.Tests
             Assert.Equal(instance, container.GetInstance<ISomeClass>());
             Assert.Equal(instance, map.Factory());
             Assert.Single(container.Maps());
-            Assert.Equal(0, map.InstancesCreated);
+            Assert.Equal(0, map.Instances);
+            output.WriteLine(container.ToString());
         }
 
         [Fact]
@@ -127,7 +142,8 @@ namespace InternalContainer.Tests
             var instance = container.GetInstance<SomeClass>();
             Assert.NotEqual(instance, container.GetInstance<SomeClass>());
             Assert.Single(container.Maps());
-            Assert.Equal(0, map.InstancesCreated);
+            Assert.Equal(0, map.Instances);
+            output.WriteLine(container.ToString());
         }
 
         [Fact]
@@ -143,7 +159,8 @@ namespace InternalContainer.Tests
             var instance = container.GetInstance<ISomeClass>();
             Assert.NotEqual(instance, container.GetInstance<ISomeClass>());
             Assert.Single(container.Maps());
-            Assert.Equal(0, map.InstancesCreated);
+            Assert.Equal(0, map.Instances);
+            output.WriteLine(container.ToString());
         }
     }
 }

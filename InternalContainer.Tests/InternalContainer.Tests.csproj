@@ -54,7 +54,7 @@
     <Compile Include="ContainerDefaultLifestyleTest.cs" />
     <Compile Include="AutoEnumerableTests.cs" />
     <Compile Include="Example.cs" />
-    <Compile Include="AutoTests.cs" />
+    <Compile Include="AutoSingletonTests.cs" />
     <Compile Include="Performance\Performance.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegisterEnumerableTest.cs" />

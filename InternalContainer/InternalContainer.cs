@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 
 namespace InternalContainer
 {
@@ -28,11 +29,11 @@ namespace InternalContainer
         internal Lifestyle Lifestyle;
         internal bool AutoRegistered;
         internal Func<object> Factory;
-        internal int InstancesCreated;
+        internal int Instances;
         public override string ToString()
         {
-            return $"{(Equals(SuperType, ConcreteType) ? "" : SuperType.Name + "<-")}" +
-                   $"{ConcreteType.Name}, {Lifestyle}, AutoRegistered={AutoRegistered}, InstancesCreated={InstancesCreated}.";
+            var path = Equals(ConcreteType, null) || Equals(ConcreteType, SuperType) ? "" : Container.Pretty(ConcreteType) + "->";
+            return $"{path}{Container.Pretty(SuperType)}, {Lifestyle}, AutoRegistered={AutoRegistered}, InstancesCreated={Instances}.";
         }
     }
 
@@ -49,9 +50,9 @@ namespace InternalContainer
         {
             this.autoLifestyle = autoLifestyle;
             this.log = log;
-            Log("Creating Container.");
+            Log(()=>"Creating Container.");
             allConcreteTypes = new Lazy<List<TypeInfo>>(() => (assembly ?? this.GetType().GetTypeInfo().Assembly)
-                .DefinedTypes.Where(t => !t.IsAbstract).ToList());
+                .DefinedTypes.Where(t =>t.IsClass && !t.IsAbstract).ToList());
         }
 
         internal void RegisterSingleton<T>() => Register(typeof(T), typeof(T), null, Lifestyle.Singleton);
@@ -65,47 +66,46 @@ namespace InternalContainer
             if (supertype == null)
                 throw new ArgumentNullException(nameof(supertype));
             if (concretetype == null && (factory == null || lifestyle == Lifestyle.Singleton))
-                throw new ArgumentException("Invalid", nameof(factory));
+                throw new ArgumentNullException(nameof(concretetype));
             if (lifestyle == Lifestyle.AutoRegisterDisabled)
                 throw new ArgumentException("Invalid", nameof(lifestyle));
             TypeInfo superType = supertype.GetTypeInfo(), concreteType = concretetype?.GetTypeInfo();
 
-            if (concretetype != null)
+            if (concreteType != null)
             {
                 if (concreteType.IsAbstract && !typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(concreteType))
                 {
                     var assignables = allConcreteTypes.Value.Where(concreteType.IsAssignableFrom).ToList();
                     if (assignables.Count != 1)
-                        throw new TypeAccessException($"{assignables.Count} types found assignable to '{concreteType.Name}'.");
+                        throw new ArgumentException(nameof(concreteType), $"{assignables.Count} types found assignable to '{Pretty(concreteType)}'.");
                     concreteType = assignables.Single();
                 }
                 if (!superType.IsAssignableFrom(concreteType))
-                    throw new ArgumentException($"Type '{concretetype.Name}' is not assignable to type '{supertype.Name}'.");
+                    throw new ArgumentException(nameof(concreteType), $"Type '{Pretty(concreteType)}' is not assignable to type '{Pretty(superType)}'.");
             }
             lock (maps)
             {
-                if (factory == null)
-                    Log($"Registering {lifestyle} type '{concretetype.Name}'{(supertype == concretetype ? "" : "->'" + supertype.Name + "'")}.");
-                else if (concretetype != null)
-                    Log($"Registering instance of type {(supertype != concretetype ? "'" + concretetype.Name + "'->" : "")}'{supertype.Name}'.");
-                else
-                    Log($"Registering type '{supertype.Name}' factory.");
-
-                var map = new Map { SuperType = superType, ConcreteType = concreteType, Factory = factory, Lifestyle = lifestyle, AutoRegistered = autoRegister};
+                var map = new Map { SuperType = superType, ConcreteType = concreteType, Factory = factory, Lifestyle = lifestyle, AutoRegistered = autoRegister };
                 try
                 {
                     maps.Add(superType, map);
                 }
                 catch (Exception ex)
                 {
-                    throw new TypeAccessException($"Type '{superType.Name}' is already registered.", ex);
+                    throw new TypeAccessException($"Type '{Pretty(superType)}' is already registered.", ex);
                 }
                 if (concreteType != null && !concreteTypes.Add(concreteType))
                 {
                     maps.Remove(superType);
                     var dup = maps.Values.First(m => concreteType.Equals(m.ConcreteType));
-                    throw new TypeAccessException($"Type '{dup.SuperType.Name}' is already registered to return '{concreteType.Name}'.");
+                    throw new TypeAccessException($"Type '{Pretty(dup.SuperType)}' is already registered to return '{Pretty(concreteType)}'.");
                 }
+                if (factory == null)
+                    Log(()=>$"Registering {lifestyle} type '{Pretty(concreteType)}'{(superType.Equals(concreteType) ? "" : "->'" + Pretty(superType) + "'")}.");
+                else if (concreteType != null)
+                    Log(()=>$"Registering instance of type {(superType.Equals(concreteType) ? "" : "'" + Pretty(concreteType) + "'->")}'{Pretty(superType)}'.");
+                else
+                    Log(()=>$"Registering type '{Pretty(superType)}' factory.");
                 return map;
             }
         }
@@ -117,7 +117,7 @@ namespace InternalContainer
                 throw new ArgumentNullException(nameof(supertype));
             lock (maps)
             {
-                Log($"Getting instance of type '{supertype.Name}'.");
+                Log(()=>$"Getting instance of type '{Pretty(supertype)}'.");
                 typeStack.Clear();
                 try
                 {
@@ -127,8 +127,9 @@ namespace InternalContainer
                 }
                 catch (TypeAccessException ex)
                 {
-                    var message = $"Could not get instance of type '{string.Join("->", typeStack.Select(t => t.Name))}'.\n";
-                    Log(message + ex.Message);
+                    var typePath = string.Join("->", typeStack.Select(Pretty));
+                    var message = $"Could not get instance of type '{typePath}'\n{ex.Message}\n";
+                    Log(() =>message);
                     throw new TypeAccessException(message, ex);
                 }
             }
@@ -149,9 +150,16 @@ namespace InternalContainer
             Map map;
             if (!maps.TryGetValue(superType, out map))
             {   // auto-register
-                var lifestyle = GetLifeStyle(superType, dependent);
-                if (autoLifestyle == Lifestyle.AutoRegisterDisabled && !typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(dependent.SuperType))
-                    throw new TypeAccessException($"Cannot resolve unregistered type '{superType.Name}'.");
+                var lifestyle = autoLifestyle;
+                if (lifestyle == Lifestyle.AutoRegisterDisabled && dependent != null && typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(dependent.SuperType))
+                    lifestyle = dependent.Lifestyle;
+                if (dependent?.Lifestyle == Lifestyle.Transient && autoLifestyle == Lifestyle.Singleton)
+                {
+                    lifestyle = Lifestyle.Singleton;
+                    Log(()=>$"Warning: type '{Pretty(superType)}' lifestyle set to singleton because dependent '{Pretty(dependent.SuperType)}' is singleton.");
+                }
+                if (lifestyle == Lifestyle.AutoRegisterDisabled)
+                    throw new TypeAccessException($"Cannot resolve unregistered type '{Pretty(superType)}'.");
                 map = Register(superType.AsType(), superType.AsType(), null, lifestyle, true);
             }
             return GetInstanceFromMap(map, dependent);
@@ -160,44 +168,44 @@ namespace InternalContainer
         private object GetInstanceFromMap(Map map, Map dependent)
         {
             if (dependent?.Lifestyle == Lifestyle.Singleton && map.Lifestyle == Lifestyle.Transient)
-                throw new TypeAccessException($"Captive dependency: the singleton '{dependent.SuperType.Name}' depends on transient '{map.SuperType.Name}'.");
+                throw new TypeAccessException($"Captive dependency: the singleton '{Pretty(dependent.SuperType)}' depends on transient '{Pretty(map.SuperType)}'.");
             if (map.Factory == null)
             {
                 if (map.Lifestyle == Lifestyle.Singleton)
                 {
-                    var value = CreateInstance(map);
+                    var value = CreateInstanceOrList(map);
                     map.Factory = () => value;
                 }
                 else
-                    map.Factory = () => CreateInstance(map);
+                    map.Factory = () => CreateInstanceOrList(map);
             }
             return map.Factory();
         }
 
-        private object CreateInstance(Map map)
+        private object CreateInstanceOrList(Map map)
         {
-            map.InstancesCreated++;
+            map.Instances++;
             if (typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(map.ConcreteType))
-                return GetGenericList(map);
-            return CreateInstancex(map);
+                return CreateList(map);
+            return CreateInstance(map);
         }
 
-        private object CreateInstancex(Map map)
+        private object CreateInstance(Map map)
         {
             var type = map.ConcreteType;
             var constructors = type.DeclaredConstructors.Where(t => !t.IsPrivate).ToList();
             if (constructors.Count != 1)
-                throw new TypeAccessException($"Type '{type.Name}' has {constructors.Count} constructors." +
+                throw new TypeAccessException($"Type '{Pretty(type)}' has {constructors.Count} constructors." +
                     $" Instantiation requires exactly 1 constructor, public or internal.");
             var constructor = constructors.Single();
             var parameters = constructor.GetParameters()
                 .Select(p => p.HasDefaultValue ? p.DefaultValue : GetInstance(p.ParameterType.GetTypeInfo(), map)).ToList();
             var parametersText = string.Join(", ", parameters.Select(p => p.GetType().Name));
-            Log($"Constructing {map.Lifestyle} instance of type '{type.Name}({parametersText})'.");
+            Log(()=>$"Constructing {map.Lifestyle} instance of type '{Pretty(type)}({parametersText})'.");
             return constructor.Invoke(parameters.ToArray());
         }
 
-        private object GetGenericList(Map map)
+        private object CreateList(Map map)
         {
             var type = map.ConcreteType;
             var generictype = type.GenericTypeArguments.Single();
@@ -205,27 +213,53 @@ namespace InternalContainer
             var genericListType = typeof(List<>).MakeGenericType(generictype);
             var genericList = (IList)Activator.CreateInstance(genericListType);
             var assignables = allConcreteTypes.Value.Where(genericType.IsAssignableFrom).ToList();
-            Log($"Creating list of {assignables.Count} registered types assignable to '{generictype.Name}'.");
+            Log(()=>$"Creating list of {assignables.Count} registered types assignable to '{Pretty(generictype)}'.");
             foreach (var assignable in assignables)
                 genericList.Add(GetInstance(assignable, map));
             return genericList;
-        }
-
-        private Lifestyle GetLifeStyle(TypeInfo superType, Map dependent)
-        {
-            if (autoLifestyle == Lifestyle.AutoRegisterDisabled && dependent != null &&
-                typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(dependent.SuperType))
-                    return dependent.Lifestyle;
-            if (dependent?.Lifestyle != Lifestyle.Singleton || autoLifestyle != Lifestyle.Transient)
-                return autoLifestyle;
-            Log($"Warning: type '{superType.Name}' lifestyle set to singleton because dependent '{dependent.SuperType.Name}' is singleton.");
-            return Lifestyle.Singleton;
         }
 
         internal IList<Map> Maps() // diagnostic
         {
             lock (maps)
                 return maps.Values.ToList();
+        }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine($"Container: {autoLifestyle}");
+            sb.AppendLine($"concrete types in assembly: {allConcreteTypes.Value.Count}, registered concrete types: {concreteTypes.Count}, maps: {maps.Count}.");
+            foreach (var map in maps.Values)
+                sb.AppendLine(map.ToString());
+            return sb.ToString();
+        }
+
+        internal static string Pretty(Type type) => Pretty(type?.GetTypeInfo());
+        internal static string Pretty(TypeInfo type)
+        {
+            if (type == null)
+                return null;
+            if (type.IsGenericParameter || !type.IsGenericType)
+                return type.Name;
+
+            var sb = new StringBuilder();
+            var name = type.Name;
+            var index = name.IndexOf("`", StringComparison.Ordinal);
+            if (index >= 0)
+                name = name.Substring(0, index);
+            sb.AppendFormat(name);
+            sb.Append('<');
+            var first = true;
+            foreach (var arg in type.GenericTypeArguments)
+            {
+                if (!first)
+                    sb.Append(',');
+                sb.Append(Pretty(arg.GetTypeInfo()));
+                first = false;
+            }
+            sb.Append('>');
+            return sb.ToString();
         }
 
         public void Dispose()
@@ -235,19 +269,22 @@ namespace InternalContainer
                 foreach (var instance in maps.Values.Where(m => m.Lifestyle.Equals(Lifestyle.Singleton) && m.Factory != null)
                     .Select(m => m.Factory()).OfType<IDisposable>())
                 {
-                    Log($"Disposing type '{instance.GetType().Name}'.");
+                    Log(()=>$"Disposing type '{Pretty(instance.GetType())}'.");
                     instance.Dispose();
                 }
                 maps.Clear();
                 concreteTypes.Clear();
             }
-            Log("Container disposed.");
+            Log(()=>"Container disposed.");
         }
 
-        private void Log(string message)
+        private void Log(Func<string> message)
         {
-            if (!string.IsNullOrEmpty(message))
-                log?.Invoke(message);
+            if (log == null)
+                return;
+            var msg = message();
+            if (!string.IsNullOrEmpty(msg))
+                log(msg);
         }
     }
 }

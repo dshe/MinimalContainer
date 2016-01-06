@@ -9,10 +9,10 @@ namespace InternalContainer.Tests
 {
     public class EnumerableTest
     {
-        public interface INotUsed { }
-        public interface IMarker { }
-        public class ClassA : IMarker { }
-        public class ClassB : IMarker { }
+        internal interface INotUsed { }
+        internal interface IMarker { }
+        internal class ClassA : IMarker { }
+        internal class ClassB : IMarker { }
         private readonly Container container;
 
         public EnumerableTest(ITestOutputHelper output)
