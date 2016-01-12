@@ -39,8 +39,8 @@ container.RegisterFactory<TSuper>(() => new TConcrete());
 ```
 #### manual registration of multiple types
 ```csharp
-container.RegisterSingletonAll<TSuper>();
-container.RegisterTransientAll<TSuper>();
+container.RegisterSingleton<TSuper>();
+container.RegisterTransient<TSuper>();
 ```
 The assembly is scanned. Any types assignable to `TSuper` are registered.
 
@@ -70,7 +70,7 @@ Assert.NotEqual(instance, container.GetInstance<TSuper>());
 ```
 #### resolution of multiple types
 ```csharp
-IEnumerable<T> instances = container.GetInstance<IEnumerable<T>>();
+IEnumerable<TSuper> instances = container.GetInstance<IEnumerable<TSuper>>();
 ```
 ```csharp
 public class TSuper {}
