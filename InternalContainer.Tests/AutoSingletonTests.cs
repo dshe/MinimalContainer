@@ -12,7 +12,7 @@ namespace InternalContainer.Tests
 
         public AutoSingletonTests(ITestOutputHelper output)
         {
-            container = new Container(Lifestyle.Singleton, log:output.WriteLine, assembly:Assembly.GetExecutingAssembly());
+            container = new Container(Lifestyle.Singleton, log:output.WriteLine, assemblies:Assembly.GetExecutingAssembly());
         }
 
         public interface ISomeClass {}

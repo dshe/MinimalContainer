@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -25,7 +26,7 @@ namespace InternalContainer.Tests.Relative
 
         public CreateInstanceTest(ITestOutputHelper output)
         {
-            container = new Container(Lifestyle.Singleton, log: output.WriteLine);
+            container = new Container(Lifestyle.Singleton, log: output.WriteLine, assemblies:Assembly.GetExecutingAssembly());
         }
 
         [Fact]

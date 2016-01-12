@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -51,7 +52,13 @@ namespace InternalContainer.Tests.Performance
         internal void RegisterTypes(List<Type> types, Lifestyle lifestyle)
         {
             foreach (var type in types)
-                container.Register(type, type, () => type, lifestyle);
+                container.RegisterFactory(type.GetTypeInfo(), () =>type);
         }
+
+        private void Reg<T>(T instance)
+        {
+            //container.
+        }
+
     }
 }

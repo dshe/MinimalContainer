@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -17,7 +18,7 @@ namespace InternalContainer.Tests.Relative
 
         public CaptiveDependencyTests(ITestOutputHelper output)
         {
-            container = new Container(log: output.WriteLine);
+            container = new Container(log: output.WriteLine, assemblies:Assembly.GetExecutingAssembly());
         }
 
         [Fact]

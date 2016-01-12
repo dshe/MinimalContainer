@@ -30,7 +30,7 @@ namespace InternalContainer.Tests
         [Fact]
         public void Test_Singleton()
         {
-            var c = new Container(Lifestyle.Singleton, log: output.WriteLine);
+            var c = new Container(Lifestyle.Singleton, log: output.WriteLine, assemblies:Assembly.GetExecutingAssembly());
             var instance1 = c.GetInstance<SomeClass>();
             var map = c.Maps().Single();
             Assert.Equal(Lifestyle.Singleton, map.Lifestyle);
@@ -42,7 +42,7 @@ namespace InternalContainer.Tests
         [Fact]
         public void Test_Transient()
         {
-            var c = new Container(Lifestyle.Transient, log: output.WriteLine);
+            var c = new Container(Lifestyle.Transient, log: output.WriteLine, assemblies:Assembly.GetExecutingAssembly());
             var instance1 = c.GetInstance<SomeClass>();
             var map = c.Maps().Single();
             Assert.Equal(Lifestyle.Transient, map.Lifestyle);

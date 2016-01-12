@@ -18,7 +18,7 @@ namespace InternalContainer.Tests
 
         public RegisterEnumerableTest(ITestOutputHelper output)
         {
-            container = new Container(log: output.WriteLine, assembly: Assembly.GetExecutingAssembly());
+            container = new Container(log: output.WriteLine, assemblies: Assembly.GetExecutingAssembly());
         }
 
         [Fact]

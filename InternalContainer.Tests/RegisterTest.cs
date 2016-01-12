@@ -16,7 +16,7 @@ namespace InternalContainer.Tests
         public RegisterTest(ITestOutputHelper output)
         {
             this.output = output;
-            container = new Container(log: output.WriteLine);
+            container = new Container(log: output.WriteLine, assemblies:Assembly.GetExecutingAssembly());
         }
 
         [Fact]
