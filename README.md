@@ -5,7 +5,6 @@ A simple IOC container in a single C# 6.0 source file.
 - supports public and **internal** constructor dependency injection
 - supports singleton and transient lifestyles
 - detects captive and recursive dependencies
-- very short, easy to understand code
 - fast enough
 
 #### example
@@ -23,9 +22,9 @@ container.Dispose();
 ```
 `TSuper` is a superType of `TConcrete`. Often an interface, it could also be an abstract class or possibly a concrete type which is assignable from `TConcrete`.  
 
-Disposing the container will dispose any disposable singleton instances.
+Disposing the container will dispose any registered disposable singleton instances.
 
-#### manual registration of single types
+#### registration of single types
 ```csharp
 container.RegisterSingleton<TConcrete>();
 container.RegisterSingleton<TSuper,TConcrete>();
@@ -37,12 +36,19 @@ container.RegisterTransient<TSuper,TConcrete>();
 container.RegisterFactory(() => new TConcrete());
 container.RegisterFactory<TSuper>(() => new TConcrete());
 ```
-#### manual registration of multiple types
+#### registration of multiple types
 ```csharp
 container.RegisterSingleton<TSuper>();
 container.RegisterTransient<TSuper>();
 ```
 The assembly is scanned. Any types assignable to `TSuper` are registered.
+
+#### registration of enumerable types
+```csharp
+container.RegisterSingleton<IEnumerable<TSuper>>();
+container.RegisterTransient<IEnumerable<TSuper>>();
+```
+The assembly is scanned. Any types assignable to `TSuper` are registered. Type `IEnumerable<TSuper>` is registered as a list containing all instances of types assignable to `TSuper`.
 
 #### resolution of a single type
 ```csharp
@@ -100,7 +106,7 @@ The following graphic illustrates the strategy used to automatically resolve typ
 
 ![Image of Resolution Strategy](https://github.com/dshe/InternalContainer/blob/master/InternalContainer/TypeResolutionFlowChart.png)
 
-#### magic
+#### example
 ```csharp
 public interface IClassA {}
 public class ClassA : IClassA {}
@@ -137,5 +143,3 @@ var container = new Container(log:Console.WriteLine);
 foreach (var map in container.Maps())
   Debug.WriteLine(map.ToString());
 ```
-#### contribution
-Please sign the <a href="https://www.clahub.com/agreements/dshe/InternalContainer.cs">Contributor License Agreement</a>. 
