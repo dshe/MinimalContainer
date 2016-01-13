@@ -2,7 +2,8 @@
 A simple IOC container in a single C# 6.0 source file.
 - **no dependencies**
 - **portable** library compatibility: Windows 10, Framework 4.6, ASP.NET Core 5
-- supports dependency injection through a public or **internal** constructor
+- supports constructor dependency injection
+- selects the public or **internal** constructor with the most arguments
 - supports singleton and transient lifestyles
 - supports Generics
 - detects captive and recursive dependencies
@@ -51,7 +52,7 @@ T instance = (T)container.GetInstance(typeof(T));
 var container = new Container();
 
 container.RegisterSingleton<TSuper,TConcrete>();
-var instance = container.GetInstance<TSuper>();
+TSuper instance = container.GetInstance<TSuper>();
 Assert.Equal(instance, container.GetInstance<TSuper>());
 
 container.RegisterInstance<TSuper>(new TConcrete());
@@ -135,6 +136,6 @@ var container = new Container(log:Console.WriteLine);
 ```
 #### diagnostic
 ```csharp
-foreach (var map in container.Maps())
-  Debug.WriteLine(map.ToString());
+foreach (var registration in container.Registrations())
+  Debug.WriteLine(registration.ToString());
 ```
