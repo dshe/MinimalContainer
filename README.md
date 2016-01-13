@@ -1,13 +1,14 @@
 ## InternalContainer.cs
 A simple IOC container in a single C# 6.0 source file.
-- **no dependencies**
-- **portable** library compatibility: Windows 10, Framework 4.6, ASP.NET Core 5
-- supports constructor dependency injection
-- selects the public or **internal** constructor with the most arguments
+- *no dependencies*
+- *portable* library compatibility: Windows 10, Framework 4.6, ASP.NET Core 5
+- supports *constructor* dependency injection
+- selects the public or *internal* constructor with the most arguments
 - supports singleton and transient lifestyles
-- supports Generics
+- supports generics
 - detects captive and recursive dependencies
-- fast enough
+- tested
+- fast
 
 #### example
 ```csharp
@@ -88,12 +89,12 @@ A list of instances of registered types which are assignable to `TSuper` is retu
 
 #### automatic registration
 ```csharp
+public class TConcrete {}
 var container = new Container(Lifestyle.Singleton);
 //container.RegisterSingleton<TConcrete>();
 TConcrete instance = container.GetInstance<TConcrete>();
-Assert.Equal(instance, container.GetInstance<TConcrete>());
 ```
-To enable automatic registration and resolution, pass the desired lifestyle (singleton or transient) to be used for automatic registration in the container's constructor. If type resolution requires scanning assemblies other than the current executing assembly, those assemblies can also be passed in the continer's constructor.
+To enable automatic registration and resolution, pass the desired lifestyle (singleton or transient) to be used for automatic registration in the container's constructor. If type resolution requires scanning assemblies other than the current executing assembly, also pass references to those assemblies in the container's constructor.
 
 The following graphic illustrates the strategy used to automatically resolve types:
 
