@@ -48,7 +48,7 @@ namespace InternalContainer
             this.log = log;
             Log("Creating Container.");
             allConcreteTypes = new Lazy<List<TypeInfo>>(() =>
-                (assemblies ?? new[] { this.GetType().GetTypeInfo().Assembly })
+                (assemblies.Any() ? assemblies : new[] { this.GetType().GetTypeInfo().Assembly })
                 .Select(a => a.DefinedTypes.Where(t => t.IsClass && !t.IsAbstract).ToList())
                 .SelectMany(x => x).ToList());
         }
@@ -77,7 +77,11 @@ namespace InternalContainer
                 var assignables = allConcreteTypes.Value.Where(superType.IsAssignableFrom).ToList();
                 concreteType = assignables.SingleOrDefault();
                 if (concreteType == null)
-                    throw new TypeAccessException($"{assignables.Count} types found assignable to '{superType.AsString()}'.");
+                {
+                    if (assignables.Count > 1 || superType.IsAbstract) 
+                        throw new TypeAccessException($"{assignables.Count} types found assignable to '{superType.AsString()}'.");
+                    concreteType = superType; // could be generic
+                }
             }
             var reg = new Registration(superType, concreteType, lifestyle, autoRegister);
             Register(reg, () => $"Registering type: {reg}");
@@ -171,9 +175,7 @@ namespace InternalContainer
             Registration registration;
             if (!registrations.TryGetValue(superType, out registration))
             {   // auto-register
-                var lifestyle = autoLifestyle;
-                if (dependent != null)
-                    lifestyle = dependent.Lifestyle;
+                var lifestyle = dependent?.Lifestyle ?? autoLifestyle;
                 if (lifestyle == Lifestyle.AutoRegisterDisabled)
                     throw new TypeAccessException($"Cannot resolve unregistered type '{superType.AsString()}'.");
                 registration = Register(superType, null, lifestyle, true);
@@ -210,11 +212,9 @@ namespace InternalContainer
         private object CreateInstance(Registration reg)
         {
             var type = reg.ConcreteType;
-            var constructors = type.DeclaredConstructors.Where(t => !t.IsPrivate).ToList();
-            var constructor = constructors.SingleOrDefault();
+            var constructor = type.DeclaredConstructors.Where(t => !t.IsPrivate).OrderBy(t => t.GetParameters().Length).LastOrDefault();
             if (constructor == null)
-                throw new TypeAccessException(
-                    $"Type '{type.AsString()}' has {constructors.Count} constructors. Instantiation requires exactly 1 constructor, public or internal.");
+                throw new TypeAccessException($"Type '{type.AsString()}' has no public or internal constructor.");
             var parameters = constructor.GetParameters()
                 .Select(p => p.HasDefaultValue ? p.DefaultValue : GetInstance(p.ParameterType.GetTypeInfo(), reg))
                 .ToArray();
