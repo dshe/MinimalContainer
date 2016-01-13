@@ -2,8 +2,9 @@
 A simple IOC container in a single C# 6.0 source file.
 - **no dependencies**
 - **portable** library compatibility: Windows 10, Framework 4.6, ASP.NET Core 5
-- supports public and **internal** constructor dependency injection
+- supports dependency injection through a public or **internal** constructor
 - supports singleton and transient lifestyles
+- supports Generics
 - detects captive and recursive dependencies
 - fast enough
 
@@ -36,20 +37,11 @@ container.RegisterTransient<TSuper,TConcrete>();
 container.RegisterFactory(() => new TConcrete());
 container.RegisterFactory<TSuper>(() => new TConcrete());
 ```
-#### registration of multiple types
-```csharp
-container.RegisterSingleton<TSuper>();
-container.RegisterTransient<TSuper>();
-```
-The assembly is scanned. Any types assignable to `TSuper` are registered.
-
 #### registration of enumerable types
 ```csharp
 container.RegisterSingleton<IEnumerable<TSuper>>();
 container.RegisterTransient<IEnumerable<TSuper>>();
 ```
-The assembly is scanned. Any types assignable to `TSuper` are registered. Type `IEnumerable<TSuper>` is registered as a list containing all instances of types assignable to `TSuper`.
-
 #### resolution of a single type
 ```csharp
 T instance = container.GetInstance<T>();
