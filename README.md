@@ -55,15 +55,15 @@ var instance = container.GetInstance<TSuper>();
 Assert.Equal(instance, container.GetInstance<TSuper>());
 
 container.RegisterInstance<TSuper>(new TConcrete());
-var instance = container.GetInstance<TSuper>();
+TSuper instance = container.GetInstance<TSuper>();
 Assert.Equal(instance, container.GetInstance<TSuper>());
 
 container.RegisterTransient<TSuper,TConcrete>();
-var instance = container.GetInstance<TSuper>();
+TSuper instance = container.GetInstance<TSuper>();
 Assert.NotEqual(instance, container.GetInstance<TSuper>());
 
 container.RegisterFactory<TSuper>(() => new TConcrete());
-var instance = container.GetInstance<TSuper>();
+TSuper instance = container.GetInstance<TSuper>();
 Assert.NotEqual(instance, container.GetInstance<TSuper>());
 ```
 #### resolution of multiple types
@@ -92,7 +92,7 @@ var container = new Container(Lifestyle.Singleton);
 TConcrete instance = container.GetInstance<TConcrete>();
 Assert.Equal(instance, container.GetInstance<TConcrete>());
 ```
-To enable automatic registration and resolution, pass the desired lifestyle (singleton or transient) to be used for automatic registration in the container's constructor.
+To enable automatic registration and resolution, pass the desired lifestyle (singleton or transient) to be used for automatic registration in the container's constructor. If type resolution requires scanning assemblies other than the current executing assembly, those assemblies can also be passed in the continer's constructor.
 
 The following graphic illustrates the strategy used to automatically resolve types:
 
@@ -107,9 +107,12 @@ public interface IClass {}
 public class ClassB : IClass {}
 public class ClassC : IClass {}
 
+public class ClassD<T> {}
+public class ClassE {}
+
 public class ClassB : IDisposable
 {
-  public ClassB(IClassA a, IEnumerable<IClass> list) {}
+  public ClassB(IClassA a, IEnumerable<IClass> list, ClassD<ClassE> de) {}
   public void Dispose() {}
 }
 
@@ -124,7 +127,7 @@ public class Root
 using (var container = new Container(Lifestyle.Singleton))
   container.GetInstance<Root>();
 ```
-In the example above, the complete object graph is created and the application started by simply resolving the compositional root. This approach is recommended.
+In the example above, the complete object graph is created and the application started by simply resolving the compositional root. 
 
 #### logging
 ```csharp
