@@ -10,8 +10,9 @@ namespace InternalContainer.Tests.Performance
 {
     public class Performance
     {
+        private readonly Container container = new Container();
+
         private readonly Stopwatch sw = new Stopwatch();
-        private readonly Container container = new Container(Lifestyle.Singleton);
         private readonly ITestOutputHelper output;
         public Performance(ITestOutputHelper output)
         {
@@ -52,12 +53,7 @@ namespace InternalContainer.Tests.Performance
         internal void RegisterTypes(List<Type> types, Lifestyle lifestyle)
         {
             foreach (var type in types)
-                container.RegisterFactory(type.GetTypeInfo(), () =>type);
-        }
-
-        private void Reg<T>(T instance)
-        {
-            //container.
+                container.RegisterFactory(type.GetTypeInfo(), () => type);
         }
 
     }

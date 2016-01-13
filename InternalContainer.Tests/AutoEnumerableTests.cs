@@ -14,9 +14,11 @@ namespace InternalContainer.Tests
         internal class ClassA : IMarker { }
         internal class ClassB : IMarker { }
         private readonly Container container;
+        private readonly ITestOutputHelper output;
 
         public EnumerableTest(ITestOutputHelper output)
         {
+            this.output = output;
             container = new Container(Lifestyle.Singleton, log:output.WriteLine, assemblies:Assembly.GetExecutingAssembly());
         }
 
@@ -25,6 +27,8 @@ namespace InternalContainer.Tests
         {
             var list = container.GetInstance<IList<ClassA>>();
             Assert.Equal(1, list.Count);
+            Assert.Equal(2, container.Registrations().Count);
+            output.WriteLine(Environment.NewLine + container);
         }
 
         [Fact]
@@ -32,6 +36,7 @@ namespace InternalContainer.Tests
         {
             var list = container.GetInstance<IList<IMarker>>();
             Assert.Equal(2, list.Count);
+            output.WriteLine(Environment.NewLine + container);
         }
 
         [Fact]
@@ -45,7 +50,7 @@ namespace InternalContainer.Tests
         [Fact]
         public void Test_RegisterAll_Enumerable()
         {
-            container.GetInstance<IEnumerable<INotUsed>>();
+            Assert.Throws<TypeAccessException>(() => container.GetInstance<IEnumerable<INotUsed>>());
         }
 
     }

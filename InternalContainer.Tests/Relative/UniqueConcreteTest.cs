@@ -46,7 +46,7 @@ namespace InternalContainer.Tests.Relative
         public void Test_RegistrationConcreteMultiple()
         {
             container.RegisterSingleton<IMarker1,ClassA1>();
-            Assert.Throws<TypeAccessException>(() => container.GetInstance<ClassA1>());
+            container.GetInstance<ClassA1>();
             container.GetInstance<IMarker1>();
         }
 
