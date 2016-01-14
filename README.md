@@ -108,10 +108,10 @@ public class Root
 using (var container = new Container(Lifestyle.Singleton))
     container.GetInstance<Root>();
 ```
-In the example above, the complete object graph is created and the application started by simply resolving the compositional root. 
+The complete object graph is created and the application is started by simply resolving the compositional root. 
 
 #### resolution strategy
-The following graphic illustrates the strategy used to automatically resolve types:
+The following graphic illustrates the automatic type resolution strategy:
 
 ![Image of Resolution Strategy](https://github.com/dshe/InternalContainer/blob/master/InternalContainer/TypeResolutionFlowChart.png)
 
