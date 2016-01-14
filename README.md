@@ -49,25 +49,6 @@ container.RegisterTransient<IEnumerable<TSuper>>();
 T instance = container.GetInstance<T>();
 T instance = (T)container.GetInstance(typeof(T));
 ```
-```csharp
-var container = new Container();
-
-container.RegisterSingleton<TSuper,TConcrete>();
-TSuper instance = container.GetInstance<TSuper>();
-Assert.Equal(instance, container.GetInstance<TSuper>());
-
-container.RegisterInstance<TSuper>(new TConcrete());
-TSuper instance = container.GetInstance<TSuper>();
-Assert.Equal(instance, container.GetInstance<TSuper>());
-
-container.RegisterTransient<TSuper,TConcrete>();
-TSuper instance = container.GetInstance<TSuper>();
-Assert.NotEqual(instance, container.GetInstance<TSuper>());
-
-container.RegisterFactory<TSuper>(() => new TConcrete());
-TSuper instance = container.GetInstance<TSuper>();
-Assert.NotEqual(instance, container.GetInstance<TSuper>());
-```
 #### resolution of multiple types
 ```csharp
 IEnumerable<TSuper> instances = container.GetInstance<IEnumerable<TSuper>>();
@@ -102,32 +83,32 @@ The following graphic illustrates the strategy used to automatically resolve typ
 
 #### example
 ```csharp
-public interface IClassA {}
-public class ClassA : IClassA {}
+public interface IClassB {}
+public class ClassB : IClassB {}
+
+public class ClassC<T> { }
+public class ClassD { }
 
 public interface IClass {}
-public class ClassB : IClass {}
-public class ClassC : IClass {}
+public class ClassE : IClass {}
+public class ClassF : IClass {}
 
-public class ClassD<T> {}
-public class ClassE {}
-
-public class ClassB : IDisposable
+public class ClassA : IDisposable
 {
-  public ClassB(IClassA a, IEnumerable<IClass> list, ClassD<ClassE> de) {}
-  public void Dispose() {}
+    public ClassA(IClassB b, ClassC<ClassD> cd, IEnumerable<IClass> list) {}
+    public void Dispose() {}
 }
 
 public class Root
 {
-  public Root(ClassB b) 
-  {
-    Start();
-  }
+    public Root(ClassA a)
+    {
+        //Start();
+    }
 }
 
 using (var container = new Container(Lifestyle.Singleton))
-  container.GetInstance<Root>();
+    container.GetInstance<Root>();
 ```
 In the example above, the complete object graph is created and the application started by simply resolving the compositional root. 
 
