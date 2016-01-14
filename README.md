@@ -77,10 +77,6 @@ TConcrete instance = container.GetInstance<TConcrete>();
 ```
 To enable automatic registration and resolution, pass the desired lifestyle (singleton or transient) to be used for automatic registration in the container's constructor. If automatic type resolution requires scanning assemblies other than the current executing assembly, also include references to those assemblies in the container's constructor.
 
-The following graphic illustrates the strategy used to automatically resolve types:
-
-![Image of Resolution Strategy](https://github.com/dshe/InternalContainer/blob/master/InternalContainer/TypeResolutionFlowChart.png)
-
 #### example
 ```csharp
 public interface IClassB {}
@@ -111,6 +107,11 @@ using (var container = new Container(Lifestyle.Singleton))
     container.GetInstance<Root>();
 ```
 In the example above, the complete object graph is created and the application started by simply resolving the compositional root. 
+
+#### resolution strategy
+The following graphic illustrates the strategy used to automatically resolve types:
+
+![Image of Resolution Strategy](https://github.com/dshe/InternalContainer/blob/master/InternalContainer/TypeResolutionFlowChart.png)
 
 #### logging
 ```csharp
