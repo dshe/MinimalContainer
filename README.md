@@ -18,7 +18,7 @@ var container = new Container();
 
 container.RegisterSingleton<TSuper,TConcrete>();
 
-var instance = container.GetInstance<TSuper>();
+TSuper instance = container.GetInstance<TSuper>();
 
 container.Dispose();
 ```
@@ -43,7 +43,7 @@ container.RegisterFactory<TSuper>(() => new TConcrete());
 container.RegisterSingleton<IEnumerable<TSuper>>();
 container.RegisterTransient<IEnumerable<TSuper>>();
 ```
-#### resolution of a single type
+#### resolution of single types
 ```csharp
 T instance = container.GetInstance<T>();
 T instance = (T)container.GetInstance(typeof(T));
@@ -93,7 +93,7 @@ var container = new Container(Lifestyle.Singleton);
 //container.RegisterSingleton<TConcrete>();
 TConcrete instance = container.GetInstance<TConcrete>();
 ```
-To enable automatic registration and resolution, pass the desired lifestyle (singleton or transient) to be used for automatic registration in the container's constructor. If type resolution requires scanning assemblies other than the current executing assembly, also pass references to those assemblies in the container's constructor.
+To enable automatic registration and resolution, pass the desired lifestyle (singleton or transient) to be used for automatic registration in the container's constructor. If automatic type resolution requires scanning assemblies other than the current executing assembly, also include references to those assemblies in the container's constructor.
 
 The following graphic illustrates the strategy used to automatically resolve types:
 
