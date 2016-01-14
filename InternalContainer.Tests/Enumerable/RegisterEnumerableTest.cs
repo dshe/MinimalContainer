@@ -23,27 +23,18 @@ namespace InternalContainer.Tests.Enumerable
         public void Test_Register_Enumerable_Singleton()
         {
             container.RegisterSingleton<IEnumerable<ISomeClass>>();
-            /*
-            var reg = container.Registrations().Single();
-            Assert.Equal(typeof (IEnumerable<ISomeClass>).GetTypeInfo(), reg.SuperType);
-            Assert.Equal(typeof (IEnumerable<ISomeClass>).GetTypeInfo(), reg.ConcreteType);
-            Assert.Equal(null, reg.Factory);
-            Assert.Equal(Lifestyle.Singleton, reg.Lifestyle);
-            Assert.Equal(false, reg.AutoRegistered);
-            Assert.Equal(0, reg.Instances);
-            */
+            container.RegisterSingleton<SomeClass1>();
+            container.RegisterSingleton<SomeClass2>();
 
             var instance = container.GetInstance<IEnumerable<ISomeClass>>();
-            /*
             Assert.IsAssignableFrom<IEnumerable<ISomeClass>>(instance);
             Assert.Equal(instance, container.GetInstance(typeof (IEnumerable<ISomeClass>)));
-            //Assert.Equal(3, container.Registrations().Count);
+            Assert.Equal(3, container.Registrations().Count);
             foreach (var m in container.Registrations())
             {
                 Assert.Equal(Lifestyle.Singleton, m.Lifestyle);
                 Assert.Equal(1, m.Instances);
             }
-            */
             container.Log();
         }
 
@@ -51,6 +42,8 @@ namespace InternalContainer.Tests.Enumerable
         public void Test_Register_Enumerable_Transient()
         {
             container.RegisterTransient<IEnumerable<ISomeClass>>();
+            container.RegisterTransient<SomeClass1>();
+            container.RegisterTransient<SomeClass2>();
 
             var instance = container.GetInstance<IEnumerable<ISomeClass>>();
             Assert.NotEqual(instance, container.GetInstance(typeof (IEnumerable<ISomeClass>)));
@@ -65,16 +58,22 @@ namespace InternalContainer.Tests.Enumerable
         [Fact]
         public void Test_Register_List_Types()
         {
+            container.RegisterSingleton<SomeClass1>();
+            container.RegisterSingleton<SomeClass2>();
             container.RegisterSingleton<IEnumerable<ISomeClass>>();
             var list = container.GetInstance<IEnumerable<ISomeClass>>();
             Assert.Equal(2, list.Count());
             container.Dispose();
 
+            container.RegisterSingleton<SomeClass1>();
+            container.RegisterSingleton<SomeClass2>();
             container.RegisterSingleton<IList<ISomeClass>>();
             list = container.GetInstance<IList<ISomeClass>>();
             Assert.Equal(2, list.Count());
             container.Dispose();
 
+            container.RegisterSingleton<SomeClass1>();
+            container.RegisterSingleton<SomeClass2>();
             container.RegisterSingleton<IList<ISomeClass>>();
             list = container.GetInstance<IList<ISomeClass>>();
             Assert.Equal(2, list.Count());
@@ -83,6 +82,7 @@ namespace InternalContainer.Tests.Enumerable
         [Fact]
         public void Test_Register_List_Concrete()
         {
+            container.RegisterSingleton<SomeClass1>();
             container.RegisterSingleton<IEnumerable<SomeClass1>>();
             var list = container.GetInstance<IEnumerable<SomeClass1>>();
             Assert.Equal(1, list.Count());

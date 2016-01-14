@@ -62,7 +62,7 @@ namespace InternalContainer
                 throw new ArgumentNullException(nameof(superType));
             if (lifestyle == Lifestyle.AutoRegisterDisabled)
                 throw new ArgumentException("Invalid", nameof(lifestyle));
-            concreteType = concreteType ?? GetConcreteType(superType);
+            concreteType = concreteType ?? FindConcreteType(superType);
             if (concreteType.IsAbstract && !typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(superType))
                 throw new TypeAccessException($"Cannot find a concrete type assignable to '{superType.AsString()}'.");
             var reg = new Registration(superType, concreteType, lifestyle);
@@ -97,38 +97,22 @@ namespace InternalContainer
                 Registration reg;
                 if (registrations.TryGetValue(registration.SuperType, out reg))
                     throw new TypeAccessException($"Type '{registration.SuperType.AsString()}' is already registered: {reg}");
-                if (registration.ConcreteType != null && !Equals(registration.ConcreteType, registration.SuperType) &&
-                    registrations.TryGetValue(registration.ConcreteType, out reg))
-                        throw new TypeAccessException($"Type '{registration.ConcreteType.AsString()}' is already registered: {reg}");
-                            Log(() => $"{message}: {registration}");
-                registrations.Add(registration.SuperType, registration);
-                if (registration.ConcreteType != null && !registration.SuperType.Equals(registration.ConcreteType))
-                    registrations.Add(registration.ConcreteType, registration);
+                AddRegistration(registration, message);
             }
         }
 
-        private Registration AutoRegister(TypeInfo superType, Lifestyle lifestyle)
+        private void AddRegistration(Registration registration, string message)
         {
-            var concreteType = GetConcreteType(superType);
-            Registration reg;
-            if (!Equals(concreteType, superType) && registrations.TryGetValue(concreteType, out reg))
-                throw new TypeAccessException($"Type '{reg.SuperType.AsString()}' is already registered to return concrete type: {reg}");
-            var registration = new Registration(superType, concreteType, lifestyle);
-            Log(() => $"Registering type: {registration}");
-            registrations.Add(superType, registration);
-            if (!superType.Equals(concreteType))
-                registrations.Add(concreteType, registration);
-            return registration;
-        }
-
-        private TypeInfo GetConcreteType(TypeInfo superType)
-        {
-            if (!superType.IsAbstract || superType.IsGenericType || typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(superType))
-                return superType;
-            var assignables = allConcreteTypes.Value.Where(superType.IsAssignableFrom).ToList();
-            if (assignables.Count == 1)
-                return assignables.Single();
-            throw new TypeAccessException($"{assignables.Count} types found assignable to '{superType.AsString()}'.");
+            if (registration.ConcreteType != null && !Equals(registration.ConcreteType, registration.SuperType))
+            {
+                Registration reg;
+                if (registrations.TryGetValue(registration.ConcreteType, out reg))
+                    throw new TypeAccessException($"Type '{reg.SuperType.AsString()}' is already registered to return concrete type: {reg}");
+            }
+            Log(() => $"{message}: {registration}");
+            registrations.Add(registration.SuperType, registration);
+            if (registration.ConcreteType != null && !registration.SuperType.Equals(registration.ConcreteType))
+                registrations.Add(registration.ConcreteType, registration);
         }
 
         public TSuper GetInstance<TSuper>() => (TSuper)GetInstance(typeof(TSuper));
@@ -142,7 +126,7 @@ namespace InternalContainer
                 typeStack.Clear();
                 try
                 {
-                    var instance = GetInstance(supertype.GetTypeInfo(), null);
+                    var instance = GetInstance(supertype.GetTypeInfo());
                     Debug.Assert(!typeStack.Any());
                     return instance;
                 }
@@ -170,11 +154,13 @@ namespace InternalContainer
         {
             Registration registration;
             if (!registrations.TryGetValue(superType, out registration))
-            {   // auto-register
-                var lifestyle = dependent?.Lifestyle ?? autoLifestyle;
-                if (lifestyle == Lifestyle.AutoRegisterDisabled)
+            {
+                if (autoLifestyle == Lifestyle.AutoRegisterDisabled)
                     throw new TypeAccessException($"Cannot resolve unregistered type '{superType.AsString()}'.");
-                registration = AutoRegister(superType, lifestyle);
+                var lifestyle = dependent?.Lifestyle == Lifestyle.Singleton ? Lifestyle.Singleton : autoLifestyle;
+                var concreteType = FindConcreteType(superType);
+                registration = new Registration(superType, concreteType, lifestyle);
+                AddRegistration(registration, "Registering type");
             }
             return GetInstanceFromRegistration(registration, dependent);
         }
@@ -229,6 +215,16 @@ namespace InternalContainer
             foreach (var assignable in assignables)
                 genericList.Add(GetInstance(assignable, reg));
             return genericList;
+        }
+
+        private TypeInfo FindConcreteType(TypeInfo superType)
+        {
+            if (!superType.IsAbstract || superType.IsGenericType || typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(superType))
+                return superType;
+            var assignables = allConcreteTypes.Value.Where(superType.IsAssignableFrom).ToList();
+            if (assignables.Count == 1)
+                return assignables.Single();
+            throw new TypeAccessException($"{assignables.Count} types found assignable to '{superType.AsString()}'.");
         }
 
         public IList<Registration> Registrations()
