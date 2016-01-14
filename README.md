@@ -54,19 +54,15 @@ var container = new Container();
 
 container.RegisterSingleton<TSuper,TConcrete>();
 TSuper instance = container.GetInstance<TSuper>();
-Assert.Equal(instance, container.GetInstance<TSuper>());
 
 container.RegisterInstance<TSuper>(new TConcrete());
 TSuper instance = container.GetInstance<TSuper>();
-Assert.Equal(instance, container.GetInstance<TSuper>());
 
 container.RegisterTransient<TSuper,TConcrete>();
 TSuper instance = container.GetInstance<TSuper>();
-Assert.NotEqual(instance, container.GetInstance<TSuper>());
 
 container.RegisterFactory<TSuper>(() => new TConcrete());
 TSuper instance = container.GetInstance<TSuper>();
-Assert.NotEqual(instance, container.GetInstance<TSuper>());
 ```
 #### resolution of multiple types
 ```csharp
