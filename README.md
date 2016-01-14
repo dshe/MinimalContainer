@@ -75,7 +75,7 @@ var container = new Container(Lifestyle.Singleton);
 //container.RegisterSingleton<TConcrete>();
 TConcrete instance = container.GetInstance<TConcrete>();
 ```
-To enable automatic registration and resolution, pass the desired lifestyle (singleton or transient) to be used for automatic registration in the container's constructor. Note that the dependencies of singleton instances will always have singleton lifestyle.  
+To enable automatic registration and resolution, pass the desired lifestyle (singleton or transient) to be used for automatic registration in the container's constructor. Note however that the dependencies of singleton instances will always be set to singleton lifestyle.  
 
 If automatic type resolution requires scanning assemblies other than the current executing assembly, also include references to those assemblies in the container's constructor.
 
