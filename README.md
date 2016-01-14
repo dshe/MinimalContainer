@@ -1,13 +1,14 @@
 ## InternalContainer.cs
 A simple IOC container in a single C# 6.0 source file.
-- **no dependencies**
-- **portable** library compatibility: Windows 10, Framework 4.6, ASP.NET Core 5
+- no dependencies
+- portable library compatibility: Windows 10, Framework 4.6, ASP.NET Core 5
 - supports constructor dependency injection
-- selects the public or **internal** constructor with the most arguments
-- supports singleton and transient lifestyles
-- supports Generics
+- supports automatic or manual type registration
+- supports singleton or transient default lifestyle
+- supports open generics and enumerables
 - detects captive and recursive dependencies
-- fast enough
+- tested
+- fast
 
 #### example
 ```csharp
@@ -18,7 +19,7 @@ var container = new Container();
 
 container.RegisterSingleton<TSuper,TConcrete>();
 
-var instance = container.GetInstance<TSuper>();
+TSuper instance = container.GetInstance<TSuper>();
 
 container.Dispose();
 ```
@@ -43,7 +44,7 @@ container.RegisterFactory<TSuper>(() => new TConcrete());
 container.RegisterSingleton<IEnumerable<TSuper>>();
 container.RegisterTransient<IEnumerable<TSuper>>();
 ```
-#### resolution of a single type
+#### resolution of single types
 ```csharp
 T instance = container.GetInstance<T>();
 T instance = (T)container.GetInstance(typeof(T));
@@ -88,12 +89,12 @@ A list of instances of registered types which are assignable to `TSuper` is retu
 
 #### automatic registration
 ```csharp
+public class TConcrete {}
 var container = new Container(Lifestyle.Singleton);
 //container.RegisterSingleton<TConcrete>();
 TConcrete instance = container.GetInstance<TConcrete>();
-Assert.Equal(instance, container.GetInstance<TConcrete>());
 ```
-To enable automatic registration and resolution, pass the desired lifestyle (singleton or transient) to be used for automatic registration in the container's constructor. If type resolution requires scanning assemblies other than the current executing assembly, those assemblies can also be passed in the continer's constructor.
+To enable automatic registration and resolution, pass the desired lifestyle (singleton or transient) to be used for automatic registration in the container's constructor. If automatic type resolution requires scanning assemblies other than the current executing assembly, also include references to those assemblies in the container's constructor.
 
 The following graphic illustrates the strategy used to automatically resolve types:
 
