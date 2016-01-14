@@ -1,4 +1,4 @@
-﻿//InternalContainer.cs 1.05
+﻿//InternalContainer.cs 1.06
 //Copyright 2016 David Shepherd. Licensed under the Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0
 using System;
 using System.Collections;
@@ -16,20 +16,18 @@ namespace InternalContainer
     {
         internal readonly TypeInfo SuperType, ConcreteType;
         internal readonly Lifestyle Lifestyle;
-        internal readonly bool AutoRegistered;
         internal Func<object> Factory;
         internal int Instances;
-        public Registration(TypeInfo superType, TypeInfo concreteType, Lifestyle lifestyle, bool autoRegistered)
+        public Registration(TypeInfo superType, TypeInfo concreteType, Lifestyle lifestyle)
         {
             SuperType = superType;
             ConcreteType = concreteType;
             Lifestyle = lifestyle;
-            AutoRegistered = autoRegistered;
         }
         public override string ToString()
         {
             return $"'{(Equals(ConcreteType, null) || Equals(ConcreteType, SuperType) ? "" : ConcreteType.AsString() + "->")}" +
-                   $"{SuperType.AsString()}', {Lifestyle}, AutoRegistered={AutoRegistered}, InstancesCreated={Instances}.";
+                   $"{SuperType.AsString()}', {Lifestyle}, InstancesCreated={Instances}.";
         }
     }
 
@@ -67,7 +65,7 @@ namespace InternalContainer
             concreteType = concreteType ?? GetConcreteType(superType);
             if (concreteType.IsAbstract && !typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(superType))
                 throw new TypeAccessException($"Cannot find a concrete type assignable to '{superType.AsString()}'.");
-            var reg = new Registration(superType, concreteType, lifestyle, false);
+            var reg = new Registration(superType, concreteType, lifestyle);
             Register(reg, "Registering type");
         }
 
@@ -76,7 +74,7 @@ namespace InternalContainer
             if (instance == null)
                 throw new ArgumentNullException(nameof(instance));
             var reg = new Registration(typeof (TSuper).GetTypeInfo(), instance.GetType().GetTypeInfo(),
-                Lifestyle.Singleton, false) {Factory = () => instance};
+                Lifestyle.Singleton) {Factory = () => instance};
             Register(reg, "Registering instance of type");
         }
 
@@ -86,7 +84,7 @@ namespace InternalContainer
         {
             if (factory == null)
                 throw new ArgumentNullException(nameof(factory));
-            var reg = new Registration(superType, null, Lifestyle.Transient, false) { Factory = factory };
+            var reg = new Registration(superType, null, Lifestyle.Transient) { Factory = factory };
             Register(reg, "Registering type factory");
         }
 
@@ -115,7 +113,7 @@ namespace InternalContainer
             Registration reg;
             if (!Equals(concreteType, superType) && registrations.TryGetValue(concreteType, out reg))
                 throw new TypeAccessException($"Type '{reg.SuperType.AsString()}' is already registered to return concrete type: {reg}");
-            var registration = new Registration(superType, concreteType, lifestyle, true);
+            var registration = new Registration(superType, concreteType, lifestyle);
             Log(() => $"Registering type: {registration}");
             registrations.Add(superType, registration);
             if (!superType.Equals(concreteType))

@@ -4,12 +4,12 @@ using Xunit.Abstractions;
 
 namespace InternalContainer.Tests
 {
-    public class Example
+    public class Examples
     {
         public interface IClassA { }
         public class ClassA : IClassA { }
         private readonly ITestOutputHelper output;
-        public Example(ITestOutputHelper output)
+        public Examples(ITestOutputHelper output)
         {
             this.output = output;
         }
@@ -30,6 +30,8 @@ namespace InternalContainer.Tests
 
             container.Dispose();
         }
+
+
 
     }
 }

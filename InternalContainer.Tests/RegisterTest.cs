@@ -28,7 +28,6 @@ namespace InternalContainer.Tests
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.ConcreteType);
             Assert.Equal(null, reg.Factory);
             Assert.Equal(Lifestyle.Singleton, reg.Lifestyle);
-            Assert.Equal(false, reg.AutoRegistered);
             Assert.Equal(0, reg.Instances);
 
             var instance = container.GetInstance<SomeClass>();

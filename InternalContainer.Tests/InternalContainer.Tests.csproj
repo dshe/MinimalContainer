@@ -63,6 +63,7 @@
     <Compile Include="RegisterTest.cs" />
     <Compile Include="Relative\CaptiveDependencyTest.cs" />
     <Compile Include="Relative\CreateInstanceTest.cs" />
+    <Compile Include="Example\Example.cs" />
     <Compile Include="Relative\RecursionTest.cs" />
     <Compile Include="Relative\UniqueConcreteTest.cs" />
     <Compile Include="Utilities\ExtensionMethods.cs" />
