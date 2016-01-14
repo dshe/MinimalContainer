@@ -52,12 +52,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ContainerDefaultLifestyleTest.cs" />
-    <Compile Include="AutoEnumerableTests.cs" />
+    <Compile Include="Enumerable\AutoEnumerableTests.cs" />
     <Compile Include="Example.cs" />
     <Compile Include="AutoSingletonTests.cs" />
+    <Compile Include="Generic\GenericTests.cs" />
     <Compile Include="Performance\Performance.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RegisterEnumerableTest.cs" />
+    <Compile Include="Enumerable\RegisterEnumerableTest.cs" />
     <Compile Include="RegisterErrorTest.cs" />
     <Compile Include="RegisterTest.cs" />
     <Compile Include="Relative\CaptiveDependencyTest.cs" />
@@ -69,9 +70,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ok\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\InternalContainer\InternalContainer.csproj">
       <Project>{95eb285c-2916-425c-b50f-af42b94d650c}</Project>

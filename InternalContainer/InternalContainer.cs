@@ -35,7 +35,6 @@ namespace InternalContainer
 
     internal sealed class Container : IDisposable
     {
-        private readonly object locker = new object();
         private readonly Lifestyle autoLifestyle;
         private readonly Lazy<List<TypeInfo>> allConcreteTypes;
         private readonly Dictionary<TypeInfo, Registration> registrations = new Dictionary<TypeInfo, Registration>();
@@ -59,33 +58,17 @@ namespace InternalContainer
             Register(typeof(TSuper).GetTypeInfo(), typeof(TConcrete).GetTypeInfo(), Lifestyle.Singleton);
         public void RegisterTransient<TSuper, TConcrete>() where TConcrete : TSuper =>
             Register(typeof(TSuper).GetTypeInfo(), typeof(TConcrete).GetTypeInfo(), Lifestyle.Transient);
-        public Registration Register(TypeInfo superType, TypeInfo concreteType, Lifestyle lifestyle, bool autoRegister = false)
+        public void Register(TypeInfo superType, TypeInfo concreteType, Lifestyle lifestyle)
         {
             if (superType == null)
                 throw new ArgumentNullException(nameof(superType));
             if (lifestyle == Lifestyle.AutoRegisterDisabled)
                 throw new ArgumentException("Invalid", nameof(lifestyle));
-            if (concreteType != null)
-            {
-                if (!superType.IsAssignableFrom(concreteType))
-                    throw new TypeAccessException($"Type '{concreteType.AsString()}' is not assignable to type '{superType.AsString()}'.");
-            }
-            else if (typeof (IEnumerable).GetTypeInfo().IsAssignableFrom(superType))
-                concreteType = superType;
-            else
-            {
-                var assignables = allConcreteTypes.Value.Where(superType.IsAssignableFrom).ToList();
-                concreteType = assignables.SingleOrDefault();
-                if (concreteType == null)
-                {
-                    if (assignables.Count > 1 || superType.IsAbstract) 
-                        throw new TypeAccessException($"{assignables.Count} types found assignable to '{superType.AsString()}'.");
-                    concreteType = superType; // could be generic
-                }
-            }
-            var reg = new Registration(superType, concreteType, lifestyle, autoRegister);
-            Register(reg, () => $"Registering type: {reg}");
-            return reg;
+            concreteType = concreteType ?? GetConcreteType(superType);
+            if (concreteType.IsAbstract && !typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(superType))
+                throw new TypeAccessException($"Cannot find a concrete type assignable to '{superType.AsString()}'.");
+            var reg = new Registration(superType, concreteType, lifestyle, false);
+            Register(reg, "Registering type");
         }
 
         public void RegisterInstance<TSuper>(TSuper instance)
@@ -94,45 +77,60 @@ namespace InternalContainer
                 throw new ArgumentNullException(nameof(instance));
             var reg = new Registration(typeof (TSuper).GetTypeInfo(), instance.GetType().GetTypeInfo(),
                 Lifestyle.Singleton, false) {Factory = () => instance};
-            Register(reg, () => $"Registering instance of type: {reg}");
+            Register(reg, "Registering instance of type");
         }
 
         public void RegisterFactory<TSuper>(Func<TSuper> factory) where TSuper : class =>
             RegisterFactory(typeof(TSuper).GetTypeInfo(), factory);
-        internal void RegisterFactory(TypeInfo superType, Func<object> factory)
+        internal void RegisterFactory(TypeInfo superType, Func<object> factory) // used for testing performance
         {
             if (factory == null)
                 throw new ArgumentNullException(nameof(factory));
             var reg = new Registration(superType, null, Lifestyle.Transient, false) { Factory = factory };
-            Register(reg, () => $"Registering type factory: {reg}");
+            Register(reg, "Registering type factory");
         }
 
-        private void Register(Registration registration, Func<string> message)
+        private void Register(Registration registration, string message)
         {
-            lock (locker)
+            if (registration.ConcreteType != null && !registration.SuperType.IsAssignableFrom(registration.ConcreteType))
+                throw new TypeAccessException($"Type '{registration.ConcreteType.AsString()}' is not assignable to type '{registration.SuperType.AsString()}'.");
+            lock (registrations)
             {
-                if (registrations.ContainsKey(registration.SuperType))
-                {
-                    if (registration.AutoRegistered)
-                        return;
-                    throw new TypeAccessException($"Type '{registration.SuperType.AsString()}' is already registered.");
-                }
-                if (registration.ConcreteType != null)
-                {
-                    Registration reg;
-                    if (registrations.TryGetValue(registration.ConcreteType, out reg))
-                    {
-                        if (registration.ConcreteType.Equals(reg.ConcreteType))
-                            throw new TypeAccessException(
-                                $"Type '{reg.SuperType.AsString()}' is already registered to return '{reg.ConcreteType.AsString()}'.");
-                        throw new TypeAccessException($"Type '{registration.ConcreteType.AsString()}' is already registered.");
-                    }
-                }
-                Log(message);
+                Registration reg;
+                if (registrations.TryGetValue(registration.SuperType, out reg))
+                    throw new TypeAccessException($"Type '{registration.SuperType.AsString()}' is already registered: {reg}");
+                if (registration.ConcreteType != null && !Equals(registration.ConcreteType, registration.SuperType) &&
+                    registrations.TryGetValue(registration.ConcreteType, out reg))
+                        throw new TypeAccessException($"Type '{registration.ConcreteType.AsString()}' is already registered: {reg}");
+                            Log(() => $"{message}: {registration}");
                 registrations.Add(registration.SuperType, registration);
                 if (registration.ConcreteType != null && !registration.SuperType.Equals(registration.ConcreteType))
                     registrations.Add(registration.ConcreteType, registration);
             }
+        }
+
+        private Registration AutoRegister(TypeInfo superType, Lifestyle lifestyle)
+        {
+            var concreteType = GetConcreteType(superType);
+            Registration reg;
+            if (!Equals(concreteType, superType) && registrations.TryGetValue(concreteType, out reg))
+                throw new TypeAccessException($"Type '{reg.SuperType.AsString()}' is already registered to return concrete type: {reg}");
+            var registration = new Registration(superType, concreteType, lifestyle, true);
+            Log(() => $"Registering type: {registration}");
+            registrations.Add(superType, registration);
+            if (!superType.Equals(concreteType))
+                registrations.Add(concreteType, registration);
+            return registration;
+        }
+
+        private TypeInfo GetConcreteType(TypeInfo superType)
+        {
+            if (!superType.IsAbstract || superType.IsGenericType || typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(superType))
+                return superType;
+            var assignables = allConcreteTypes.Value.Where(superType.IsAssignableFrom).ToList();
+            if (assignables.Count == 1)
+                return assignables.Single();
+            throw new TypeAccessException($"{assignables.Count} types found assignable to '{superType.AsString()}'.");
         }
 
         public TSuper GetInstance<TSuper>() => (TSuper)GetInstance(typeof(TSuper));
@@ -140,7 +138,7 @@ namespace InternalContainer
         {
             if (supertype == null)
                 throw new ArgumentNullException(nameof(supertype));
-            lock (locker)
+            lock (registrations)
             {
                 Log(() => $"Getting instance of type: '{supertype.AsString()}'.");
                 typeStack.Clear();
@@ -178,7 +176,7 @@ namespace InternalContainer
                 var lifestyle = dependent?.Lifestyle ?? autoLifestyle;
                 if (lifestyle == Lifestyle.AutoRegisterDisabled)
                     throw new TypeAccessException($"Cannot resolve unregistered type '{superType.AsString()}'.");
-                registration = Register(superType, null, lifestyle, true);
+                registration = AutoRegister(superType, lifestyle);
             }
             return GetInstanceFromRegistration(registration, dependent);
         }
@@ -218,7 +216,7 @@ namespace InternalContainer
             var parameters = constructor.GetParameters()
                 .Select(p => p.HasDefaultValue ? p.DefaultValue : GetInstance(p.ParameterType.GetTypeInfo(), reg))
                 .ToArray();
-            Log(() => $"Constructing {reg.Lifestyle} instance: '{type.AsString()}({string.Join(", ", parameters.Select(p => p.GetType().Name))})'.");
+            Log(() => $"Constructing {reg.Lifestyle} instance: '{type.AsString()}({string.Join(", ", parameters.Select(p => p.GetType().AsString()))})'.");
             return constructor.Invoke(parameters);
         }
 
@@ -228,7 +226,7 @@ namespace InternalContainer
             var genericList = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(genericType.AsType()));
             var assignables = allConcreteTypes.Value.Where(t => genericType.IsAssignableFrom(t)).ToList();
             if (!assignables.Any())
-                throw new TypeAccessException($"No types found assignable to generic type '{genericType.AsType()}'.");
+                throw new TypeAccessException($"No types found assignable to generic type '{genericType.AsString()}'.");
             Log(() => $"Creating list of {assignables.Count} types assignable to '{genericType.AsString()}'.");
             foreach (var assignable in assignables)
                 genericList.Add(GetInstance(assignable, reg));
@@ -237,8 +235,8 @@ namespace InternalContainer
 
         public IList<Registration> Registrations()
         {
-            lock (locker)
-                return registrations.Values.Distinct().OrderBy(x => x.SuperType.Name).ToList();
+            lock (registrations)
+                return registrations.Values.Distinct().OrderBy(r => r.SuperType.Name).ToList();
         }
 
         public void Log() => Log(ToString());
@@ -262,7 +260,7 @@ namespace InternalContainer
 
         public void Dispose()
         {
-            lock (locker)
+            lock (registrations)
             {
                 Registrations()
                     .Where(r => r.Lifestyle.Equals(Lifestyle.Singleton) && r.Factory != null)
@@ -294,17 +292,6 @@ namespace InternalContainer
                 name = name.Substring(0, index);
             var args = type.GenericTypeArguments.Select(a => a.GetTypeInfo().AsString());
             return $"{name}<{string.Join(",", args)}>";
-        }
-
-        public static TResult Map<TSource, TResult>(this TSource @this, Func<TSource, TResult> fcn) where TSource : class where TResult : class
-            => @this == null ? null : fcn(@this);
-        public static T Where<T>(this T @this, Func<bool> predicate) where T : class
-            => @this == null || !predicate() ? null : @this;
-        public static T Do<T>(this T @this, Action<T> act) where T : class
-        {
-            if (@this != null)
-                act(@this);
-            return @this;
         }
     }
 }
