@@ -71,7 +71,7 @@ A list of instances of registered types which are assignable to `TSuper` is retu
 #### automatic registration
 ```csharp
 public class TConcrete {}
-var container = new Container(Lifestyle.Singleton);
+var container = new Container(Lifestyle.Singleton, assemblies:someAssembly);
 //container.RegisterSingleton<TConcrete>();
 TConcrete instance = container.GetInstance<TConcrete>();
 ```
