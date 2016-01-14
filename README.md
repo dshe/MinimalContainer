@@ -1,11 +1,10 @@
 ## InternalContainer.cs
 A simple IOC container in a single C# 6.0 source file.
-- *no dependencies*
-- *portable* library compatibility: Windows 10, Framework 4.6, ASP.NET Core 5
-- supports *constructor* dependency injection
-- selects the public or *internal* constructor with the most arguments
+- no dependencies
+- portable library compatibility: Windows 10, Framework 4.6, ASP.NET Core 5
+- supports constructor dependency injection, selects the public or internal constructor with the most arguments
 - supports singleton and transient lifestyles
-- supports generics
+- supports open generics and enumerables
 - detects captive and recursive dependencies
 - tested
 - fast
