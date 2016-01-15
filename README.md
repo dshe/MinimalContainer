@@ -4,7 +4,7 @@ A simple IoC (Inversion of Control) container.
 - portable class library (PCL) compatibility: Windows 10, Framework 4.6, ASP.NET Core 5
 - supports constructor dependency injection
 - supports automatic or manual type registration
-- supports transient and singleton (container) lifestyle
+- supports transient or singleton (container) lifestyles
 - supports open generics and enumerables
 - detects captive and recursive dependencies
 - tested
