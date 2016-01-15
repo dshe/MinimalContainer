@@ -4,7 +4,7 @@ A simple IoC (Inversion of Control) container.
 - portable class library (PCL) compatibility: Windows 10, Framework 4.6, ASP.NET Core 5
 - supports constructor dependency injection
 - supports automatic or manual type registration
-- supports singleton or transient default lifestyle
+- supports transient and singleton (container) lifestyle
 - supports open generics and enumerables
 - detects captive and recursive dependencies
 - tested
@@ -75,9 +75,9 @@ var container = new Container(Lifestyle.Singleton, assemblies:someAssembly);
 //container.RegisterSingleton<TConcrete>();
 TConcrete instance = container.GetInstance<TConcrete>();
 ```
-To enable automatic registration and resolution, pass the desired lifestyle (singleton or transient) to be used for automatic registration in the container's constructor. Note however that the dependencies of singleton instances will always be set to singleton lifestyle.  
+To enable automatic registration and resolution, pass the desired lifestyle (singleton or transient) to be used for automatic registration in the container's constructor. Note however that the container will always register the dependencies of singleton instances as singletons.
 
-If automatic type resolution requires scanning assemblies other than the current executing assembly, also include references to those assemblies in the container's constructor.
+If automatic type resolution requires scanning assemblies other than the current executing assembly, include references to those assemblies in the container's constructor.
 
 #### example
 ```csharp
