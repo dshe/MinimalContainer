@@ -7,6 +7,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InternalContainer", "Intern
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InternalContainer.Tests", "InternalContainer.Tests\InternalContainer.Tests.csproj", "{AF9753AD-3F17-4787-A0FB-7A45B1C8DD88}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Folder", "Solution Folder", "{45A24516-448B-45BA-AD58-92B41A1DD6E2}"
+	ProjectSection(SolutionItems) = preProject
+		Notes.txt = Notes.txt
+		TypeResolutionFlowChart.png = TypeResolutionFlowChart.png
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
