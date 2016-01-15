@@ -1,7 +1,7 @@
 ## InternalContainer.cs
 A simple IoC (Inversion of Control) container.
 - one C# 6.0 source file with no dependencies
-- portable class library (PCL) compatibility: Windows 10, Framework 4.6, ASP.NET Core 5
+- portable class library (PCL) compatibility: Windows Universal 10, .Net Framework 4.6, ASP.NET Core 5
 - supports constructor dependency injection
 - supports automatic or manual type registration
 - supports transient or singleton (container) lifestyles
