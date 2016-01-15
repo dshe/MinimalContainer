@@ -113,7 +113,7 @@ The complete object graph is created and the application is started by simply re
 #### resolution strategy
 The following graphic illustrates the automatic type resolution strategy:
 
-![Image of Resolution Strategy](https://github.com/dshe/InternalContainer/blob/master/InternalContainer/TypeResolutionFlowChart.png)
+![Image of Resolution Strategy](https://github.com/dshe/InternalContainer/blob/master/TypeResolutionFlowChart.png)
 
 #### logging
 ```csharp
