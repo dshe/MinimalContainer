@@ -59,7 +59,28 @@ container.RegisterSingleton<IEnumerable<TSuper>>();
 IEnumerable<TSuper> instances = container.GetInstance<IEnumerable<TSuper>>();
 ```
 A list of instances of registered types which are assignable to `TSuper` is returned.
+#### generic types
+```csharp
+internal class GenericParameterClass {}
 
+internal class GenericClass<T>
+{
+    public GenericClass(T t) {}
+}
+
+internal class SomeClass
+{
+    public SomeClass(GenericClass<GenericParameterClass> g) {}
+}
+
+var container = new Container();
+
+container.RegisterSingleton<GenericParameterClass>();
+container.RegisterSingleton<GenericClass<GenericParameterClass>>();
+container.RegisterSingleton<SomeClass>();
+
+container.GetInstance<SomeClass>>();
+```
 #### automatic registration
 ```csharp
 public class TConcrete {}
