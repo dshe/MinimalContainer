@@ -56,7 +56,7 @@ container.RegisterSingleton<TConcrete1>>();
 container.RegisterSingleton<TConcrete2>>();
 container.RegisterSingleton<IEnumerable<TSuper>>();
 
-IEnumerable<TSuper> instances = container.GetInstance<IEnumerable<TSuper>>();
+IEnumerable<TSuper> enumerable = container.GetInstance<IEnumerable<TSuper>>();
 ```
 A list of instances of registered types which are assignable to `TSuper` is returned.
 #### generic types
@@ -79,9 +79,9 @@ container.RegisterSingleton<GenericParameterClass>();
 container.RegisterSingleton<GenericClass<GenericParameterClass>>();
 container.RegisterSingleton<SomeClass>();
 
-container.GetInstance<SomeClass>();
+SomeClass instance = container.GetInstance<SomeClass>();
 ```
-#### automatic registration and resolution
+#### automatic type registration and resolution
 ```csharp
 public class TConcrete {}
 var container = new Container(Lifestyle.Singleton, assemblies:someAssembly);
@@ -123,7 +123,7 @@ using (var container = new Container(Lifestyle.Singleton))
 ```
 The complete object graph is created and the application is started by simply resolving the compositional root. 
 
-#### resolution strategy
+#### type resolution strategy
 The following graphic illustrates the automatic type resolution strategy:
 
 ![Image of Resolution Strategy](https://github.com/dshe/InternalContainer/blob/master/TypeResolutionFlowChart.png)
