@@ -27,7 +27,7 @@ container.Dispose();
 
 Disposing the container will dispose any registered disposable singleton instances.
 
-#### registration
+#### type registration
 ```csharp
 container.RegisterSingleton<T>();
 container.RegisterSingleton<TSuper,TConcrete>();
@@ -39,7 +39,7 @@ container.RegisterTransient<TSuper,TConcrete>();
 container.RegisterFactory(() => new TConcrete());
 container.RegisterFactory<TSuper>(() => new TConcrete());
 ```
-#### resolution
+#### type resolution
 ```csharp
 T instance = container.GetInstance<T>();
 T instance = (T)container.GetInstance(typeof(T));
@@ -81,7 +81,7 @@ container.RegisterSingleton<SomeClass>();
 
 container.GetInstance<SomeClass>();
 ```
-#### automatic registration
+#### automatic registration and resolution
 ```csharp
 public class TConcrete {}
 var container = new Container(Lifestyle.Singleton, assemblies:someAssembly);
