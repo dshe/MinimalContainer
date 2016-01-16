@@ -3,7 +3,7 @@ A simple IoC (Inversion of Control) container.
 - one C# 6.0 source file with no dependencies
 - portable class library (PCL) compatibility: at least Windows Universal 10, .Net Framework 4.6, ASP.NET Core 5
 - supports constructor dependency injection (selects the constructor with the most arguments)
-- supports automatic or manual type registration
+- supports automatic or explicit type registration
 - supports transient and singleton (container) lifestyles
 - supports generics and enumerables
 - detects captive and recursive dependencies
