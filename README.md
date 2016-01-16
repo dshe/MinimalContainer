@@ -84,8 +84,9 @@ SomeClass instance = container.GetInstance<SomeClass>();
 #### automatic type registration and resolution
 ```csharp
 public class TConcrete {}
+
 var container = new Container(Lifestyle.Singleton, assemblies:someAssembly);
-//container.RegisterSingleton<TConcrete>();
+
 TConcrete instance = container.GetInstance<TConcrete>();
 ```
 To enable automatic registration and resolution, pass the desired lifestyle (singleton or transient) to be used for automatic registration in the container's constructor. Note however that the container will always register the dependencies of singleton instances as singletons.
@@ -114,7 +115,7 @@ public class Root
 {
     public Root(ClassA a)
     {
-        //Start();
+        Start();
     }
 }
 
