@@ -49,7 +49,7 @@ container.RegisterTransient<IEnumerable<TSuper>>();
 T instance = container.GetInstance<T>();
 T instance = (T)container.GetInstance(typeof(T));
 ```
-#### resolution of multiple types
+#### resolution of enumerable types
 ```csharp
 IEnumerable<TSuper> instances = container.GetInstance<IEnumerable<TSuper>>();
 ```
@@ -60,11 +60,11 @@ public class TConcrete2 : TSuper {}
 
 var container = new Container();
 
-container.RegisterSingleton<TSuper,TConcrete1>();
-container.RegisterSingleton<TSuper,TConcrete2>();
+container.RegisterSingleton<TConcrete1>>();
+container.RegisterSingleton<TConcrete2>>();
+container.RegisterSingleton<IEnumerable<TSuper>>();
 
 IEnumerable<TSuper> instances = container.GetInstance<IEnumerable<TSuper>>();
-Assert.Equal(2, instances.Count);
 ```
 A list of instances of registered types which are assignable to `TSuper` is returned.
 
