@@ -39,15 +39,15 @@ container.RegisterTransient<TSuper,TConcrete>();
 container.RegisterFactory(() => new TConcrete());
 container.RegisterFactory<TSuper>(() => new TConcrete());
 ```
-#### registration of enumerable types
-```csharp
-container.RegisterSingleton<IEnumerable<TSuper>>();
-container.RegisterTransient<IEnumerable<TSuper>>();
-```
 #### resolution of single types
 ```csharp
 T instance = container.GetInstance<T>();
 T instance = (T)container.GetInstance(typeof(T));
+```
+#### registration of enumerable types
+```csharp
+container.RegisterSingleton<IEnumerable<TSuper>>();
+container.RegisterTransient<IEnumerable<TSuper>>();
 ```
 #### resolution of enumerable types
 ```csharp
