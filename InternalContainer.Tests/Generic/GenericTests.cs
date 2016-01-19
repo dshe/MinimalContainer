@@ -8,21 +8,15 @@ namespace InternalContainer.Tests.Generic
 {
     public class GenericTests
     {
-        internal interface IClassA {}
-        internal class ClassA : IClassA {}
-        internal class ClassB<T>
+        internal class GenericParameterClass { }
+        internal class GenericClass<T>
         {
-            public ClassB(T t) {}
+            public GenericClass(T t) { }
         }
 
-        internal class ClassC
+        internal class SomeClass
         {
-            public ClassC(ClassB<ClassA> ba)
-            { }
-        }
-        internal class ClassD
-        {
-            public ClassD(ClassB<IClassA> ba)
+            public SomeClass(GenericClass<GenericParameterClass> generic)
             { }
         }
 
@@ -32,25 +26,20 @@ namespace InternalContainer.Tests.Generic
         public GenericTests(ITestOutputHelper output)
         {
             this.output = output;
-            container = new Container(Lifestyle.Singleton, log:output.WriteLine, assemblies:Assembly.GetExecutingAssembly());
+            container = new Container(log: output.WriteLine, assemblies: Assembly.GetExecutingAssembly());
         }
 
         [Fact]
         public void Test_01()
         {
-            container.GetInstance<ClassC>();
+            container.RegisterSingleton<GenericParameterClass>();
+            container.RegisterSingleton<GenericClass<GenericParameterClass>>();
+            container.RegisterSingleton<SomeClass>();
+
+            container.GetInstance<SomeClass>();
             Assert.Equal(3, container.Registrations().Count);
             output.WriteLine(Environment.NewLine + container);
         }
-
-        [Fact]
-        public void Test_02()
-        {
-            container.GetInstance<ClassD>();
-            Assert.Equal(3, container.Registrations().Count);
-            output.WriteLine(Environment.NewLine + container);
-        }
-
 
 
     }

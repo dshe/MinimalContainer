@@ -22,12 +22,11 @@ namespace InternalContainer.Tests.Enumerable
         [Fact]
         public void Test_Register_Enumerable_Singleton()
         {
-            container.RegisterSingleton<IEnumerable<ISomeClass>>();
             container.RegisterSingleton<SomeClass1>();
             container.RegisterSingleton<SomeClass2>();
+            container.RegisterSingleton<IEnumerable<ISomeClass>>();
 
             var instance = container.GetInstance<IEnumerable<ISomeClass>>();
-            Assert.IsAssignableFrom<IEnumerable<ISomeClass>>(instance);
             Assert.Equal(instance, container.GetInstance(typeof (IEnumerable<ISomeClass>)));
             Assert.Equal(3, container.Registrations().Count);
             foreach (var m in container.Registrations())

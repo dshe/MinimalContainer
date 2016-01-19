@@ -1,1 +1,24 @@
+value
+
+specific instance
+	provided value
+
+singleton class
+	create value once
+
+transient class
+	create factory
+
+specific factory
+	factory
+
+==========================================
+
+bool hasFactory
+
+factory
+
+
+
+
 C:\prg\repos\InternalContainer\InternalContainer\TypeResolutionFlowChart.png
