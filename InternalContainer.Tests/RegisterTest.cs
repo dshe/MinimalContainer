@@ -25,16 +25,13 @@ namespace InternalContainer.Tests
             container.RegisterSingleton<SomeClass>();
             var reg = container.Registrations().Single();
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.SuperType);
-            Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.ConcreteType);
             Assert.Equal(null, reg.Factory);
             Assert.Equal(Lifestyle.Singleton, reg.Lifestyle);
-            Assert.Equal(0, reg.Instances);
 
             var instance = container.GetInstance<SomeClass>();
             Assert.IsType<SomeClass>(instance);
             Assert.Equal(instance, container.GetInstance(typeof(SomeClass)));
             Assert.Single(container.Registrations());
-            Assert.Equal(1, reg.Instances);
             output.WriteLine(container.ToString());
         }
 
@@ -52,7 +49,6 @@ namespace InternalContainer.Tests
             Assert.IsType<SomeClass>(instance);
             Assert.Equal(instance, container.GetInstance(typeof(ISomeClass)));
             Assert.Single(container.Registrations());
-            Assert.Equal(1, reg.Instances);
             output.WriteLine(container.ToString());
         }
 
@@ -62,7 +58,7 @@ namespace InternalContainer.Tests
             container.RegisterTransient<SomeClass>();
             var reg = container.Registrations().Single();
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.SuperType);
-            Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.ConcreteType);
+            //Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.ConcreteType);
             Assert.Equal(null, reg.Factory);
             Assert.Equal(Lifestyle.Transient, reg.Lifestyle);
 
@@ -70,7 +66,6 @@ namespace InternalContainer.Tests
             Assert.IsType<SomeClass>(instance);
             Assert.NotEqual(instance, container.GetInstance(typeof(SomeClass)));
             Assert.Single(container.Registrations());
-            Assert.Equal(2, reg.Instances);
             output.WriteLine(container.ToString());
         }
 
@@ -88,7 +83,6 @@ namespace InternalContainer.Tests
             Assert.IsType<SomeClass>(instance);
             Assert.NotEqual(instance, container.GetInstance<ISomeClass>());
             Assert.Single(container.Registrations());
-            Assert.Equal(2, reg.Instances);
             output.WriteLine(container.ToString());
         }
 
@@ -106,7 +100,6 @@ namespace InternalContainer.Tests
             Assert.Equal(instance, container.GetInstance<SomeClass>());
             Assert.Equal(instance, reg.Factory());
             Assert.Single(container.Registrations());
-            Assert.Equal(0, reg.Instances);
             output.WriteLine(container.ToString());
         }
 
@@ -124,7 +117,6 @@ namespace InternalContainer.Tests
             Assert.Equal(instance, container.GetInstance<ISomeClass>());
             Assert.Equal(instance, reg.Factory());
             Assert.Single(container.Registrations());
-            Assert.Equal(0, reg.Instances);
             output.WriteLine(container.ToString());
         }
 
@@ -141,7 +133,6 @@ namespace InternalContainer.Tests
             var instance = container.GetInstance<SomeClass>();
             Assert.NotEqual(instance, container.GetInstance<SomeClass>());
             Assert.Single(container.Registrations());
-            Assert.Equal(0, reg.Instances);
             output.WriteLine(container.ToString());
         }
 
@@ -158,7 +149,6 @@ namespace InternalContainer.Tests
             var instance = container.GetInstance<ISomeClass>();
             Assert.NotEqual(instance, container.GetInstance<ISomeClass>());
             Assert.Single(container.Registrations());
-            Assert.Equal(0, reg.Instances);
             output.WriteLine(container.ToString());
         }
     }

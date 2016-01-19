@@ -41,6 +41,15 @@ namespace InternalContainer.Tests.Generic
             output.WriteLine(Environment.NewLine + container);
         }
 
+        [Fact]
+        public void Test_02()
+        {
+            //container.RegisterClass(typeof(GenericClass<>), null, Lifestyle.Singleton);
+            //container.GetInstance(typeof(GenericClass<>));
+            //Assert.Equal(3, container.Registrations().Count);
+            //output.WriteLine(Environment.NewLine + container);
+        }
+
 
     }
 }

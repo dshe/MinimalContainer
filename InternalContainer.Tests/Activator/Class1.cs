@@ -26,7 +26,7 @@ namespace InternalContainer.Tests.Activator
         public int X;
         public Class2(Class4 c4)
         {
-            X = 2;
+            X++;
         }
     }
     public class Class3 {}
@@ -50,7 +50,6 @@ namespace InternalContainer.Tests.Activator
                 .Select(p => p.HasDefaultValue ? Expression.Constant(p.DefaultValue) : GetInstanceExpression(p.ParameterType.GetTypeInfo()));
             return Expression.New(ctor, ps);
         }
-
         public Func<object> GetFactory(Type type)
         {
             var exp = GetInstanceExpression(type.GetTypeInfo());

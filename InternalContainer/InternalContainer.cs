@@ -1,14 +1,12 @@
-﻿//InternalContainer.cs 1.06
+﻿//InternalContainer.cs 1.07
 //Copyright 2016 David Shepherd. Licensed under the Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Reflection.Emit;
 using System.Text;
 
 namespace InternalContainer
@@ -17,23 +15,14 @@ namespace InternalContainer
 
     internal sealed class Registration
     {
-        internal readonly TypeInfo SuperType, ConcreteType;
-        internal readonly Lifestyle Lifestyle;
+        internal TypeInfo SuperType, ConcreteType;
+        internal Lifestyle Lifestyle;
+        internal Expression Expression;
         internal Func<object> Factory;
-        //internal Expression expression;
-        //internal object instance;
-
-        internal int Instances;
-        public Registration(TypeInfo superType, TypeInfo concreteType, Lifestyle lifestyle)
-        {
-            SuperType = superType;
-            ConcreteType = concreteType;
-            Lifestyle = lifestyle;
-        }
         public override string ToString()
         {
             return $"'{(Equals(ConcreteType, null) || Equals(ConcreteType, SuperType) ? "" : ConcreteType.AsString() + "->")}" +
-                   $"{SuperType.AsString()}', {Lifestyle}, InstancesCreated={Instances}.";
+                   $"{SuperType.AsString()}', {Lifestyle}.";
         }
     }
 
@@ -41,7 +30,7 @@ namespace InternalContainer
     {
         private readonly Lifestyle autoLifestyle;
         private readonly Lazy<List<TypeInfo>> allConcreteTypes;
-        private readonly Dictionary<TypeInfo, Registration> registrations = new Dictionary<TypeInfo, Registration>();
+        private readonly Dictionary<Type, Registration> registrations = new Dictionary<Type, Registration>();
         private readonly Stack<TypeInfo> typeStack = new Stack<TypeInfo>();
         private readonly Action<string> log;
 
@@ -49,27 +38,26 @@ namespace InternalContainer
         {
             this.autoLifestyle = autoLifestyle;
             this.log = log;
-            Log("Creating Container.");
+            Log("Creating InternalContainer.");
             allConcreteTypes = new Lazy<List<TypeInfo>>(() =>
                 (assemblies.Any() ? assemblies : new[] { this.GetType().GetTypeInfo().Assembly })
                 .Select(a => a.DefinedTypes.Where(t => t.IsClass && !t.IsAbstract).ToList())
                 .SelectMany(x => x).ToList());
         }
 
-        public void RegisterSingleton<T>() => Register(typeof(T).GetTypeInfo(), null, Lifestyle.Singleton);
-        public void RegisterTransient<T>() => Register(typeof(T).GetTypeInfo(), null, Lifestyle.Transient);
+        public void RegisterSingleton<T>() => RegisterClass(typeof(T), null, Lifestyle.Singleton);
+        public void RegisterTransient<T>() => RegisterClass(typeof(T), null, Lifestyle.Transient);
         public void RegisterSingleton<TSuper, TConcrete>() where TConcrete : TSuper =>
-            Register(typeof(TSuper).GetTypeInfo(), typeof(TConcrete).GetTypeInfo(), Lifestyle.Singleton);
+            RegisterClass(typeof(TSuper), typeof(TConcrete), Lifestyle.Singleton);
         public void RegisterTransient<TSuper, TConcrete>() where TConcrete : TSuper =>
-            Register(typeof(TSuper).GetTypeInfo(), typeof(TConcrete).GetTypeInfo(), Lifestyle.Transient);
-        public void Register(TypeInfo superType, TypeInfo concreteType, Lifestyle lifestyle)
+            RegisterClass(typeof(TSuper), typeof(TConcrete), Lifestyle.Transient);
+        public void RegisterClass(Type supertype, Type concretetype, Lifestyle lifestyle)
         {
-            if (superType == null)
-                throw new ArgumentNullException(nameof(superType));
+            if (supertype == null)
+                throw new ArgumentNullException(nameof(supertype));
             if (lifestyle == Lifestyle.AutoRegisterDisabled)
                 throw new ArgumentException("Invalid", nameof(lifestyle));
-            concreteType = concreteType ?? FindConcreteType(superType);
-            var reg = new Registration(superType, concreteType, lifestyle);
+            var reg = new Registration { SuperType = supertype.GetTypeInfo(), ConcreteType = concretetype?.GetTypeInfo(), Lifestyle = lifestyle};
             Register(reg, "Registering type");
         }
 
@@ -77,18 +65,22 @@ namespace InternalContainer
         {
             if (instance == null)
                 throw new ArgumentNullException(nameof(instance));
-            var reg = new Registration(typeof (TSuper).GetTypeInfo(), instance.GetType().GetTypeInfo(),
-                Lifestyle.Singleton) {Factory = () => instance};
+            var reg = new Registration { SuperType = typeof (TSuper).GetTypeInfo(), ConcreteType = instance.GetType().GetTypeInfo(),
+                Lifestyle = Lifestyle.Singleton, Factory = () => instance, Expression = Expression.Constant(instance) };
+            reg.Expression = Expression.Constant(instance);
+
             Register(reg, "Registering instance of type");
         }
 
         public void RegisterFactory<TSuper>(Func<TSuper> factory) where TSuper : class =>
-            RegisterFactory(typeof(TSuper).GetTypeInfo(), factory);
-        internal void RegisterFactory(TypeInfo superType, Func<object> factory) // used for testing performance
+            RegisterFactory(typeof(TSuper), factory);
+        internal void RegisterFactory(Type supertype, Func<object> factory) // used for testing performance
         {
             if (factory == null)
                 throw new ArgumentNullException(nameof(factory));
-            var reg = new Registration(superType, null, Lifestyle.Transient) { Factory = factory };
+            var reg = new Registration { SuperType = supertype.GetTypeInfo(), Lifestyle = Lifestyle.Transient, Factory = factory };
+            Expression<Func<object>> expression = () => factory();
+            reg.Expression = expression;
             Register(reg, "Registering type factory");
         }
 
@@ -98,26 +90,44 @@ namespace InternalContainer
                 throw new TypeAccessException($"Type '{registration.ConcreteType.AsString()}' is not assignable to type '{registration.SuperType.AsString()}'.");
             lock (registrations)
             {
-                Registration reg;
-                if (registrations.TryGetValue(registration.SuperType, out reg))
-                    throw new TypeAccessException($"Type '{registration.SuperType.AsString()}' is already registered: {reg}");
-                AddRegistration(registration, message);
-                // reverse this, to catch exception
+                try
+                {
+                    AddRegistration(registration, message);
+                }
+                catch (ArgumentException ex)
+                {
+                    throw new TypeAccessException($"Type '{registration.SuperType.AsString()}' is already registered.", ex);
+                }
             }
         }
 
         private void AddRegistration(Registration registration, string message)
         {
-            if (registration.ConcreteType != null && !Equals(registration.ConcreteType, registration.SuperType))
-            {
-                Registration reg;
-                if (registrations.TryGetValue(registration.ConcreteType, out reg))
-                    throw new TypeAccessException($"Type '{reg.SuperType.AsString()}' is already registered to return concrete type: {reg}");
-            }
+            if (registration.ConcreteType == null && registration.Factory == null)
+                registration.ConcreteType = FindConcreteType(registration.SuperType);
             Log(() => $"{message}: {registration}");
-            registrations.Add(registration.SuperType, registration);
-            if (registration.ConcreteType != null && !registration.SuperType.Equals(registration.ConcreteType))
-                registrations.Add(registration.ConcreteType, registration);
+            registrations.Add(registration.SuperType.AsType(), registration);
+            if (registration.ConcreteType == null || registration.SuperType.Equals(registration.ConcreteType))
+                return;
+            try
+            {
+                registrations.Add(registration.ConcreteType.AsType(), registration);
+            }
+            catch (Exception ex)
+            {
+                registrations.Remove(registration.SuperType.AsType());
+                throw new TypeAccessException($"Type '{registration.ConcreteType.AsString()}' is already registered.", ex);
+            }
+        }
+
+        private TypeInfo FindConcreteType(TypeInfo superType)
+        {
+            if (!superType.IsAbstract || superType.IsGenericType || typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(superType))
+                return superType;
+            var types = allConcreteTypes.Value.Where(superType.IsAssignableFrom).ToList(); // slow
+            if (types.Count == 1)
+                return types.Single();
+            throw new TypeAccessException($"{types.Count} types found assignable to '{superType.AsString()}'.");
         }
 
         //////////////////////////////////////////////////////////////////////////////
@@ -129,13 +139,9 @@ namespace InternalContainer
                 throw new ArgumentNullException(nameof(supertype));
             lock (registrations)
             {
-                Log(() => $"Getting instance of type: '{supertype.AsString()}'.");
-                typeStack.Clear();
                 try
                 {
-                    var instance = GetInstance(supertype.GetTypeInfo());
-                    Debug.Assert(!typeStack.Any());
-                    return instance;
+                    return GetRegistration(supertype).Factory();
                 }
                 catch (TypeAccessException ex)
                 {
@@ -147,109 +153,85 @@ namespace InternalContainer
             }
         }
 
-        private object GetInstance(TypeInfo superType, Registration dependent = null)
-        {
-            typeStack.Push(superType);
-            if (typeStack.Count(t => t.Equals(superType)) > 1)
-                throw new TypeAccessException("Recursive dependency.");
-            var instance = GetInstanceInternal(superType, dependent);
-            typeStack.Pop();
-            return instance;
-        }
-
-        private object GetInstanceInternal(TypeInfo superType, Registration dependent)
+        private Registration GetRegistration(Type supertype, Registration dependent = null)
         {
             Registration registration;
-            if (!registrations.TryGetValue(superType, out registration))
+            if (!registrations.TryGetValue(supertype, out registration))
             {
                 if (autoLifestyle == Lifestyle.AutoRegisterDisabled)
-                    throw new TypeAccessException($"Cannot resolve unregistered type '{superType.AsString()}'.");
+                    throw new TypeAccessException($"Cannot resolve unregistered type '{supertype.AsString()}'.");
                 var lifestyle = dependent?.Lifestyle == Lifestyle.Singleton ? Lifestyle.Singleton : autoLifestyle;
-                var concreteType = FindConcreteType(superType);
-                registration = new Registration(superType, concreteType, lifestyle);
+                registration = new Registration { SuperType = supertype.GetTypeInfo(), Lifestyle = lifestyle};
                 AddRegistration(registration, "Registering type");
             }
-            //if (registration.Factory != null)
-            //    return registration.Factory();
-
-            return GetInstanceFromRegistration(registration, dependent);
+            if (registration.Factory == null)
+                CreateFactory(registration, dependent);
+            return registration;
         }
 
-        private object GetInstanceFromRegistration(Registration reg, Registration dependent)
+        private void CreateFactory(Registration reg, Registration dependent = null)
+        {
+            if (dependent == null)
+            {
+                typeStack.Clear();
+                Log(() => $"Getting instance of type: '{reg.SuperType.AsString()}'.");
+            }
+
+            typeStack.Push(reg.SuperType);
+            if (typeStack.Count(t => t.Equals(reg.SuperType)) > 1)
+                throw new TypeAccessException("Recursive dependency.");
+            SetFactory(reg, dependent);
+            typeStack.Pop();
+        }
+
+        private void SetFactory(Registration reg, Registration dependent)
         {
             if (dependent?.Lifestyle == Lifestyle.Singleton && reg.Lifestyle == Lifestyle.Transient)
                 throw new TypeAccessException(
                     $"Captive dependency: the singleton '{dependent.SuperType.AsString()}' depends on transient '{reg.SuperType.AsString()}'.");
-            if (reg.Factory == null)
+            SetExpression(reg);
+            reg.Factory = Expression.Lambda<Func<object>>(reg.Expression).Compile();
+            if (reg.Lifestyle == Lifestyle.Singleton)
             {
-                if (reg.Lifestyle == Lifestyle.Singleton)
-                {
-                    var value = CreateInstanceOrList(reg);
-                    reg.Factory = () => value;
-                }
-                else
-                    reg.Factory = () => CreateInstanceOrList(reg);
+                var instance = reg.Factory();
+                reg.Expression = Expression.Constant(instance);
+                reg.Factory = () => instance;
             }
-            return reg.Factory();
         }
 
-        private object CreateInstanceOrList(Registration reg)
+        private void SetExpression(Registration reg)
         {
-            reg.Instances++;
             if (typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(reg.SuperType))
-                return CreateList(reg);
-            return CreateInstance(reg);
+                SetExpressionArray(reg);
+            else
+                SetExpressionNew(reg);
         }
 
-        private object CreateInstance(Registration reg)
+        private void SetExpressionNew(Registration reg)
         {
             var type = reg.ConcreteType;
             var ctor = type.DeclaredConstructors.Where(t => !t.IsPrivate).OrderBy(t => t.GetParameters().Length).LastOrDefault();
             if (ctor == null)
                 throw new TypeAccessException($"Type '{type.AsString()}' has no public or internal constructor.");
             var parameters = ctor.GetParameters()
-                .Select(p => p.HasDefaultValue ? p.DefaultValue : GetInstance(p.ParameterType.GetTypeInfo(), reg))
-                .ToArray();
-            Log(() => $"Constructing {reg.Lifestyle} instance: '{type.AsString()}({string.Join(", ", parameters.Select(p => p.GetType().AsString()))})'.");
-            return ctor.Invoke(parameters);
-        }
-
-        /*
-        public Expression GetNewInstanceExpression(Registration reg)
-        {
-            var type = reg.ConcreteType;
-            var ctor = type.DeclaredConstructors.First();
-            if (ctor == null)
-                throw new TypeAccessException($"Type '{type.AsString()}' has no public or internal constructor.");
-            var parameters = ctor.GetParameters()
-                .Select(p => p.HasDefaultValue ? Expression.Constant(p.DefaultValue) : GetNewInstanceExpression(p.ParameterType.GetTypeInfo(), reg))
+                .Select(p => p.HasDefaultValue ? Expression.Constant(p.DefaultValue) : GetRegistration(p.ParameterType, reg).Expression)
                 .ToList();
             Log(() => $"Constructing {reg.Lifestyle} instance: '{type.AsString()}({string.Join(", ", parameters.Select(p => p.GetType().AsString()))})'.");
-            return Expression.New(ctor, parameters);
+            reg.Expression = Expression.New(ctor, parameters);
         }
-        */
 
-        private object CreateList(Registration reg)
+        private void SetExpressionArray(Registration reg)
         {
-            var genericType = reg.ConcreteType.GenericTypeArguments.Single().GetTypeInfo();
-            var genericList = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(genericType.AsType()));
-            var assignables = allConcreteTypes.Value.Where(t => genericType.IsAssignableFrom(t)).ToList();
-            if (!assignables.Any())
+            var generictype = reg.ConcreteType.GenericTypeArguments.Single();
+            var genericType = generictype.GetTypeInfo();
+            var expressions = allConcreteTypes.Value
+                .Where(t => genericType.IsAssignableFrom(t))
+                .Select(x => GetRegistration(x.AsType(), reg).Expression)
+                .ToList();
+            if (!expressions.Any())
                 throw new TypeAccessException($"No types found assignable to generic type '{genericType.AsString()}'.");
-            Log(() => $"Creating list of {assignables.Count} types assignable to '{genericType.AsString()}'.");
-            foreach (var assignable in assignables)
-                genericList.Add(GetInstance(assignable, reg));
-            return genericList;
-        }
-
-        private TypeInfo FindConcreteType(TypeInfo superType)
-        {
-            if (!superType.IsAbstract || superType.IsGenericType || typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(superType))
-                return superType;
-            var types = allConcreteTypes.Value.Where(superType.IsAssignableFrom).ToList();
-            if (types.Count == 1)
-                return types.Single();
-            throw new TypeAccessException($"{types.Count} types found assignable to '{superType.AsString()}'.");
+            Log(() => $"Creating list of {expressions.Count} types assignable to '{genericType.AsString()}'.");
+            reg.Expression = Expression.NewArrayInit(generictype, expressions);
         }
 
         //////////////////////////////////////////////////////////////////////////////
@@ -314,16 +296,6 @@ namespace InternalContainer
                 name = name.Substring(0, index);
             var args = type.GenericTypeArguments.Select(a => a.GetTypeInfo().AsString());
             return $"{name}<{string.Join(",", args)}>";
-        }
-
-        public static T CreateInstance<T>(params object[] args)
-        {
-            var argumentTypes = args.Select(a => a.GetType()).ToArray();
-            var argumentExpressions = argumentTypes.Select((t, i) => Expression.Parameter(t, "param" + i)).ToArray();
-            var constructorInfo = typeof(T).GetConstructor(argumentTypes);
-            var constructor = Expression.New(constructorInfo, argumentExpressions);
-            var instance = Expression.Lambda(constructor, argumentExpressions).Compile();
-            return (T)instance.DynamicInvoke(args);
         }
     }
 }

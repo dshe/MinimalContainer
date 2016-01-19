@@ -43,7 +43,6 @@ namespace InternalContainer.Tests.Enumerable
         {
             container.GetInstance<IEnumerable<IMarker>>();
             container.GetInstance<IList<IMarker>>();
-            container.GetInstance<List<IMarker>>();
         }
 
         [Fact]

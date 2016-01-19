@@ -32,7 +32,6 @@ namespace InternalContainer.Tests.Enumerable
             foreach (var m in container.Registrations())
             {
                 Assert.Equal(Lifestyle.Singleton, m.Lifestyle);
-                Assert.Equal(1, m.Instances);
             }
             container.Log();
         }
@@ -50,7 +49,7 @@ namespace InternalContainer.Tests.Enumerable
             foreach (var m in container.Registrations())
             {
                 Assert.Equal(Lifestyle.Transient, m.Lifestyle);
-                Assert.Equal(2, m.Instances);
+                //Assert.Equal(2, m.Instances);
             }
         }
 

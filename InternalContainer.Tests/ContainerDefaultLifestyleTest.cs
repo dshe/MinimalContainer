@@ -34,10 +34,8 @@ namespace InternalContainer.Tests
             var instance1 = c.GetInstance<SomeClass>();
             var reg = c.Registrations().Single();
             Assert.Equal(Lifestyle.Singleton, reg.Lifestyle);
-            Assert.Equal(1, reg.Instances);
             var instance2 = c.GetInstance<SomeClass>();
             Assert.Equal(instance1, instance2);
-            Assert.Equal(1, reg.Instances);
         }
         [Fact]
         public void Test_Transient()
@@ -46,10 +44,8 @@ namespace InternalContainer.Tests
             var instance1 = c.GetInstance<SomeClass>();
             var reg = c.Registrations().Single();
             Assert.Equal(Lifestyle.Transient, reg.Lifestyle);
-            Assert.Equal(1, reg.Instances);
             var instance2 = c.GetInstance<SomeClass>();
             Assert.NotEqual(instance1, instance2);
-            Assert.Equal(2, reg.Instances);
         }
     }
 }

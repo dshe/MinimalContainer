@@ -58,7 +58,7 @@
     <Compile Include="AutoSingletonTests.cs" />
     <Compile Include="Generic\GenericTests.cs" />
     <Compile Include="Generic\AutoGenericTests.cs" />
-    <Compile Include="Performance.cs" />
+    <Compile Include="Performance\Performance.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Enumerable\RegisterEnumerableTest.cs" />
     <Compile Include="RegisterErrorTest.cs" />
@@ -73,9 +73,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Performance\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\InternalContainer\InternalContainer.csproj">
       <Project>{95eb285c-2916-425c-b50f-af42b94d650c}</Project>

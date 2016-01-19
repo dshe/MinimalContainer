@@ -26,26 +26,25 @@ namespace InternalContainer.Tests
         public void Test01_Null_SuperType()
         {
             Assert.Throws<ArgumentNullException>(() => 
-                container.Register(null, typeof(SomeClass).GetTypeInfo(), Lifestyle.Singleton)).Output(output);
+                container.RegisterClass(null, typeof(SomeClass).GetTypeInfo(), Lifestyle.Singleton)).Output(output);
         }
 
         [Fact]
         public void Test03_AutoLifestyleDisabled()
         {
             Assert.Throws<ArgumentException>(() => 
-                container.Register(typeof(ISomeClass).GetTypeInfo(), typeof(SomeClass).GetTypeInfo(), Lifestyle.AutoRegisterDisabled)).Output(output);
+                container.RegisterClass(typeof(ISomeClass), typeof(SomeClass).GetTypeInfo(), Lifestyle.AutoRegisterDisabled)).Output(output);
         }
         [Fact]
         public void Test04_Abstract_NoConcrete()
         {
-             Assert.Throws<TypeAccessException>(() =>
-                container.RegisterSingleton<INoClass>()).Output(output);
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<INoClass>());
         }
         [Fact]
         public void Test05_Not_Assignable()
         {
             Assert.Throws<TypeAccessException>(() => 
-                container.Register(typeof(IDisposable).GetTypeInfo(), typeof(SomeClass).GetTypeInfo(), Lifestyle.Singleton)).Output(output);
+                container.RegisterClass(typeof(IDisposable).GetTypeInfo(), typeof(SomeClass).GetTypeInfo(), Lifestyle.Singleton)).Output(output);
         }
 
         [Fact]
