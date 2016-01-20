@@ -1,9 +1,8 @@
-﻿//InternalContainer.cs 1.07
+﻿//InternalContainer.cs 1.08
 //Copyright 2016 David Shepherd. Licensed under the Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -19,6 +18,7 @@ namespace InternalContainer
         internal Lifestyle Lifestyle;
         internal Expression Expression;
         internal Func<object> Factory;
+        internal object Instance;
         public override string ToString()
         {
             return $"'{(Equals(ConcreteType, null) || Equals(ConcreteType, SuperType) ? "" : ConcreteType.AsString() + "->")}" +
@@ -38,20 +38,20 @@ namespace InternalContainer
         {
             this.autoLifestyle = autoLifestyle;
             this.log = log;
-            Log("Creating InternalContainer.");
+            Log("Creating Container.");
             allConcreteTypes = new Lazy<List<TypeInfo>>(() =>
                 (assemblies.Any() ? assemblies : new[] { this.GetType().GetTypeInfo().Assembly })
                 .Select(a => a.DefinedTypes.Where(t => t.IsClass && !t.IsAbstract).ToList())
                 .SelectMany(x => x).ToList());
         }
 
-        public void RegisterSingleton<T>() => RegisterClass(typeof(T), null, Lifestyle.Singleton);
-        public void RegisterTransient<T>() => RegisterClass(typeof(T), null, Lifestyle.Transient);
+        public void RegisterSingleton<T>() => RegisterType(typeof(T), null, Lifestyle.Singleton);
+        public void RegisterTransient<T>() => RegisterType(typeof(T), null, Lifestyle.Transient);
         public void RegisterSingleton<TSuper, TConcrete>() where TConcrete : TSuper =>
-            RegisterClass(typeof(TSuper), typeof(TConcrete), Lifestyle.Singleton);
+            RegisterType(typeof(TSuper), typeof(TConcrete), Lifestyle.Singleton);
         public void RegisterTransient<TSuper, TConcrete>() where TConcrete : TSuper =>
-            RegisterClass(typeof(TSuper), typeof(TConcrete), Lifestyle.Transient);
-        public void RegisterClass(Type supertype, Type concretetype, Lifestyle lifestyle)
+            RegisterType(typeof(TSuper), typeof(TConcrete), Lifestyle.Transient);
+        public void RegisterType(Type supertype, Type concretetype, Lifestyle lifestyle)
         {
             if (supertype == null)
                 throw new ArgumentNullException(nameof(supertype));
@@ -66,9 +66,7 @@ namespace InternalContainer
             if (instance == null)
                 throw new ArgumentNullException(nameof(instance));
             var reg = new Registration { SuperType = typeof (TSuper).GetTypeInfo(), ConcreteType = instance.GetType().GetTypeInfo(),
-                Lifestyle = Lifestyle.Singleton, Factory = () => instance, Expression = Expression.Constant(instance) };
-            reg.Expression = Expression.Constant(instance);
-
+                Lifestyle = Lifestyle.Singleton, Instance = instance, Expression = Expression.Constant(instance) };
             Register(reg, "Registering instance of type");
         }
 
@@ -78,45 +76,45 @@ namespace InternalContainer
         {
             if (factory == null)
                 throw new ArgumentNullException(nameof(factory));
-            var reg = new Registration { SuperType = supertype.GetTypeInfo(), Lifestyle = Lifestyle.Transient, Factory = factory };
             Expression<Func<object>> expression = () => factory();
-            reg.Expression = expression;
+            var reg = new Registration { SuperType = supertype.GetTypeInfo(), Lifestyle = Lifestyle.Transient,
+                Factory = factory, Expression = expression };
             Register(reg, "Registering type factory");
         }
 
-        private void Register(Registration registration, string message)
+        private void Register(Registration reg, string message)
         {
-            if (registration.ConcreteType != null && !registration.SuperType.IsAssignableFrom(registration.ConcreteType))
-                throw new TypeAccessException($"Type '{registration.ConcreteType.AsString()}' is not assignable to type '{registration.SuperType.AsString()}'.");
+            if (reg.ConcreteType != null && !reg.SuperType.IsAssignableFrom(reg.ConcreteType))
+                throw new TypeAccessException($"Type '{reg.ConcreteType.AsString()}' is not assignable to type '{reg.SuperType.AsString()}'.");
             lock (registrations)
             {
                 try
                 {
-                    AddRegistration(registration, message);
+                    AddRegistration(reg, message);
                 }
                 catch (ArgumentException ex)
                 {
-                    throw new TypeAccessException($"Type '{registration.SuperType.AsString()}' is already registered.", ex);
+                    throw new TypeAccessException($"Type '{reg.SuperType.AsString()}' is already registered.", ex);
                 }
             }
         }
 
-        private void AddRegistration(Registration registration, string message)
+        private void AddRegistration(Registration reg, string message)
         {
-            if (registration.ConcreteType == null && registration.Factory == null)
-                registration.ConcreteType = FindConcreteType(registration.SuperType);
-            Log(() => $"{message}: {registration}");
-            registrations.Add(registration.SuperType.AsType(), registration);
-            if (registration.ConcreteType == null || registration.SuperType.Equals(registration.ConcreteType))
+            if (reg.ConcreteType == null && reg.Factory == null)
+                reg.ConcreteType = FindConcreteType(reg.SuperType);
+            Log(() => $"{message}: {reg}");
+            registrations.Add(reg.SuperType.AsType(), reg);
+            if (reg.ConcreteType == null || reg.SuperType.Equals(reg.ConcreteType))
                 return;
             try
             {
-                registrations.Add(registration.ConcreteType.AsType(), registration);
+                registrations.Add(reg.ConcreteType.AsType(), reg);
             }
             catch (Exception ex)
             {
-                registrations.Remove(registration.SuperType.AsType());
-                throw new TypeAccessException($"Type '{registration.ConcreteType.AsString()}' is already registered.", ex);
+                registrations.Remove(reg.SuperType.AsType());
+                throw new TypeAccessException($"Type '{reg.ConcreteType.AsString()}' is already registered.", ex);
             }
         }
 
@@ -141,7 +139,8 @@ namespace InternalContainer
             {
                 try
                 {
-                    return GetRegistration(supertype).Factory();
+                    var reg = GetRegistration(supertype, null);
+                    return reg.Instance ?? reg.Factory();
                 }
                 catch (TypeAccessException ex)
                 {
@@ -153,50 +152,48 @@ namespace InternalContainer
             }
         }
 
-        private Registration GetRegistration(Type supertype, Registration dependent = null)
+        private Registration GetRegistration(Type supertype, Registration dependent)
         {
-            Registration registration;
-            if (!registrations.TryGetValue(supertype, out registration))
+            Registration reg;
+            if (!registrations.TryGetValue(supertype, out reg))
             {
                 if (autoLifestyle == Lifestyle.AutoRegisterDisabled)
                     throw new TypeAccessException($"Cannot resolve unregistered type '{supertype.AsString()}'.");
                 var lifestyle = dependent?.Lifestyle == Lifestyle.Singleton ? Lifestyle.Singleton : autoLifestyle;
-                registration = new Registration { SuperType = supertype.GetTypeInfo(), Lifestyle = lifestyle};
-                AddRegistration(registration, "Registering type");
+                reg = new Registration { SuperType = supertype.GetTypeInfo(), Lifestyle = lifestyle};
+                AddRegistration(reg, "Auto-registering type");
             }
-            if (registration.Factory == null)
-                CreateFactory(registration, dependent);
-            return registration;
+            if (reg.Instance == null && reg.Factory == null)
+                Initialize(reg, dependent);
+            return reg;
         }
 
-        private void CreateFactory(Registration reg, Registration dependent = null)
+        private void Initialize(Registration reg, Registration dependent)
         {
             if (dependent == null)
             {
                 typeStack.Clear();
                 Log(() => $"Getting instance of type: '{reg.SuperType.AsString()}'.");
             }
-
             typeStack.Push(reg.SuperType);
             if (typeStack.Count(t => t.Equals(reg.SuperType)) > 1)
                 throw new TypeAccessException("Recursive dependency.");
-            SetFactory(reg, dependent);
-            typeStack.Pop();
-        }
-
-        private void SetFactory(Registration reg, Registration dependent)
-        {
             if (dependent?.Lifestyle == Lifestyle.Singleton && reg.Lifestyle == Lifestyle.Transient)
                 throw new TypeAccessException(
                     $"Captive dependency: the singleton '{dependent.SuperType.AsString()}' depends on transient '{reg.SuperType.AsString()}'.");
+            Initialize(reg);
+            typeStack.Pop();
+        }
+
+        private void Initialize(Registration reg)
+        {
             SetExpression(reg);
             reg.Factory = Expression.Lambda<Func<object>>(reg.Expression).Compile();
-            if (reg.Lifestyle == Lifestyle.Singleton)
-            {
-                var instance = reg.Factory();
-                reg.Expression = Expression.Constant(instance);
-                reg.Factory = () => instance;
-            }
+            if (reg.Lifestyle == Lifestyle.Transient)
+                return;
+            reg.Instance = reg.Factory();
+            reg.Expression = Expression.Constant(reg.Instance);
+            reg.Factory = null;
         }
 
         private void SetExpression(Registration reg)
@@ -283,7 +280,6 @@ namespace InternalContainer
     internal static class InternalContainerExtensionMethods
     {
         public static string AsString(this Type type) => type.GetTypeInfo().AsString();
-
         public static string AsString(this TypeInfo type)
         {
             if (type == null)

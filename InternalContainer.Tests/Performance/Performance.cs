@@ -69,7 +69,7 @@ namespace InternalContainer.Tests.Performance
         internal void RegisterTypes(List<Type> types, Lifestyle lifestyle)
         {
             foreach (var type in types)
-                container.RegisterFactory(type.GetTypeInfo(), () => type);
+                container.RegisterFactory(type, () => type);
         }
 
         public class ClassA { }

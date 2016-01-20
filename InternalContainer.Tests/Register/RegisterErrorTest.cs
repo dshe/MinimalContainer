@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Linq;
 using System.Reflection;
-using InternalContainer.Tests.Relative;
 using InternalContainer.Tests.Utilities;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace InternalContainer.Tests
+namespace InternalContainer.Tests.Register
 {
     public class RegisterErrorTest
     {
@@ -26,14 +24,14 @@ namespace InternalContainer.Tests
         public void Test01_Null_SuperType()
         {
             Assert.Throws<ArgumentNullException>(() => 
-                container.RegisterClass(null, typeof(SomeClass).GetTypeInfo(), Lifestyle.Singleton)).Output(output);
+                container.RegisterType(null, typeof(SomeClass).GetTypeInfo(), Lifestyle.Singleton)).Output(output);
         }
 
         [Fact]
         public void Test03_AutoLifestyleDisabled()
         {
             Assert.Throws<ArgumentException>(() => 
-                container.RegisterClass(typeof(ISomeClass), typeof(SomeClass).GetTypeInfo(), Lifestyle.AutoRegisterDisabled)).Output(output);
+                container.RegisterType(typeof(ISomeClass), typeof(SomeClass).GetTypeInfo(), Lifestyle.AutoRegisterDisabled)).Output(output);
         }
         [Fact]
         public void Test04_Abstract_NoConcrete()
@@ -44,7 +42,7 @@ namespace InternalContainer.Tests
         public void Test05_Not_Assignable()
         {
             Assert.Throws<TypeAccessException>(() => 
-                container.RegisterClass(typeof(IDisposable).GetTypeInfo(), typeof(SomeClass).GetTypeInfo(), Lifestyle.Singleton)).Output(output);
+                container.RegisterType(typeof(IDisposable).GetTypeInfo(), typeof(SomeClass).GetTypeInfo(), Lifestyle.Singleton)).Output(output);
         }
 
         [Fact]

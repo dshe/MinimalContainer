@@ -47,10 +47,7 @@ namespace InternalContainer.Tests.Enumerable
             Assert.NotEqual(instance, container.GetInstance(typeof (IEnumerable<ISomeClass>)));
             Assert.Equal(3, container.Registrations().Count);
             foreach (var m in container.Registrations())
-            {
                 Assert.Equal(Lifestyle.Transient, m.Lifestyle);
-                //Assert.Equal(2, m.Instances);
-            }
         }
 
         [Fact]

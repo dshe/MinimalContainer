@@ -51,18 +51,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Activator\Class1.cs" />
     <Compile Include="ContainerDefaultLifestyleTest.cs" />
     <Compile Include="Enumerable\AutoEnumerableTests.cs" />
     <Compile Include="Example.cs" />
-    <Compile Include="AutoSingletonTests.cs" />
     <Compile Include="Generic\GenericTests.cs" />
     <Compile Include="Generic\AutoGenericTests.cs" />
     <Compile Include="Performance\Performance.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Enumerable\RegisterEnumerableTest.cs" />
-    <Compile Include="RegisterErrorTest.cs" />
-    <Compile Include="RegisterTest.cs" />
+    <Compile Include="Register\RegisterErrorTest.cs" />
+    <Compile Include="Register\RegisterTest.cs" />
     <Compile Include="Relative\CaptiveDependencyTest.cs" />
     <Compile Include="Relative\CreateInstanceTest.cs" />
     <Compile Include="Example\Example.cs" />

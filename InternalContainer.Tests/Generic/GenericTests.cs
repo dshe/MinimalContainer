@@ -42,14 +42,11 @@ namespace InternalContainer.Tests.Generic
         }
 
         [Fact]
-        public void Test_02()
+        public void Test_OpenGeneric()
         {
-            //container.RegisterClass(typeof(GenericClass<>), null, Lifestyle.Singleton);
+            //container.RegisterType(typeof(GenericClass<>), null, Lifestyle.Singleton);
             //container.GetInstance(typeof(GenericClass<>));
-            //Assert.Equal(3, container.Registrations().Count);
             //output.WriteLine(Environment.NewLine + container);
         }
-
-
     }
 }

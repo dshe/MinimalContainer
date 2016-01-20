@@ -3,7 +3,7 @@ using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace InternalContainer.Tests
+namespace InternalContainer.Tests.Register
 {
     public class RegisterTest
     {
@@ -58,7 +58,6 @@ namespace InternalContainer.Tests
             container.RegisterTransient<SomeClass>();
             var reg = container.Registrations().Single();
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.SuperType);
-            //Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.ConcreteType);
             Assert.Equal(null, reg.Factory);
             Assert.Equal(Lifestyle.Transient, reg.Lifestyle);
 
@@ -94,11 +93,11 @@ namespace InternalContainer.Tests
             var reg = container.Registrations().Single();
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.SuperType);
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.ConcreteType);
-            Assert.Equal(instance, reg.Factory());
+            Assert.Equal(instance, reg.Instance);
             Assert.Equal(Lifestyle.Singleton, reg.Lifestyle);
 
             Assert.Equal(instance, container.GetInstance<SomeClass>());
-            Assert.Equal(instance, reg.Factory());
+            Assert.Equal(instance, reg.Instance);
             Assert.Single(container.Registrations());
             output.WriteLine(container.ToString());
         }
@@ -111,11 +110,11 @@ namespace InternalContainer.Tests
             var reg = container.Registrations().Single();
             Assert.Equal(typeof(ISomeClass).GetTypeInfo(), reg.SuperType);
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.ConcreteType);
-            Assert.Equal(instance, reg.Factory());
+            Assert.Equal(instance, reg.Instance);
             Assert.Equal(Lifestyle.Singleton, reg.Lifestyle);
 
             Assert.Equal(instance, container.GetInstance<ISomeClass>());
-            Assert.Equal(instance, reg.Factory());
+            Assert.Equal(instance, reg.Instance);
             Assert.Single(container.Registrations());
             output.WriteLine(container.ToString());
         }
