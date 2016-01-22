@@ -9,7 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InternalContainer.Tests", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Folder", "Solution Folder", "{45A24516-448B-45BA-AD58-92B41A1DD6E2}"
 	ProjectSection(SolutionItems) = preProject
-		Notes.txt = Notes.txt
 		TypeResolutionFlowChart.png = TypeResolutionFlowChart.png
 	EndProjectSection
 EndProject

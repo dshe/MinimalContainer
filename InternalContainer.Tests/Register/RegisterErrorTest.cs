@@ -24,15 +24,9 @@ namespace InternalContainer.Tests.Register
         public void Test01_Null_SuperType()
         {
             Assert.Throws<ArgumentNullException>(() => 
-                container.RegisterType(null, typeof(SomeClass).GetTypeInfo(), Lifestyle.Singleton)).Output(output);
+                container.RegisterSingleton(null, typeof(SomeClass).GetTypeInfo())).Output(output);
         }
 
-        [Fact]
-        public void Test03_AutoLifestyleDisabled()
-        {
-            Assert.Throws<ArgumentException>(() => 
-                container.RegisterType(typeof(ISomeClass), typeof(SomeClass).GetTypeInfo(), Lifestyle.AutoRegisterDisabled)).Output(output);
-        }
         [Fact]
         public void Test04_Abstract_NoConcrete()
         {
@@ -42,7 +36,7 @@ namespace InternalContainer.Tests.Register
         public void Test05_Not_Assignable()
         {
             Assert.Throws<TypeAccessException>(() => 
-                container.RegisterType(typeof(IDisposable).GetTypeInfo(), typeof(SomeClass).GetTypeInfo(), Lifestyle.Singleton)).Output(output);
+                container.RegisterSingleton(typeof(IDisposable).GetTypeInfo(), typeof(SomeClass).GetTypeInfo())).Output(output);
         }
 
         [Fact]

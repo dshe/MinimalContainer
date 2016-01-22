@@ -1,8 +1,9 @@
-﻿//InternalContainer.cs 1.08
+﻿//InternalContainer.cs 1.09
 //Copyright 2016 David Shepherd. Licensed under the Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -19,6 +20,16 @@ namespace InternalContainer
         internal Expression Expression;
         internal Func<object> Factory;
         internal object Instance;
+
+        internal Registration(Type supertype, Type concretetype, Lifestyle lifestyle)
+        {
+            if (supertype == null)
+                throw new ArgumentNullException(nameof(supertype));
+            Debug.Assert(lifestyle != Lifestyle.AutoRegisterDisabled);
+            SuperType = supertype.GetTypeInfo();
+            ConcreteType = concretetype?.GetTypeInfo();
+            Lifestyle = lifestyle;
+        }
         public override string ToString()
         {
             return $"'{(Equals(ConcreteType, null) || Equals(ConcreteType, SuperType) ? "" : ConcreteType.AsString() + "->")}" +
@@ -45,19 +56,21 @@ namespace InternalContainer
                 .SelectMany(x => x).ToList());
         }
 
-        public void RegisterSingleton<T>() => RegisterType(typeof(T), null, Lifestyle.Singleton);
-        public void RegisterTransient<T>() => RegisterType(typeof(T), null, Lifestyle.Transient);
+        public void RegisterSingleton<T>() => RegisterSingleton(typeof(T));
         public void RegisterSingleton<TSuper, TConcrete>() where TConcrete : TSuper =>
-            RegisterType(typeof(TSuper), typeof(TConcrete), Lifestyle.Singleton);
-        public void RegisterTransient<TSuper, TConcrete>() where TConcrete : TSuper =>
-            RegisterType(typeof(TSuper), typeof(TConcrete), Lifestyle.Transient);
-        public void RegisterType(Type supertype, Type concretetype, Lifestyle lifestyle)
+            RegisterSingleton(typeof(TSuper), typeof(TConcrete));
+        public void RegisterSingleton(Type supertype, Type concretetype = null)
         {
-            if (supertype == null)
-                throw new ArgumentNullException(nameof(supertype));
-            if (lifestyle == Lifestyle.AutoRegisterDisabled)
-                throw new ArgumentException("Invalid", nameof(lifestyle));
-            var reg = new Registration { SuperType = supertype.GetTypeInfo(), ConcreteType = concretetype?.GetTypeInfo(), Lifestyle = lifestyle};
+            var reg = new Registration(supertype, concretetype, Lifestyle.Singleton);
+            Register(reg, "Registering type");
+        }
+
+        public void RegisterTransient<T>() => RegisterTransient(typeof(T));
+        public void RegisterTransient<TSuper, TConcrete>() where TConcrete : TSuper =>
+            RegisterTransient(typeof(TSuper), typeof(TConcrete));
+        public void RegisterTransient(Type supertype, Type concretetype = null)
+        {
+            var reg = new Registration(supertype, concretetype, Lifestyle.Transient);
             Register(reg, "Registering type");
         }
 
@@ -65,8 +78,7 @@ namespace InternalContainer
         {
             if (instance == null)
                 throw new ArgumentNullException(nameof(instance));
-            var reg = new Registration { SuperType = typeof (TSuper).GetTypeInfo(), ConcreteType = instance.GetType().GetTypeInfo(),
-                Lifestyle = Lifestyle.Singleton, Instance = instance, Expression = Expression.Constant(instance) };
+            var reg = new Registration(typeof (TSuper), instance.GetType(), Lifestyle.Singleton) { Instance = instance, Expression = Expression.Constant(instance) };
             Register(reg, "Registering instance of type");
         }
 
@@ -77,8 +89,7 @@ namespace InternalContainer
             if (factory == null)
                 throw new ArgumentNullException(nameof(factory));
             Expression<Func<object>> expression = () => factory();
-            var reg = new Registration { SuperType = supertype.GetTypeInfo(), Lifestyle = Lifestyle.Transient,
-                Factory = factory, Expression = expression };
+            var reg = new Registration(supertype, null, Lifestyle.Transient) { Factory = factory, Expression = expression };
             Register(reg, "Registering type factory");
         }
 
@@ -145,9 +156,8 @@ namespace InternalContainer
                 catch (TypeAccessException ex)
                 {
                     var typePath = string.Join("->", typeStack.Select(t => t.AsString()));
-                    var message = $"Could not get instance of type '{typePath}'. {ex.Message}";
-                    Log(message + Environment.NewLine);
-                    throw new TypeAccessException(message, ex);
+                    typePath = string.IsNullOrEmpty(typePath) ? supertype.AsString() : typePath;
+                    throw new TypeAccessException($"Could not get instance of type '{typePath}'. {ex.Message}", ex);
                 }
             }
         }
@@ -160,7 +170,7 @@ namespace InternalContainer
                 if (autoLifestyle == Lifestyle.AutoRegisterDisabled)
                     throw new TypeAccessException($"Cannot resolve unregistered type '{supertype.AsString()}'.");
                 var lifestyle = dependent?.Lifestyle == Lifestyle.Singleton ? Lifestyle.Singleton : autoLifestyle;
-                reg = new Registration { SuperType = supertype.GetTypeInfo(), Lifestyle = lifestyle};
+                reg = new Registration(supertype, null, lifestyle);
                 AddRegistration(reg, "Auto-registering type");
             }
             if (reg.Instance == null && reg.Factory == null)
@@ -219,8 +229,7 @@ namespace InternalContainer
 
         private void SetExpressionArray(Registration reg)
         {
-            var generictype = reg.ConcreteType.GenericTypeArguments.Single();
-            var genericType = generictype.GetTypeInfo();
+            var genericType = reg.ConcreteType.GenericTypeArguments.Single().GetTypeInfo();
             var expressions = allConcreteTypes.Value
                 .Where(t => genericType.IsAssignableFrom(t))
                 .Select(x => GetRegistration(x.AsType(), reg).Expression)
@@ -228,7 +237,7 @@ namespace InternalContainer
             if (!expressions.Any())
                 throw new TypeAccessException($"No types found assignable to generic type '{genericType.AsString()}'.");
             Log(() => $"Creating list of {expressions.Count} types assignable to '{genericType.AsString()}'.");
-            reg.Expression = Expression.NewArrayInit(generictype, expressions);
+            reg.Expression = Expression.NewArrayInit(genericType.AsType(), expressions);
         }
 
         //////////////////////////////////////////////////////////////////////////////
@@ -262,15 +271,13 @@ namespace InternalContainer
         {
             lock (registrations)
             {
-                Registrations()
-                    .Where(r => r.Lifestyle.Equals(Lifestyle.Singleton) && r.Factory != null)
-                    .Select(r => r.Factory())
-                    .OfType<IDisposable>()
-                    .ToList().ForEach(instance =>
-                    {
-                        Log($"Disposing type '{instance.GetType().AsString()}'.");
-                        instance.Dispose();
-                    });
+                foreach (var instance in Registrations()
+                    .Where(r => r.Lifestyle.Equals(Lifestyle.Singleton) && r.Instance != null)
+                    .Select(r => r.Instance).OfType<IDisposable>())
+                {
+                    Log($"Disposing type '{instance.GetType().AsString()}'.");
+                    instance.Dispose();
+                }
                 registrations.Clear();
             }
             Log("Container disposed.");
