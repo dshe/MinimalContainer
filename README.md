@@ -30,13 +30,13 @@ Disposing the container will dispose any registered disposable singleton instanc
 #### type registration
 ```csharp
 container.RegisterSingleton<T>();
-container.RegisterSingleton<TSuper,TConcrete>();
-container.RegisterSingleton(typeof(TSuper));
+container.RegisterSingleton(typeof(T));
+container.RegisterSingleton<TSuper, TConcrete>();
 container.RegisterSingleton(typeof(TSuper), typeof(TConcrete);
 
 container.RegisterTransient<T>();
-container.RegisterTransient<TSuper,TConcrete>();
-container.RegisterTransient(typeof(TSuper));
+container.RegisterTransient(typeof(T));
+container.RegisterTransient<TSuper, TConcrete>();
 container.RegisterTransient(typeof(TSuper), typeof(TConcrete);
 
 container.RegisterInstance(new TConcrete());
