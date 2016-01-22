@@ -27,7 +27,7 @@ container.Dispose();
 
 Disposing the container will dispose any registered disposable singleton instances.
 
-#### type registration
+#### registration
 ```csharp
 container.RegisterSingleton<T>();
 container.RegisterSingleton(typeof(T));
@@ -45,12 +45,12 @@ container.RegisterInstance<TSuper>(new TConcrete());
 container.RegisterFactory(() => new TConcrete());
 container.RegisterFactory<TSuper>(() => new TConcrete());
 ```
-#### type resolution
+#### resolution
 ```csharp
 T instance = container.GetInstance<T>();
 T instance = (T)container.GetInstance(typeof(T));
 ```
-#### enumerable types
+#### enumerables
 ```csharp
 public class TSuper {}
 public class TConcrete1 : TSuper {}
@@ -65,7 +65,7 @@ container.RegisterSingleton<IEnumerable<TSuper>>();
 IEnumerable<TSuper> enumerable = container.GetInstance<IEnumerable<TSuper>>();
 ```
 A list of instances of registered types which are assignable to `TSuper` is returned.
-#### generic types
+#### generics
 ```csharp
 public class GenericParameterClass {}
 
@@ -87,7 +87,7 @@ container.RegisterSingleton<SomeClass>();
 
 SomeClass instance = container.GetInstance<SomeClass>();
 ```
-#### automatic type registration and resolution
+#### automatic registration
 ```csharp
 public class TConcrete {}
 
@@ -95,7 +95,7 @@ var container = new Container(Lifestyle.Singleton, assemblies:someAssembly);
 
 TConcrete instance = container.GetInstance<TConcrete>();
 ```
-To enable automatic registration and resolution, pass the desired lifestyle (singleton or transient) to be used for automatic registration in the container's constructor. Note however that the container will always register the dependencies of singleton instances as singletons.
+To enable automatic registration, pass the desired lifestyle (singleton or transient) to be used for automatic registration in the container's constructor. Note however that the container will always register the dependencies of singleton instances as singletons.
 
 If automatic type resolution requires scanning assemblies other than the current executing assembly, include references to those assemblies in the container's constructor.
 
@@ -130,7 +130,7 @@ using (var container = new Container(Lifestyle.Singleton))
 ```
 The complete object graph is created and the application is started by simply resolving the compositional root. 
 
-#### type resolution strategy
+#### resolution strategy
 The following graphic illustrates the automatic type resolution strategy:
 
 ![Image of Resolution Strategy](https://github.com/dshe/InternalContainer/blob/master/TypeResolutionFlowChart.png)
