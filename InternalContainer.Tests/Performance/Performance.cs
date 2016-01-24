@@ -26,7 +26,7 @@ namespace InternalContainer.Tests.Performance
             var types = typeof(string).Assembly.GetTypes().Where(t => !t.IsAbstract).ToList();
 
             sw.Start();
-            RegisterTypes(types, Lifestyle.Transient);
+            RegisterFactory(types);
             sw.Stop();
             var rate = types.Count / sw.Elapsed.TotalSeconds;
             output.WriteLine($"{rate,10:####,###} registrations/second ({types.Count} types).");
@@ -36,7 +36,7 @@ namespace InternalContainer.Tests.Performance
                 container.GetInstance(type);
             sw.Stop();
             rate = types.Count / sw.Elapsed.TotalSeconds;
-            output.WriteLine($"{rate,10:####,###} transient instances/second ({types.Count} types).");
+            output.WriteLine($"{rate,10:####,###} initial transient instances/second ({types.Count} types).");
 
             sw.Restart();
             foreach (var type in types)
@@ -44,29 +44,12 @@ namespace InternalContainer.Tests.Performance
             sw.Stop();
             rate = types.Count / sw.Elapsed.TotalSeconds;
             output.WriteLine($"{rate,10:####,###} transient instances/second ({types.Count} types).");
-            container.Dispose();
-
-
-            RegisterTypes(types, Lifestyle.Singleton);
-            sw.Restart();
-            foreach (var type in types)
-                container.GetInstance(type);
-            sw.Stop();
-            rate = types.Count / sw.Elapsed.TotalSeconds;
-            output.WriteLine($"{rate,10:####,###} singleton instances/second ({types.Count} types).");
-
-            sw.Restart();
-            foreach (var type in types)
-                container.GetInstance(type);
-            sw.Stop();
-            rate = types.Count / sw.Elapsed.TotalSeconds;
-            output.WriteLine($"{rate,10:####,###} singleton instances/second ({types.Count} types).");
             container.Dispose();
 
             Assert.True(true);
         }
 
-        internal void RegisterTypes(List<Type> types, Lifestyle lifestyle)
+        internal void RegisterFactory(List<Type> types)
         {
             foreach (var type in types)
                 container.RegisterFactory(type, () => type);
@@ -87,7 +70,7 @@ namespace InternalContainer.Tests.Performance
             }
             sw.Stop();
             var rate = iterations / sw.Elapsed.TotalSeconds;
-            output.WriteLine($"{rate,10:####,###} instances/second.");
+            output.WriteLine($"{rate,10:####,###} Transient instances/second.");
             container.Dispose();
 
             container.RegisterSingleton<ClassA>();
@@ -98,7 +81,7 @@ namespace InternalContainer.Tests.Performance
             }
             sw.Stop();
             rate = iterations / sw.Elapsed.TotalSeconds;
-            output.WriteLine($"{rate,10:####,###} instances/second.");
+            output.WriteLine($"{rate,10:####,###} Singleton instances/second.");
 
             Assert.True(true);
         }

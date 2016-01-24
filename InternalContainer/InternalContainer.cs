@@ -1,4 +1,4 @@
-﻿//InternalContainer.cs 1.10
+﻿//InternalContainer.cs 1.11
 //Copyright 2016 David Shepherd. Licensed under the Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0
 using System;
 using System.Collections;
@@ -108,7 +108,7 @@ namespace InternalContainer
 
         private void AddRegistration(Registration reg, string caller)
         {
-            if (reg.ConcreteType == null && reg.Factory == null)
+            if (reg.ConcreteType == null && reg.Instance == null && reg.Factory == null)
                 reg.ConcreteType = FindConcreteType(reg.SuperType);
             Log(() => $"{caller}: {reg}");
             registrations.Add(reg.SuperType.AsType(), reg);
@@ -238,7 +238,7 @@ namespace InternalContainer
 
         //////////////////////////////////////////////////////////////////////////////
 
-        public IList<Registration> Registrations()
+        public IList<Registration> GetRegistrations()
         {
             lock (registrations)
                 return registrations.Values.Distinct().OrderBy(r => r.SuperType.Name).ToList();
@@ -258,8 +258,8 @@ namespace InternalContainer
         public override string ToString()
         {
             return new StringBuilder()
-                .AppendLine($"Container: {autoLifestyle}, {Registrations().Count} registered types:")
-                .AppendLine(string.Join(Environment.NewLine, Registrations()))
+                .AppendLine($"Container: {autoLifestyle}, {GetRegistrations().Count} registered types:")
+                .AppendLine(string.Join(Environment.NewLine, GetRegistrations()))
                 .ToString();
         }
 
@@ -267,7 +267,7 @@ namespace InternalContainer
         {
             lock (registrations)
             {
-                foreach (var instance in Registrations()
+                foreach (var instance in GetRegistrations()
                     .Where(r => r.Lifestyle.Equals(Lifestyle.Singleton) && r.Instance != null)
                     .Select(r => r.Instance).OfType<IDisposable>())
                 {

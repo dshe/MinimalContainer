@@ -25,7 +25,7 @@ namespace InternalContainer.Tests
             Assert.IsType<ClassA>(instance);
             Assert.Equal(instance, container.GetInstance<IClassA>());
 
-            foreach (var reg in container.Registrations())
+            foreach (var reg in container.GetRegistrations())
                 output.WriteLine(reg.ToString());
 
             container.Dispose();
