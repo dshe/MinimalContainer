@@ -1,4 +1,4 @@
-﻿//InternalContainer.cs 1.11
+﻿//InternalContainer.cs 1.10
 //Copyright 2016 David Shepherd. Licensed under the Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0
 using System;
 using System.Collections;
@@ -108,7 +108,7 @@ namespace InternalContainer
 
         private void AddRegistration(Registration reg, string caller)
         {
-            if (reg.ConcreteType == null && reg.Instance == null && reg.Factory == null)
+            if (reg.ConcreteType == null && reg.Factory == null)
                 reg.ConcreteType = FindConcreteType(reg.SuperType);
             Log(() => $"{caller}: {reg}");
             registrations.Add(reg.SuperType.AsType(), reg);
