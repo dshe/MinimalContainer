@@ -27,7 +27,7 @@ namespace InternalContainer.Tests.Relative
             container.RegisterSingleton<ClassA>();
             container.RegisterTransient<ClassB>();
             Assert.Throws<TypeAccessException>(() => container.GetInstance<ClassA>());
-            Assert.Equal(2, container.Registrations().Count);
+            Assert.Equal(2, container.GetRegistrations().Count);
         }
 
         [Fact]
@@ -36,7 +36,7 @@ namespace InternalContainer.Tests.Relative
             container.RegisterTransient<ClassA>();
             container.RegisterSingleton<ClassB>();
             container.GetInstance<ClassA>();
-            Assert.Equal(2, container.Registrations().Count);
+            Assert.Equal(2, container.GetRegistrations().Count);
         }
 
         [Fact]
@@ -45,7 +45,7 @@ namespace InternalContainer.Tests.Relative
             container.RegisterSingleton<ClassA>();
             container.RegisterSingleton<ClassB>();
             container.GetInstance<ClassA>();
-            Assert.Equal(2, container.Registrations().Count);
+            Assert.Equal(2, container.GetRegistrations().Count);
         }
 
         [Fact]
@@ -54,7 +54,7 @@ namespace InternalContainer.Tests.Relative
             container.RegisterTransient<ClassA>();
             container.RegisterTransient<ClassB>();
             container.GetInstance<ClassA>();
-            Assert.Equal(2, container.Registrations().Count);
+            Assert.Equal(2, container.GetRegistrations().Count);
         }
     }
 
