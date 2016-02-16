@@ -39,7 +39,7 @@ namespace InternalContainer.Tests.Generic
         public void Test_01()
         {
             container.GetInstance<ClassC>();
-            Assert.Equal(3, container.GetRegistrations().Count);
+            Assert.Equal(4, container.GetRegistrations().Count);
             output.WriteLine(Environment.NewLine + container);
         }
 
@@ -47,7 +47,7 @@ namespace InternalContainer.Tests.Generic
         public void Test_02()
         {
             container.GetInstance<ClassD>();
-            Assert.Equal(3, container.GetRegistrations().Count);
+            Assert.Equal(4, container.GetRegistrations().Count);
             output.WriteLine(Environment.NewLine + container);
         }
 

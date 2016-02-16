@@ -37,7 +37,7 @@ namespace InternalContainer.Tests.Generic
             container.RegisterSingleton<SomeClass>();
 
             container.GetInstance<SomeClass>();
-            Assert.Equal(3, container.GetRegistrations().Count);
+            Assert.Equal(4, container.GetRegistrations().Count);
             output.WriteLine(Environment.NewLine + container);
         }
 

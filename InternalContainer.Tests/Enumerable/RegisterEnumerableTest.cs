@@ -28,7 +28,7 @@ namespace InternalContainer.Tests.Enumerable
 
             var instance = container.GetInstance<IEnumerable<ISomeClass>>();
             Assert.Equal(instance, container.GetInstance(typeof (IEnumerable<ISomeClass>)));
-            Assert.Equal(3, container.GetRegistrations().Count);
+            Assert.Equal(4, container.GetRegistrations().Count);
             foreach (var m in container.GetRegistrations())
             {
                 Assert.Equal(Lifestyle.Singleton, m.Lifestyle);
@@ -45,9 +45,7 @@ namespace InternalContainer.Tests.Enumerable
 
             var instance = container.GetInstance<IEnumerable<ISomeClass>>();
             Assert.NotEqual(instance, container.GetInstance(typeof (IEnumerable<ISomeClass>)));
-            Assert.Equal(3, container.GetRegistrations().Count);
-            foreach (var m in container.GetRegistrations())
-                Assert.Equal(Lifestyle.Transient, m.Lifestyle);
+            Assert.Equal(4, container.GetRegistrations().Count);
         }
 
         [Fact]

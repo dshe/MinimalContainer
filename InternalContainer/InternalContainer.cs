@@ -1,4 +1,4 @@
-﻿//InternalContainer.cs 1.12
+﻿//InternalContainer.cs 1.13
 //Copyright 2016 David Shepherd. Licensed under the Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0
 using System;
 using System.Collections;
@@ -55,6 +55,7 @@ namespace InternalContainer
                 (assemblies.Any() ? assemblies : new[] { this.GetType().GetTypeInfo().Assembly })
                 .Select(a => a.DefinedTypes.Where(t => t.IsClass && !t.IsAbstract).ToList())
                 .SelectMany(x => x).ToList());
+            RegisterInstance(this); // container self-register
         }
 
         public void RegisterSingleton<T>() => RegisterSingleton(typeof(T));
@@ -268,7 +269,7 @@ namespace InternalContainer
             lock (registrations)
             {
                 foreach (var instance in GetRegistrations()
-                    .Where(r => r.Lifestyle.Equals(Lifestyle.Singleton) && r.Instance != null)
+                    .Where(r => r.Lifestyle.Equals(Lifestyle.Singleton) && r.Instance != null && r.Instance != this)
                     .Select(r => r.Instance).OfType<IDisposable>())
                 {
                     Log($"Disposing type '{instance.GetType().AsString()}'.");

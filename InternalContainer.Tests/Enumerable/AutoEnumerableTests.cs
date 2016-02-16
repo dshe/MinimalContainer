@@ -26,7 +26,7 @@ namespace InternalContainer.Tests.Enumerable
         {
             var list = container.GetInstance<IList<ClassA>>();
             Assert.Equal(1, list.Count);
-            Assert.Equal(2, container.GetRegistrations().Count);
+            Assert.Equal(3, container.GetRegistrations().Count);
             output.WriteLine(Environment.NewLine + container);
         }
 
