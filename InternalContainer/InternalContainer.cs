@@ -1,4 +1,4 @@
-﻿//InternalContainer.cs 1.13
+﻿//InternalContainer.cs 1.15
 //Copyright 2016 David Shepherd. Licensed under the Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0
 using System;
 using System.Collections;
@@ -16,21 +16,22 @@ namespace InternalContainer
 
     internal sealed class Registration
     {
-        internal TypeInfo SuperType, ConcreteType;
-        internal Lifestyle Lifestyle;
+        internal readonly TypeInfo SuperType;
+        internal TypeInfo ConcreteType;
+        internal readonly Lifestyle Lifestyle;
         internal Expression Expression;
         internal Func<object> Factory;
         internal object Instance;
 
         internal Registration(Type supertype, Type concretetype, Lifestyle lifestyle)
         {
-            if (supertype == null)
-                throw new ArgumentNullException(nameof(supertype));
-            Debug.Assert(lifestyle != Lifestyle.AutoRegisterDisabled);
+            Debug.Assert(supertype != null);
             SuperType = supertype.GetTypeInfo();
             ConcreteType = concretetype?.GetTypeInfo();
+            Debug.Assert(lifestyle != Lifestyle.AutoRegisterDisabled);
             Lifestyle = lifestyle;
         }
+
         public override string ToString()
         {
             return $"'{(Equals(ConcreteType, null) || Equals(ConcreteType, SuperType) ? "" : ConcreteType.AsString() + "->")}" +
@@ -58,39 +59,39 @@ namespace InternalContainer
             RegisterInstance(this); // container self-register
         }
 
-        public void RegisterSingleton<T>() => RegisterSingleton(typeof(T));
-        public void RegisterSingleton<TSuper, TConcrete>() where TConcrete : TSuper =>
+        public Container RegisterSingleton<T>() => RegisterSingleton(typeof(T));
+        public Container RegisterSingleton<TSuper, TConcrete>() where TConcrete : TSuper =>
             RegisterSingleton(typeof(TSuper), typeof(TConcrete));
-        public void RegisterSingleton(Type supertype, Type concretetype = null) =>
+        public Container RegisterSingleton(Type supertype, Type concretetype = null) =>
             Register(new Registration(supertype, concretetype, Lifestyle.Singleton));
 
-        public void RegisterTransient<T>() => RegisterTransient(typeof(T));
-        public void RegisterTransient<TSuper, TConcrete>() where TConcrete : TSuper =>
+        public Container RegisterTransient<T>() => RegisterTransient(typeof(T));
+        public Container RegisterTransient<TSuper, TConcrete>() where TConcrete : TSuper =>
             RegisterTransient(typeof(TSuper), typeof(TConcrete));
-        public void RegisterTransient(Type supertype, Type concretetype = null) =>
+        public Container RegisterTransient(Type supertype, Type concretetype = null) =>
             Register(new Registration(supertype, concretetype, Lifestyle.Transient));
 
-        public void RegisterInstance<TSuper>(TSuper instance)
+        public Container RegisterInstance<TSuper>(TSuper instance)
         {
             if (instance == null)
                 throw new ArgumentNullException(nameof(instance));
             var reg = new Registration(typeof (TSuper), instance.GetType(), Lifestyle.Singleton)
                 { Instance = instance, Expression = Expression.Constant(instance) };
-            Register(reg);
+            return Register(reg);
         }
 
-        public void RegisterFactory<TSuper>(Func<TSuper> factory) where TSuper : class =>
+        public Container RegisterFactory<TSuper>(Func<TSuper> factory) where TSuper : class =>
             RegisterFactory(typeof(TSuper), factory);
-        internal void RegisterFactory(Type supertype, Func<object> factory) // used for testing performance
+        internal Container RegisterFactory(Type supertype, Func<object> factory) // used for testing performance
         {
             if (factory == null)
                 throw new ArgumentNullException(nameof(factory));
             Expression<Func<object>> expression = () => factory();
             var reg = new Registration(supertype, null, Lifestyle.Transient) { Factory = factory, Expression = expression };
-            Register(reg);
+            return Register(reg);
         }
 
-        private void Register(Registration reg, [CallerMemberName] string caller = null)
+        private Container Register(Registration reg, [CallerMemberName] string caller = null)
         {
             if (reg.ConcreteType != null && !reg.SuperType.IsAssignableFrom(reg.ConcreteType))
                 throw new TypeAccessException($"Type '{reg.ConcreteType.AsString()}' is not assignable to type '{reg.SuperType.AsString()}'.");
@@ -105,6 +106,7 @@ namespace InternalContainer
                     throw new TypeAccessException($"Type '{reg.SuperType.AsString()}' is already registered.", ex);
                 }
             }
+            return this;
         }
 
         private void AddRegistration(Registration reg, string caller)
@@ -186,8 +188,7 @@ namespace InternalContainer
             if (typeStack.Count(t => t.Equals(reg.SuperType)) > 1)
                 throw new TypeAccessException("Recursive dependency.");
             if (dependent?.Lifestyle == Lifestyle.Singleton && reg.Lifestyle == Lifestyle.Transient)
-                throw new TypeAccessException(
-                    $"Captive dependency: the singleton '{dependent.SuperType.AsString()}' depends on transient '{reg.SuperType.AsString()}'.");
+                throw new TypeAccessException($"Captive dependency: the singleton '{dependent.SuperType.AsString()}' depends on transient '{reg.SuperType.AsString()}'.");
             Initialize(reg);
             typeStack.Pop();
         }
@@ -245,15 +246,17 @@ namespace InternalContainer
                 return registrations.Values.Distinct().OrderBy(r => r.SuperType.Name).ToList();
         }
 
-        public void Log() => Log(ToString());
-        private void Log(string message) => Log(() => message);
-        private void Log(Func<string> message)
+        public Container Log() => Log(ToString());
+        private Container Log(string message) => Log(() => message);
+        private Container Log(Func<string> message)
         {
-            if (log == null)
-                return;
-            var msg = message();
-            if (!string.IsNullOrEmpty(msg))
-                log(msg);
+            if (log != null)
+            {
+                var msg = message?.Invoke();
+                if (!string.IsNullOrEmpty(msg))
+                    log(msg);
+            }
+            return this;
         }
 
         public override string ToString()

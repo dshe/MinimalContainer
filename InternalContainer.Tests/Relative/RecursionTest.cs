@@ -9,6 +9,7 @@ namespace InternalContainer.Tests.Relative
     {
         public Class1(Class2 c2) { }
     }
+
     public class Class2
     {
         public Class2(Class3 c3) { }
@@ -28,12 +29,13 @@ namespace InternalContainer.Tests.Relative
         }
 
         [Fact]
-        public void Test_Recursive_Depandency()
+        public void Test_Recursive_Dependency()
         {
             Assert.Throws<TypeAccessException>(() => container.GetInstance<Class1>());
             Assert.Throws<TypeAccessException>(() => container.GetInstance<Class2>());
             Assert.Throws<TypeAccessException>(() => container.GetInstance<Class3>());
         }
-    }
 
+
+    }
 }

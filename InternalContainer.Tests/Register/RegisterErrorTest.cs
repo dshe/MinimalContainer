@@ -21,13 +21,6 @@ namespace InternalContainer.Tests.Register
         }
 
         [Fact]
-        public void Test01_Null_SuperType()
-        {
-            Assert.Throws<ArgumentNullException>(() => 
-                container.RegisterSingleton(null, typeof(SomeClass).GetTypeInfo())).Output(output);
-        }
-
-        [Fact]
         public void Test04_Abstract_NoConcrete()
         {
             Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<INoClass>());
