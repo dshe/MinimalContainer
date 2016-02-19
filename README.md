@@ -24,7 +24,7 @@ TSuper instance = container.GetInstance<TSuper>();
 
 container.Dispose();
 ```
-`TSuper` is a superType of `TConcrete`. Often an interface, it could also be an abstract class or possibly a concrete type which is assignable from `TConcrete`.  
+`TSuper`, usually an interface, is a superType of `TConcrete`. 
 
 Disposing the container will dispose any registered disposable singleton instances.
 
@@ -33,12 +33,12 @@ Disposing the container will dispose any registered disposable singleton instanc
 container.RegisterSingleton<T>();
 container.RegisterSingleton(typeof(T));
 container.RegisterSingleton<TSuper, TConcrete>();
-container.RegisterSingleton(typeof(TSuper), typeof(TConcrete);
+container.RegisterSingleton(typeof(TSuper), typeof(TConcrete));
 
 container.RegisterTransient<T>();
 container.RegisterTransient(typeof(T));
 container.RegisterTransient<TSuper, TConcrete>();
-container.RegisterTransient(typeof(TSuper), typeof(TConcrete);
+container.RegisterTransient(typeof(TSuper), typeof(TConcrete));
 
 container.RegisterInstance(new TConcrete());
 container.RegisterInstance<TSuper>(new TConcrete());
@@ -59,8 +59,8 @@ public class TConcrete2 : TSuper {}
 
 var container = new Container();
 
-container.RegisterSingleton<TConcrete1>>();
-container.RegisterSingleton<TConcrete2>>();
+container.RegisterSingleton<TConcrete1>();
+container.RegisterSingleton<TConcrete2>();
 container.RegisterSingleton<IEnumerable<TSuper>>();
 
 IEnumerable<TSuper> enumerable = container.GetInstance<IEnumerable<TSuper>>();
@@ -122,7 +122,7 @@ public class Root
 {
     public Root(ClassA a)
     {
-        Start();
+        StartApplication();
     }
 }
 
@@ -130,13 +130,16 @@ using (var container = new Container(Lifestyle.Singleton))
     container.GetInstance<Root>();
 ```
 The complete object graph is created and the application is started by simply resolving the compositional root. 
-#### fluent example
+#### fluent examples
 ```csharp
 var root = new Container(Lifestyle.Transient)
     .RegisterSingleton<T1>()
     .RegisterInstance(new T2())
     .RegisterFactory(() => new T3())
     .GetInstance<TRoot>();
+```
+```csharp
+new Container(Lifestyle.Transient).GetInstance<TRoot>().StartApplication();
 ```
 #### resolution strategy
 The following graphic illustrates the automatic type resolution strategy:
