@@ -3,10 +3,11 @@ A simple IoC (Inversion of Control) container.
 - one C# 6.0 source file with no dependencies
 - portable class library (PCL) compatibility: at least Windows Universal 10, .Net Framework 4.6, ASP.NET Core 5
 - supports constructor dependency injection (selects the public or internal constructor with the most arguments)
-- supports automatic or explicit type registration
+- supports automatic and/or explicit type registration
 - supports transient and singleton (container) lifestyles
 - supports enumerables and closed generics
 - detects captive and recursive dependencies
+- fluent interface
 - tested
 - fast
 
@@ -129,7 +130,14 @@ using (var container = new Container(Lifestyle.Singleton))
     container.GetInstance<Root>();
 ```
 The complete object graph is created and the application is started by simply resolving the compositional root. 
-
+#### fluent example
+```csharp
+var root = new Container(Lifestyle.Transient)
+    .RegisterSingleton<T1>()
+    .RegisterInstance(new T2())
+    .RegisterFactory(() => new T3())
+    .GetInstance<TRoot>();
+```
 #### resolution strategy
 The following graphic illustrates the automatic type resolution strategy:
 
@@ -143,4 +151,7 @@ var container = new Container(log:Console.WriteLine);
 ```csharp
 foreach (var registration in container.Registrations())
   Debug.WriteLine(registration.ToString());
+```
+```csharp
+Debug.WriteLine(container.ToString());
 ```
