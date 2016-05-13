@@ -1,4 +1,4 @@
-﻿//InternalContainer.cs 1.15
+﻿//InternalContainer.cs 1.16
 //Copyright 2016 David Shepherd. Licensed under the Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0
 using System;
 using System.Collections;
@@ -154,8 +154,9 @@ namespace InternalContainer
                 }
                 catch (TypeAccessException ex)
                 {
-                    var typePath = string.Join("->", typeStack.Select(t => t.AsString()));
-                    typePath = string.IsNullOrEmpty(typePath) ? supertype.AsString() : typePath;
+                    if (!typeStack.Any())
+                        throw new TypeAccessException($"Could not get instance of type '{supertype}'. {ex.Message}", ex);
+                    var typePath = typeStack.Select(t => t.AsString()).Join("->");
                     throw new TypeAccessException($"Could not get instance of type '{typePath}'. {ex.Message}", ex);
                 }
             }
@@ -221,7 +222,7 @@ namespace InternalContainer
             var parameters = ctor.GetParameters()
                 .Select(p => p.HasDefaultValue ? Expression.Constant(p.DefaultValue) : GetRegistration(p.ParameterType, reg).Expression)
                 .ToList();
-            Log(() => $"Constructing {reg.Lifestyle} instance: '{type.AsString()}({string.Join(", ", parameters.Select(p => p.Type.AsString()))})'.");
+            Log(() => $"Constructing {reg.Lifestyle} instance: '{type.AsString()}({parameters.Select(p => p.Type.AsString()).Join(", ")})'.");
             reg.Expression = Expression.New(ctor, parameters);
         }
 
@@ -261,9 +262,10 @@ namespace InternalContainer
 
         public override string ToString()
         {
+            var reg = GetRegistrations();
             return new StringBuilder()
-                .AppendLine($"Container: {autoLifestyle}, {GetRegistrations().Count} registered types:")
-                .AppendLine(string.Join(Environment.NewLine, GetRegistrations()))
+                .AppendLine($"Container: {autoLifestyle}, {reg.Count} registered types:")
+                .AppendLine(reg.Select(x => x.ToString()).Join(Environment.NewLine))
                 .ToString();
         }
 
@@ -297,8 +299,11 @@ namespace InternalContainer
             var index = name.IndexOf("`", StringComparison.Ordinal);
             if (index >= 0)
                 name = name.Substring(0, index);
-            var args = type.GenericTypeArguments.Select(a => a.GetTypeInfo().AsString());
-            return $"{name}<{string.Join(",", args)}>";
+            var args = type.GenericTypeArguments
+                .Select(a => a.GetTypeInfo().AsString())
+                .Join(",");
+            return $"{name}<{args}>";
         }
+        public static string Join(this IEnumerable<string> strings, string separator) => string.Join(separator, strings);
     }
 }
