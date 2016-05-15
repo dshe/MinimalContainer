@@ -1,5 +1,6 @@
-﻿//InternalContainer.cs 1.16
+﻿//InternalContainer.cs 1.17
 //Copyright 2016 David Shepherd. Licensed under the Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -75,8 +76,8 @@ namespace InternalContainer
         {
             if (instance == null)
                 throw new ArgumentNullException(nameof(instance));
-            var reg = new Registration(typeof (TSuper), instance.GetType(), Lifestyle.Singleton)
-                { Instance = instance, Expression = Expression.Constant(instance) };
+            var reg = new Registration(typeof(TSuper), instance.GetType(), Lifestyle.Singleton)
+            { Instance = instance, Expression = Expression.Constant(instance) };
             return Register(reg);
         }
 
@@ -156,7 +157,7 @@ namespace InternalContainer
                 {
                     if (!typeStack.Any())
                         throw new TypeAccessException($"Could not get instance of type '{supertype}'. {ex.Message}", ex);
-                    var typePath = typeStack.Select(t => t.AsString()).Join("->");
+                    var typePath = typeStack.Select(t => t.AsString()).JoinString("->");
                     throw new TypeAccessException($"Could not get instance of type '{typePath}'. {ex.Message}", ex);
                 }
             }
@@ -222,7 +223,7 @@ namespace InternalContainer
             var parameters = ctor.GetParameters()
                 .Select(p => p.HasDefaultValue ? Expression.Constant(p.DefaultValue) : GetRegistration(p.ParameterType, reg).Expression)
                 .ToList();
-            Log(() => $"Constructing {reg.Lifestyle} instance: '{type.AsString()}({parameters.Select(p => p.Type.AsString()).Join(", ")})'.");
+            Log(() => $"Constructing {reg.Lifestyle} instance: '{type.AsString()}({parameters.Select(p => p.Type.AsString()).JoinString(", ")})'.");
             reg.Expression = Expression.New(ctor, parameters);
         }
 
@@ -247,17 +248,15 @@ namespace InternalContainer
                 return registrations.Values.Distinct().OrderBy(r => r.SuperType.Name).ToList();
         }
 
-        public Container Log() => Log(ToString());
-        private Container Log(string message) => Log(() => message);
-        private Container Log(Func<string> message)
+        public void Log() => Log(ToString());
+        private void Log(string message) => Log(() => message);
+        private void Log(Func<string> message)
         {
-            if (log != null)
-            {
-                var msg = message?.Invoke();
-                if (!string.IsNullOrEmpty(msg))
-                    log(msg);
-            }
-            return this;
+            if (log == null)
+                return;
+            var msg = message?.Invoke();
+            if (!string.IsNullOrEmpty(msg))
+                log(msg);
         }
 
         public override string ToString()
@@ -265,7 +264,7 @@ namespace InternalContainer
             var reg = GetRegistrations();
             return new StringBuilder()
                 .AppendLine($"Container: {autoLifestyle}, {reg.Count} registered types:")
-                .AppendLine(reg.Select(x => x.ToString()).Join(Environment.NewLine))
+                .AppendLine(reg.Select(x => x.ToString()).JoinString(Environment.NewLine))
                 .ToString();
         }
 
@@ -288,8 +287,11 @@ namespace InternalContainer
 
     internal static class InternalContainerExtensionMethods
     {
-        public static string AsString(this Type type) => type.GetTypeInfo().AsString();
-        public static string AsString(this TypeInfo type)
+        internal static string JoinString(this IEnumerable<string> strings, string separator) =>
+            string.Join(separator, strings);
+        internal static string AsString(this Type type) =>
+            type.GetTypeInfo().AsString();
+        internal static string AsString(this TypeInfo type)
         {
             if (type == null)
                 return null;
@@ -301,9 +303,8 @@ namespace InternalContainer
                 name = name.Substring(0, index);
             var args = type.GenericTypeArguments
                 .Select(a => a.GetTypeInfo().AsString())
-                .Join(",");
+                .JoinString(",");
             return $"{name}<{args}>";
         }
-        public static string Join(this IEnumerable<string> strings, string separator) => string.Join(separator, strings);
     }
 }
