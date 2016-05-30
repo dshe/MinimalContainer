@@ -61,6 +61,7 @@
     <Compile Include="Enumerable\RegisterEnumerableTest.cs" />
     <Compile Include="Register\RegisterErrorTest.cs" />
     <Compile Include="Register\RegisterTest.cs" />
+    <Compile Include="Relative\Arguments.cs" />
     <Compile Include="Relative\CaptiveDependencyTest.cs" />
     <Compile Include="Relative\CreateInstanceTest.cs" />
     <Compile Include="Example\Example.cs" />

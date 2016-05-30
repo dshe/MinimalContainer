@@ -1,4 +1,4 @@
-﻿//InternalContainer.cs 1.17
+﻿//InternalContainer.cs 1.18
 //Copyright 2016 David Shepherd. Licensed under the Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0
 
 using System;
@@ -114,6 +114,15 @@ namespace InternalContainer
         {
             if (reg.ConcreteType == null && reg.Factory == null)
                 reg.ConcreteType = FindConcreteType(reg.SuperType);
+
+            if (reg.ConcreteType != null)
+            {
+                if (reg.ConcreteType.IsValueType)
+                    throw new TypeAccessException("Cannot register value type.");
+                if (typeof(string).GetTypeInfo().IsAssignableFrom(reg.ConcreteType))
+                    throw new TypeAccessException("Cannot register type 'string'.");
+            }
+
             Log(() => $"{caller}: {reg}");
             registrations.Add(reg.SuperType.AsType(), reg);
             if (reg.ConcreteType == null || reg.SuperType.Equals(reg.ConcreteType))
@@ -221,7 +230,7 @@ namespace InternalContainer
             if (ctor == null)
                 throw new TypeAccessException($"Type '{type.AsString()}' has no public or internal constructor.");
             var parameters = ctor.GetParameters()
-                .Select(p => p.HasDefaultValue ? Expression.Constant(p.DefaultValue) : GetRegistration(p.ParameterType, reg).Expression)
+                .Select(p => p.HasDefaultValue ? Expression.Constant(p.DefaultValue, p.ParameterType) : GetRegistration(p.ParameterType, reg).Expression)
                 .ToList();
             Log(() => $"Constructing {reg.Lifestyle} instance: '{type.AsString()}({parameters.Select(p => p.Type.AsString()).JoinString(", ")})'.");
             reg.Expression = Expression.New(ctor, parameters);
