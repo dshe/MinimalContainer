@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
+using InternalContainer;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace InternalContainer.Tests.Generic
+namespace InternalContainerTests.Tests.Generic
 {
     public class AutoGenericTests
     {
@@ -27,11 +27,11 @@ namespace InternalContainer.Tests.Generic
         }
 
         private readonly Container container;
-        private readonly ITestOutputHelper output;
+        private readonly Action<string> write;
 
         public AutoGenericTests(ITestOutputHelper output)
         {
-            this.output = output;
+            write = output.WriteLine;
             container = new Container(Lifestyle.Singleton, log:output.WriteLine, assemblies:Assembly.GetExecutingAssembly());
         }
 
@@ -40,7 +40,7 @@ namespace InternalContainer.Tests.Generic
         {
             container.GetInstance<ClassC>();
             Assert.Equal(4, container.GetRegistrations().Count);
-            output.WriteLine(Environment.NewLine + container);
+            write(Environment.NewLine + container);
         }
 
         [Fact]
@@ -48,7 +48,7 @@ namespace InternalContainer.Tests.Generic
         {
             container.GetInstance<ClassD>();
             Assert.Equal(4, container.GetRegistrations().Count);
-            output.WriteLine(Environment.NewLine + container);
+            write(Environment.NewLine + container);
         }
 
 

@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Reflection;
+using InternalContainer;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace InternalContainer.Tests.Relative
+namespace InternalContainerTests.Tests.Constructor
 {
-    public class ArgumentTests
+    public class ConstructorArgumentTests
     {
         private readonly Container container;
-        private readonly Action<string> writeLine;
+        private readonly Action<string> write;
 
-        public ArgumentTests(ITestOutputHelper output)
+        public ConstructorArgumentTests(ITestOutputHelper output)
         {
-            writeLine = output.WriteLine;
-            container = new Container(autoLifestyle: Lifestyle.Singleton, log: output.WriteLine, assemblies: Assembly.GetExecutingAssembly());
+            write = output.WriteLine;
+            container = new Container(autoLifestyle: Lifestyle.Singleton, log: write, assemblies: Assembly.GetExecutingAssembly());
         }
 
         public class ClassWithValueTypeArgument
@@ -25,7 +26,7 @@ namespace InternalContainer.Tests.Relative
         {
             container.RegisterSingleton<ClassWithValueTypeArgument>();
             var ex = Assert.Throws<TypeAccessException>(() => container.GetInstance<ClassWithValueTypeArgument>());
-            writeLine(ex.Message);
+            write(ex.Message);
         }
 
         public class ClassWithDefaultValueTypeArgument
@@ -50,7 +51,7 @@ namespace InternalContainer.Tests.Relative
         {
             container.RegisterSingleton<ClassWithStringArgument>();
             var ex = Assert.Throws<TypeAccessException>(() => container.GetInstance<ClassWithStringArgument>());
-            writeLine(ex.Message);
+            write(ex.Message);
         }
 
         public class ClassWithDefaultStringArgument

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Reflection;
+using InternalContainer;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace InternalContainer.Tests.Relative
+namespace InternalContainerTests.Tests.Relative
 {
     public class ClassX
     {

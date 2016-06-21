@@ -1,4 +1,4 @@
-﻿//InternalContainer.cs 1.19
+﻿//InternalContainer.cs 1.20
 //Copyright 2016 David Shepherd. Licensed under the Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0
 
 using System;
@@ -227,9 +227,16 @@ namespace InternalContainer
         private void SetExpressionNew(Registration reg)
         {
             var type = reg.ConcreteType;
-            var ctor = type.DeclaredConstructors.Where(t => !t.IsPrivate).OrderBy(t => t.GetParameters().Length).LastOrDefault();
-            if (ctor == null)
+            var ctors = type.DeclaredConstructors.Where(c => !c.IsPrivate).ToList();
+            if (!ctors.Any())
                 throw new TypeAccessException($"Type '{type.AsString()}' has no public or internal constructor.");
+            if (ctors.Count > 1)
+            {
+                ctors = ctors.Where(c => c.GetCustomAttribute<ContainerConstructorAttribute>() != null).ToList();
+                if (ctors.Count != 1)
+                    throw new TypeAccessException($"Type '{type.AsString()}' with multiple constructors requires one decorated with '{nameof(ContainerConstructorAttribute)}'.");
+            }
+            var ctor = ctors.Single();
             var parameters = ctor.GetParameters()
                 .Select(p => p.HasDefaultValue ? Expression.Constant(p.DefaultValue, p.ParameterType) : GetRegistration(p.ParameterType, reg).Expression)
                 .ToList();
@@ -252,7 +259,7 @@ namespace InternalContainer
 
         //////////////////////////////////////////////////////////////////////////////
 
-        public IList<Registration> GetRegistrations()
+        public List<Registration> GetRegistrations()
         {
             lock (registrations)
                 return registrations.Values.Distinct().OrderBy(r => r.SuperType.Name).ToList();
@@ -317,4 +324,8 @@ namespace InternalContainer
             return $"{name}<{args}>";
         }
     }
+
+    [AttributeUsage(AttributeTargets.Constructor)]
+    internal sealed class ContainerConstructorAttribute : Attribute { }
+
 }

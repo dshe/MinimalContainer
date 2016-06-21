@@ -7,10 +7,11 @@
     <ProjectGuid>{AF9753AD-3F17-4787-A0FB-7A45B1C8DD88}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>InternalContainer.Tests</RootNamespace>
-    <AssemblyName>InternalContainer.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <RootNamespace>InternalContainerTests</RootNamespace>
+    <AssemblyName>InternalContainerTests</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -51,22 +52,23 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ContainerDefaultLifestyleTest.cs" />
-    <Compile Include="Enumerable\AutoEnumerableTests.cs" />
-    <Compile Include="Example.cs" />
-    <Compile Include="Generic\GenericTests.cs" />
-    <Compile Include="Generic\AutoGenericTests.cs" />
+    <Compile Include="Tests\Constructor\ConstructorSelectionTests.cs" />
+    <Compile Include="Tests\Register\ContainerDefaultLifestyleTest.cs" />
+    <Compile Include="Tests\Enumerable\AutoEnumerableTests.cs" />
+    <Compile Include="Examples\Example2.cs" />
+    <Compile Include="Tests\Generic\GenericTests.cs" />
+    <Compile Include="Tests\Generic\AutoGenericTests.cs" />
     <Compile Include="Performance\Performance.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Enumerable\RegisterEnumerableTest.cs" />
-    <Compile Include="Register\RegisterErrorTest.cs" />
-    <Compile Include="Register\RegisterTest.cs" />
-    <Compile Include="Relative\Arguments.cs" />
-    <Compile Include="Relative\CaptiveDependencyTest.cs" />
-    <Compile Include="Relative\CreateInstanceTest.cs" />
-    <Compile Include="Example\Example.cs" />
-    <Compile Include="Relative\RecursionTest.cs" />
-    <Compile Include="Relative\UniqueConcreteTest.cs" />
+    <Compile Include="Tests\Enumerable\RegisterEnumerableTest.cs" />
+    <Compile Include="Tests\Register\RegisterErrorTest.cs" />
+    <Compile Include="Tests\Register\RegisterTest.cs" />
+    <Compile Include="Tests\Constructor\ConstructorArgumentsTests.cs" />
+    <Compile Include="Tests\Relative\CaptiveDependencyTest.cs" />
+    <Compile Include="Tests\Relative\CreateInstanceTest.cs" />
+    <Compile Include="Examples\Example1.cs" />
+    <Compile Include="Tests\Relative\RecursionTest.cs" />
+    <Compile Include="Tests\Relative\UniqueConcreteTest.cs" />
     <Compile Include="Utilities\ExtensionMethods.cs" />
   </ItemGroup>
   <ItemGroup>

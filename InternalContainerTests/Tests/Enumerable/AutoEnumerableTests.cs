@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using InternalContainer;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace InternalContainer.Tests.Enumerable
+namespace InternalContainerTests.Tests.Enumerable
 {
     public class EnumerableTest
     {
@@ -13,11 +14,11 @@ namespace InternalContainer.Tests.Enumerable
         internal class ClassA : IMarker { }
         internal class ClassB : IMarker { }
         private readonly Container container;
-        private readonly ITestOutputHelper output;
+        private readonly Action<string> write;
 
         public EnumerableTest(ITestOutputHelper output)
         {
-            this.output = output;
+            write = output.WriteLine;
             container = new Container(Lifestyle.Singleton, log:output.WriteLine, assemblies:Assembly.GetExecutingAssembly());
         }
 
@@ -27,7 +28,7 @@ namespace InternalContainer.Tests.Enumerable
             var list = container.GetInstance<IList<ClassA>>();
             Assert.Equal(1, list.Count);
             Assert.Equal(3, container.GetRegistrations().Count);
-            output.WriteLine(Environment.NewLine + container);
+            write(Environment.NewLine + container);
         }
 
         [Fact]
@@ -35,7 +36,7 @@ namespace InternalContainer.Tests.Enumerable
         {
             var list = container.GetInstance<IList<IMarker>>();
             Assert.Equal(2, list.Count);
-            output.WriteLine(Environment.NewLine + container);
+            write(Environment.NewLine + container);
         }
 
         [Fact]

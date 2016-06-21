@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Reflection;
-using InternalContainer.Tests.Utilities;
+using InternalContainer;
+using InternalContainerTests.Utilities;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace InternalContainer.Tests.Register
+namespace InternalContainerTests.Tests.Register
 {
     public class RegisterErrorTest
     {
@@ -12,12 +13,12 @@ namespace InternalContainer.Tests.Register
         public interface ISomeClass { }
         public class SomeClass : ISomeClass { }
         private readonly Container container;
-        private readonly ITestOutputHelper output;
+        private readonly Action<string> write;
 
         public RegisterErrorTest(ITestOutputHelper output)
         {
-            this.output = output;
-            container = new Container(log: output.WriteLine,assemblies:Assembly.GetExecutingAssembly());
+            write = output.WriteLine;
+            container = new Container(log: write,assemblies:Assembly.GetExecutingAssembly());
         }
 
         [Fact]
@@ -25,27 +26,26 @@ namespace InternalContainer.Tests.Register
         {
             Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<INoClass>());
         }
+
         [Fact]
         public void Test05_Not_Assignable()
         {
             Assert.Throws<TypeAccessException>(() => 
-                container.RegisterSingleton(typeof(IDisposable).GetTypeInfo(), typeof(SomeClass).GetTypeInfo())).Output(output);
+                container.RegisterSingleton(typeof(IDisposable), typeof(SomeClass))).Output(write);
         }
 
         [Fact]
         public void Test06_Duplicate_Super()
         {
             container.RegisterSingleton<SomeClass>();
-            Assert.Throws<TypeAccessException>(() =>
-                container.RegisterSingleton<SomeClass>()).Output(output);
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<SomeClass>()).Output(write);
         }
 
         [Fact]
         public void Test07_Duplicate_Super_Interface()
         {
             container.RegisterSingleton<ISomeClass, SomeClass>();
-            Assert.Throws<TypeAccessException>(() =>
-                container.RegisterSingleton<ISomeClass, SomeClass>()).Output(output);
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<ISomeClass, SomeClass>()).Output(write);
 
         }
 
@@ -53,16 +53,14 @@ namespace InternalContainer.Tests.Register
         public void Test08_Duplicate_Concrete()
         {
             container.RegisterSingleton<ISomeClass, SomeClass>();
-            Assert.Throws<TypeAccessException>(() =>
-                container.RegisterSingleton<SomeClass>()).Output(output);
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<SomeClass>()).Output(write);
         }
 
         [Fact]
         public void Test09_Generic()
         {
             container.RegisterSingleton<ISomeClass, SomeClass>();
-            Assert.Throws<TypeAccessException>(() =>
-                container.RegisterSingleton<SomeClass>()).Output(output);
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<SomeClass>()).Output(write);
         }
     }
 }

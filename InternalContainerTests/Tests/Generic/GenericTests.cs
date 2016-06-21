@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
+using InternalContainer;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace InternalContainer.Tests.Generic
+namespace InternalContainerTests.Tests.Generic
 {
     public class GenericTests
     {
@@ -21,12 +21,12 @@ namespace InternalContainer.Tests.Generic
         }
 
         private readonly Container container;
-        private readonly ITestOutputHelper output;
+        private readonly Action<string> write;
 
         public GenericTests(ITestOutputHelper output)
         {
-            this.output = output;
-            container = new Container(log: output.WriteLine, assemblies: Assembly.GetExecutingAssembly());
+            write = output.WriteLine;
+            container = new Container(log: write, assemblies: Assembly.GetExecutingAssembly());
         }
 
         [Fact]
@@ -38,7 +38,7 @@ namespace InternalContainer.Tests.Generic
 
             container.GetInstance<SomeClass>();
             Assert.Equal(4, container.GetRegistrations().Count);
-            output.WriteLine(Environment.NewLine + container);
+            write(Environment.NewLine + container);
         }
 
         [Fact]
@@ -46,7 +46,7 @@ namespace InternalContainer.Tests.Generic
         {
             //container.RegisterType(typeof(GenericClass<>), null, Lifestyle.Singleton);
             //container.GetInstance(typeof(GenericClass<>));
-            //output.WriteLine(Environment.NewLine + container);
+            //write(Environment.NewLine + container);
         }
     }
 }

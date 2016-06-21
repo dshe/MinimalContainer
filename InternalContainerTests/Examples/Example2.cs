@@ -1,23 +1,25 @@
 ﻿using System;
+using System.Linq;
+using InternalContainer;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace InternalContainer.Tests
+namespace InternalContainerTests.Examples
 {
     public class Examples
     {
         public interface IClassA { }
         public class ClassA : IClassA { }
-        private readonly ITestOutputHelper output;
+        private readonly Action<string> write;
         public Examples(ITestOutputHelper output)
         {
-            this.output = output;
+            write = output.WriteLine;
         }
 
         [Fact]
         public void Test_Usage()
         {
-            var container = new Container(Lifestyle.Singleton, log:output.WriteLine);
+            var container = new Container(Lifestyle.Singleton, log:write);
 
             container.RegisterSingleton<IClassA, ClassA>();
 
@@ -25,8 +27,9 @@ namespace InternalContainer.Tests
             Assert.IsType<ClassA>(instance);
             Assert.Equal(instance, container.GetInstance<IClassA>());
 
-            foreach (var reg in container.GetRegistrations())
-                output.WriteLine(reg.ToString());
+            write("");
+            container.GetRegistrations().Select(x => x.ToString()).ToList().ForEach(write);
+            write("");
 
             container.Dispose();
         }

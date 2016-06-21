@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using InternalContainer;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace InternalContainer.Tests.Example
+namespace InternalContainerTests.Examples
 {
     public interface IClassB {}
     public class ClassB : IClassB {}
@@ -32,15 +33,16 @@ namespace InternalContainer.Tests.Example
 
     public class Main
     {
-        private readonly ITestOutputHelper output;
+        private readonly Action<string> write;
         public Main(ITestOutputHelper output)
         {
-            this.output = output;
+            write = output.WriteLine;
         }
+
         [Fact]
         public void Start()
         {
-            using (var container = new Container(Lifestyle.Singleton, log:output.WriteLine, assemblies:Assembly.GetExecutingAssembly()))
+            using (var container = new Container(Lifestyle.Singleton, log: write, assemblies:Assembly.GetExecutingAssembly()))
             {
                 container.GetInstance<Root>();
                 container.Log();

@@ -1,9 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Reflection;
+using InternalContainer;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace InternalContainer.Tests.Register
+namespace InternalContainerTests.Tests.Register
 {
     public class RegisterTest
     {
@@ -11,12 +13,12 @@ namespace InternalContainer.Tests.Register
         public class SomeClass : ISomeClass { }
 
         private readonly Container container;
-        private readonly ITestOutputHelper output;
+        private readonly Action<string> write;
 
         public RegisterTest(ITestOutputHelper output)
         {
-            this.output = output;
-            container = new Container(log: output.WriteLine, assemblies:Assembly.GetExecutingAssembly());
+            write = output.WriteLine;
+            container = new Container(log: write, assemblies:Assembly.GetExecutingAssembly());
         }
 
         [Fact]
@@ -31,7 +33,7 @@ namespace InternalContainer.Tests.Register
             var instance = container.GetInstance<SomeClass>();
             Assert.IsType<SomeClass>(instance);
             Assert.Equal(instance, container.GetInstance(typeof(SomeClass)));
-            output.WriteLine(container.ToString());
+            write(container.ToString());
         }
 
         [Fact]
@@ -47,7 +49,7 @@ namespace InternalContainer.Tests.Register
             var instance = container.GetInstance<ISomeClass>();
             Assert.IsType<SomeClass>(instance);
             Assert.Equal(instance, container.GetInstance(typeof(ISomeClass)));
-            output.WriteLine(container.ToString());
+            write(container.ToString());
         }
 
         [Fact]
@@ -62,7 +64,7 @@ namespace InternalContainer.Tests.Register
             var instance = container.GetInstance<SomeClass>();
             Assert.IsType<SomeClass>(instance);
             Assert.NotEqual(instance, container.GetInstance(typeof(SomeClass)));
-            output.WriteLine(container.ToString());
+            write(container.ToString());
         }
 
         [Fact]
@@ -78,7 +80,7 @@ namespace InternalContainer.Tests.Register
             var instance = container.GetInstance<ISomeClass>();
             Assert.IsType<SomeClass>(instance);
             Assert.NotEqual(instance, container.GetInstance<ISomeClass>());
-            output.WriteLine(container.ToString());
+            write(container.ToString());
         }
 
         [Fact]
@@ -94,7 +96,7 @@ namespace InternalContainer.Tests.Register
 
             Assert.Equal(instance, container.GetInstance<SomeClass>());
             Assert.Equal(instance, reg.Instance);
-            output.WriteLine(container.ToString());
+            write(container.ToString());
         }
 
         [Fact]
@@ -110,7 +112,7 @@ namespace InternalContainer.Tests.Register
 
             Assert.Equal(instance, container.GetInstance<ISomeClass>());
             Assert.Equal(instance, reg.Instance);
-            output.WriteLine(container.ToString());
+            write(container.ToString());
         }
 
         [Fact]
@@ -125,7 +127,7 @@ namespace InternalContainer.Tests.Register
 
             var instance = container.GetInstance<SomeClass>();
             Assert.NotEqual(instance, container.GetInstance<SomeClass>());
-            output.WriteLine(container.ToString());
+            write(container.ToString());
         }
 
         [Fact]
@@ -140,7 +142,7 @@ namespace InternalContainer.Tests.Register
 
             var instance = container.GetInstance<ISomeClass>();
             Assert.NotEqual(instance, container.GetInstance<ISomeClass>());
-            output.WriteLine(container.ToString());
+            write(container.ToString());
         }
     }
 }

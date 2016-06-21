@@ -2,22 +2,21 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
+using InternalContainer;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace InternalContainer.Tests.Performance
+namespace InternalContainerTests.Performance
 {
     public class Performance
     {
         private readonly Container container = new Container();
 
         private readonly Stopwatch sw = new Stopwatch();
-        private readonly ITestOutputHelper output;
+        private readonly Action<string> write;
         public Performance(ITestOutputHelper output)
         {
-            this.output = output;
+            write = output.WriteLine;
         }
 
         [Fact]
@@ -26,41 +25,38 @@ namespace InternalContainer.Tests.Performance
             var types = typeof(string).Assembly.GetTypes().Where(t => !t.IsAbstract).ToList();
 
             sw.Start();
-            RegisterFactory(types);
+            RegisterFactories(types);
             sw.Stop();
             var rate = types.Count / sw.Elapsed.TotalSeconds;
-            output.WriteLine($"{rate,10:####,###} registrations/second ({types.Count} types).");
+            write($"{rate,10:####,###} registrations/second ({types.Count} types).");
 
             sw.Restart();
             foreach (var type in types)
                 container.GetInstance(type);
             sw.Stop();
             rate = types.Count / sw.Elapsed.TotalSeconds;
-            output.WriteLine($"{rate,10:####,###} initial transient instances/second ({types.Count} types).");
+            write($"{rate,10:####,###} initial transient instances/second ({types.Count} types).");
 
             sw.Restart();
             foreach (var type in types)
                 container.GetInstance(type);
             sw.Stop();
             rate = types.Count / sw.Elapsed.TotalSeconds;
-            output.WriteLine($"{rate,10:####,###} transient instances/second ({types.Count} types).");
+            write($"{rate,10:####,###} transient instances/second ({types.Count} types).");
             container.Dispose();
 
             Assert.True(true);
         }
 
-        internal void RegisterFactory(List<Type> types)
-        {
-            foreach (var type in types)
-                container.RegisterFactory(type, () => type);
-        }
+        internal void RegisterFactories(List<Type> types)
+            => types.ForEach(type => container.RegisterFactory(type, () => type));
 
         public class ClassA { }
 
         [Fact]
         public void Test_Performance2()
         {
-            var iterations = 1e6;
+            const double iterations = 1e6;
 
             container.RegisterTransient<ClassA>();
             sw.Start();
@@ -70,7 +66,7 @@ namespace InternalContainer.Tests.Performance
             }
             sw.Stop();
             var rate = iterations / sw.Elapsed.TotalSeconds;
-            output.WriteLine($"{rate,10:####,###} Transient instances/second.");
+            write($"{rate,10:####,###} Transient instances/second.");
             container.Dispose();
 
             container.RegisterSingleton<ClassA>();
@@ -81,7 +77,7 @@ namespace InternalContainer.Tests.Performance
             }
             sw.Stop();
             rate = iterations / sw.Elapsed.TotalSeconds;
-            output.WriteLine($"{rate,10:####,###} Singleton instances/second.");
+            write($"{rate,10:####,###} Singleton instances/second.");
 
             Assert.True(true);
         }
