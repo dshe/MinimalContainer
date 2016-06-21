@@ -1,10 +1,9 @@
-﻿//InternalContainer.cs 1.18
+﻿//InternalContainer.cs 1.19
 //Copyright 2016 David Shepherd. Licensed under the Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -26,10 +25,12 @@ namespace InternalContainer
 
         internal Registration(Type supertype, Type concretetype, Lifestyle lifestyle)
         {
-            Debug.Assert(supertype != null);
+            if (supertype == null)
+                throw new ArgumentNullException(nameof(supertype));
             SuperType = supertype.GetTypeInfo();
             ConcreteType = concretetype?.GetTypeInfo();
-            Debug.Assert(lifestyle != Lifestyle.AutoRegisterDisabled);
+            if (lifestyle == Lifestyle.AutoRegisterDisabled)
+                throw new ArgumentException(nameof(lifestyle));
             Lifestyle = lifestyle;
         }
 
