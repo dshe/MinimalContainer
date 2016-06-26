@@ -247,10 +247,7 @@ namespace InternalContainer
                 return ctors[0];
             if (ctors.Count > 1)
                 throw new TypeAccessException($"Type '{type.AsString()}' has more than one constructor decorated with '{nameof(ContainerConstructorAttribute)}'.");
-            var ctor = allCtors.SingleOrDefault(c => !c.GetParameters().Any());
-            if (ctor == null)
-                throw new TypeAccessException($"Type '{type.AsString()}' with multiple constructors requires one decorated with '{nameof(ContainerConstructorAttribute)}'.");
-            return ctor;
+            return allCtors.OrderBy(c => c.GetParameters().Length).First();
         }
 
         private void SetExpressionArray(Registration reg)
