@@ -26,7 +26,7 @@ namespace InternalContainerTests.Tests.Constructor
         [Fact]
         public void Test_ClassWithMultipleConstructors()
         {
-            Assert.Throws<TypeAccessException>(() => container.GetInstance<ClassA>()).Output(write);
+            container.GetInstance<ClassA>();
         }
 
         public class ClassB

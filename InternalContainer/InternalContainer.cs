@@ -1,4 +1,4 @@
-﻿//InternalContainer.cs 1.20
+﻿//InternalContainer.cs 1.21
 //Copyright 2016 David Shepherd. Licensed under the Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0
 
 using System;
@@ -227,21 +227,31 @@ namespace InternalContainer
         private void SetExpressionNew(Registration reg)
         {
             var type = reg.ConcreteType;
-            var ctors = type.DeclaredConstructors.Where(c => !c.IsPrivate).ToList();
-            if (!ctors.Any())
-                throw new TypeAccessException($"Type '{type.AsString()}' has no public or internal constructor.");
-            if (ctors.Count > 1)
-            {
-                ctors = ctors.Where(c => c.GetCustomAttribute<ContainerConstructorAttribute>() != null).ToList();
-                if (ctors.Count != 1)
-                    throw new TypeAccessException($"Type '{type.AsString()}' with multiple constructors requires one decorated with '{nameof(ContainerConstructorAttribute)}'.");
-            }
-            var ctor = ctors.Single();
+            var ctor = GetConstructor(type);
+
             var parameters = ctor.GetParameters()
                 .Select(p => p.HasDefaultValue ? Expression.Constant(p.DefaultValue, p.ParameterType) : GetRegistration(p.ParameterType, reg).Expression)
                 .ToList();
             Log(() => $"Constructing {reg.Lifestyle} instance: '{type.AsString()}({parameters.Select(p => p.Type.AsString()).JoinString(", ")})'.");
             reg.Expression = Expression.New(ctor, parameters);
+        }
+
+        private static ConstructorInfo GetConstructor(TypeInfo type)
+        {
+            var allCtors = type.DeclaredConstructors.Where(c => !c.IsPrivate).ToList();
+            if (allCtors.Count == 1)
+                return allCtors[0];
+            if (!allCtors.Any())
+                throw new TypeAccessException($"Type '{type.AsString()}' has no public or internal constructor.");
+            var ctors = allCtors.Where(c => c.GetCustomAttribute<ContainerConstructorAttribute>() != null).ToList();
+            if (ctors.Count == 1)
+                return ctors[0];
+            if (ctors.Count > 1)
+                throw new TypeAccessException($"Type '{type.AsString()}' has more than one constructor decorated with '{nameof(ContainerConstructorAttribute)}'.");
+            var ctor = allCtors.SingleOrDefault(c => !c.GetParameters().Any());
+            if (ctor != null)
+                return ctor;
+            throw new TypeAccessException($"Type '{type.AsString()}' with multiple constructors requires one decorated with '{nameof(ContainerConstructorAttribute)}'.");
         }
 
         private void SetExpressionArray(Registration reg)
