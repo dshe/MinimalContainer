@@ -2,10 +2,10 @@
 A simple IoC (Inversion of Control) container.
 - one C# 6.0 source file with no dependencies
 - portable class library (PCL) compatibility: at least Windows Universal 10, .Net Framework 4.6, ASP.NET Core 5
-- supports constructor dependency injection (selects the public or internal constructor with the most arguments)
+- supports public and internal constructor dependency injection
 - supports automatic and/or explicit type registration
 - supports transient and singleton (container) lifestyles
-- supports enumerables and closed generics
+- supports enumerables and generics
 - detects captive and recursive dependencies
 - fluent interface
 - tested
@@ -146,6 +146,18 @@ The following graphic illustrates the automatic type resolution strategy:
 
 ![Image of Resolution Strategy](https://github.com/dshe/InternalContainer/blob/master/TypeResolutionFlowChart.png)
 
+
+#### constructors
+The container can create instances of types using public or internal constructors. In case a class has multiple constructors, decorate the constructor to be used with the 'ContainerConstructor' attribute.
+```csharp
+public class ClassA
+{
+    [ContainerConstructor]
+    public ClassA() {}
+    
+    public ClassA(int i) {}
+}
+```
 #### logging
 ```csharp
 var container = new Container(log:Console.WriteLine);
