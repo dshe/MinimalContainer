@@ -228,7 +228,6 @@ namespace InternalContainer
         {
             var type = reg.ConcreteType;
             var ctor = GetConstructor(type);
-
             var parameters = ctor.GetParameters()
                 .Select(p => p.HasDefaultValue ? Expression.Constant(p.DefaultValue, p.ParameterType) : GetRegistration(p.ParameterType, reg).Expression)
                 .ToList();
@@ -249,9 +248,9 @@ namespace InternalContainer
             if (ctors.Count > 1)
                 throw new TypeAccessException($"Type '{type.AsString()}' has more than one constructor decorated with '{nameof(ContainerConstructorAttribute)}'.");
             var ctor = allCtors.SingleOrDefault(c => !c.GetParameters().Any());
-            if (ctor != null)
-                return ctor;
-            throw new TypeAccessException($"Type '{type.AsString()}' with multiple constructors requires one decorated with '{nameof(ContainerConstructorAttribute)}'.");
+            if (ctor == null)
+                throw new TypeAccessException($"Type '{type.AsString()}' with multiple constructors requires one decorated with '{nameof(ContainerConstructorAttribute)}'.");
+            return ctor;
         }
 
         private void SetExpressionArray(Registration reg)
