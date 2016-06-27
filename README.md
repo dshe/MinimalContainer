@@ -148,13 +148,13 @@ The following graphic illustrates the automatic type resolution strategy:
 
 
 #### constructors
-The container can create instances of types using public or internal constructors. In case a class has multiple constructors, decorate the constructor to be used with the 'ContainerConstructor' attribute.
+The container can create instances of types using public and internal constructors. In case a class has more than one constructor, the constructor to be used may be indicated by decorating it with the 'ContainerConstructor' attribute. Otherwise, the type is constructed using the constructor with the smallest number of arguments.
 ```csharp
 public class ClassA
 {
-    [ContainerConstructor]
     public ClassA() {}
-    
+
+    [ContainerConstructor]    
     public ClassA(int i) {}
 }
 ```
