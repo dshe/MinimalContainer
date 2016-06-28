@@ -1,7 +1,7 @@
 ## InternalContainer.cs
-A simple IoC (Inversion of Control) container.
-- one C# 6.0 source file with no dependencies
-- NetStandard1.0 compatibility
+A simple and portable IoC (Inversion of Control) container.
+- one C# 6.0 source file
+- targeting .NET Platform Standard version 1.0 (netstandard1.0)
 - supports public and internal constructor dependency injection
 - supports automatic and/or explicit type registration
 - supports transient and singleton (container) lifestyles
