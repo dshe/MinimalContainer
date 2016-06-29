@@ -1,4 +1,4 @@
-## InternalContainer.cs
+## InternalContainer
 A simple and portable IoC (Inversion of Control) container.
 - one C# 6.0 source file
 - supports .NET Platform Standard 1.0 and higher
