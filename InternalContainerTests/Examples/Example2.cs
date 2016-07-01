@@ -19,7 +19,7 @@ namespace InternalContainerTests.Examples
         [Fact]
         public void Test_Usage()
         {
-            var container = new Container(Lifestyle.Singleton, log:write);
+            var container = new Container(Container.Lifestyle.Singleton, log:write);
 
             container.RegisterSingleton<IClassA, ClassA>();
 

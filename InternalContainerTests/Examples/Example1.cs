@@ -42,7 +42,7 @@ namespace InternalContainerTests.Examples
         [Fact]
         public void Start()
         {
-            using (var container = new Container(Lifestyle.Singleton, log: write, assemblies:Assembly.GetExecutingAssembly()))
+            using (var container = new Container(Container.Lifestyle.Singleton, log: write, assemblies:Assembly.GetExecutingAssembly()))
             {
                 container.GetInstance<Root>();
                 container.Log();

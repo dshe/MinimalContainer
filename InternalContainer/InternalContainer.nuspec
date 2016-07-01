@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>InternalContainer</id>
+    <version>1.23</version>
+    <title>InternalContainer</title>
+    <authors>David Shepherd</authors>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <projectUrl>https://github.com/dshe/InternalContainer</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A simple IoC container as a single portable C# source file.</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2016</copyright>
+  </metadata>
+    <files>
+        <file src="InternalContainer.cs.pp" target="InternalContainer.cs.pp" />
+    </files>
+</package>

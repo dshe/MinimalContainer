@@ -32,10 +32,10 @@ namespace InternalContainerTests.Tests.Register
         [Fact]
         public void Test_Singleton()
         {
-            var c = new Container(Lifestyle.Singleton, log: write, assemblies:Assembly.GetExecutingAssembly());
+            var c = new Container(Container.Lifestyle.Singleton, log: write, assemblies:Assembly.GetExecutingAssembly());
             var instance1 = c.GetInstance<SomeClass>();
             var reg = c.GetRegistrations().Last();
-            Assert.Equal(Lifestyle.Singleton, reg.Lifestyle);
+            Assert.Equal(Container.Lifestyle.Singleton, reg.Lifestyle);
             var instance2 = c.GetInstance<SomeClass>();
             Assert.Equal(instance1, instance2);
         }
@@ -43,10 +43,10 @@ namespace InternalContainerTests.Tests.Register
         [Fact]
         public void Test_Transient()
         {
-            var c = new Container(Lifestyle.Transient, log: write, assemblies: Assembly.GetExecutingAssembly());
+            var c = new Container(Container.Lifestyle.Transient, log: write, assemblies: Assembly.GetExecutingAssembly());
             var instance1 = c.GetInstance<SomeClass>();
             var reg = c.GetRegistrations().Last();
-            Assert.Equal(Lifestyle.Transient, reg.Lifestyle);
+            Assert.Equal(Container.Lifestyle.Transient, reg.Lifestyle);
             var instance2 = c.GetInstance<SomeClass>();
             Assert.NotEqual(instance1, instance2);
         }

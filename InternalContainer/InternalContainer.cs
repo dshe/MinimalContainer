@@ -1,5 +1,6 @@
-﻿//InternalContainer.cs 1.23
-//Copyright 2016 David Shepherd. Licensed under the Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0
+﻿// InternalContainer.cs 1.24
+// Copyright 2016 David Shepherd
+// Licensed under the Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0
 
 using System;
 using System.Collections;
@@ -12,37 +13,40 @@ using System.Text;
 
 namespace InternalContainer
 {
-    internal enum Lifestyle { AutoRegisterDisabled, Transient, Singleton };
-
-    internal sealed class Registration
-    {
-        internal readonly TypeInfo SuperType;
-        internal TypeInfo ConcreteType;
-        internal readonly Lifestyle Lifestyle;
-        internal Expression Expression;
-        internal Func<object> Factory;
-        internal object Instance;
-
-        internal Registration(Type supertype, Type concretetype, Lifestyle lifestyle)
-        {
-            if (supertype == null)
-                throw new ArgumentNullException(nameof(supertype));
-            SuperType = supertype.GetTypeInfo();
-            ConcreteType = concretetype?.GetTypeInfo();
-            if (lifestyle == Lifestyle.AutoRegisterDisabled)
-                throw new ArgumentException(nameof(lifestyle));
-            Lifestyle = lifestyle;
-        }
-
-        public override string ToString()
-        {
-            return $"'{(Equals(ConcreteType, null) || Equals(ConcreteType, SuperType) ? "" : ConcreteType.AsString() + "->")}" +
-                   $"{SuperType.AsString()}', {Lifestyle}.";
-        }
-    }
+    [AttributeUsage(AttributeTargets.Constructor)]
+    internal sealed class ContainerConstructorAttribute : Attribute { }
 
     internal sealed class Container : IDisposable
     {
+        internal enum Lifestyle { AutoRegisterDisabled, Transient, Singleton };
+
+        internal sealed class Registration
+        {
+            internal readonly TypeInfo SuperType;
+            internal TypeInfo ConcreteType;
+            internal readonly Lifestyle Lifestyle;
+            internal Expression Expression;
+            internal Func<object> Factory;
+            internal object Instance;
+
+            internal Registration(Type supertype, Type concretetype, Lifestyle lifestyle)
+            {
+                if (supertype == null)
+                    throw new ArgumentNullException(nameof(supertype));
+                SuperType = supertype.GetTypeInfo();
+                ConcreteType = concretetype?.GetTypeInfo();
+                if (lifestyle == Lifestyle.AutoRegisterDisabled)
+                    throw new ArgumentException(nameof(lifestyle));
+                Lifestyle = lifestyle;
+            }
+
+            public override string ToString()
+            {
+                return $"'{(Equals(ConcreteType, null) || Equals(ConcreteType, SuperType) ? "" : ConcreteType.AsString() + "->")}" +
+                       $"{SuperType.AsString()}', {Lifestyle}.";
+            }
+        }
+
         private readonly Lifestyle autoLifestyle;
         private readonly Lazy<List<TypeInfo>> allConcreteTypes;
         private readonly Dictionary<Type, Registration> registrations = new Dictionary<Type, Registration>();
@@ -330,8 +334,5 @@ namespace InternalContainer
             return $"{name}<{args}>";
         }
     }
-
-    [AttributeUsage(AttributeTargets.Constructor)]
-    internal sealed class ContainerConstructorAttribute : Attribute { }
 
 }

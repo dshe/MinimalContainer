@@ -32,7 +32,7 @@ namespace InternalContainerTests.Tests.Generic
         public AutoGenericTests(ITestOutputHelper output)
         {
             write = output.WriteLine;
-            container = new Container(Lifestyle.Singleton, log:output.WriteLine, assemblies:Assembly.GetExecutingAssembly());
+            container = new Container(Container.Lifestyle.Singleton, log:output.WriteLine, assemblies:Assembly.GetExecutingAssembly());
         }
 
         [Fact]

@@ -28,7 +28,7 @@ namespace InternalContainerTests.Tests.Register
             var reg = container.GetRegistrations().Last();
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.SuperType);
             Assert.Equal(null, reg.Factory);
-            Assert.Equal(Lifestyle.Singleton, reg.Lifestyle);
+            Assert.Equal(Container.Lifestyle.Singleton, reg.Lifestyle);
 
             var instance = container.GetInstance<SomeClass>();
             Assert.IsType<SomeClass>(instance);
@@ -44,7 +44,7 @@ namespace InternalContainerTests.Tests.Register
             Assert.Equal(typeof(ISomeClass).GetTypeInfo(), reg.SuperType);
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.ConcreteType);
             Assert.Equal(null, reg.Factory);
-            Assert.Equal(Lifestyle.Singleton, reg.Lifestyle);
+            Assert.Equal(Container.Lifestyle.Singleton, reg.Lifestyle);
 
             var instance = container.GetInstance<ISomeClass>();
             Assert.IsType<SomeClass>(instance);
@@ -59,7 +59,7 @@ namespace InternalContainerTests.Tests.Register
             var reg = container.GetRegistrations().Last();
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.SuperType);
             Assert.Equal(null, reg.Factory);
-            Assert.Equal(Lifestyle.Transient, reg.Lifestyle);
+            Assert.Equal(Container.Lifestyle.Transient, reg.Lifestyle);
 
             var instance = container.GetInstance<SomeClass>();
             Assert.IsType<SomeClass>(instance);
@@ -75,7 +75,7 @@ namespace InternalContainerTests.Tests.Register
             Assert.Equal(typeof(ISomeClass).GetTypeInfo(), reg.SuperType);
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.ConcreteType);
             Assert.Equal(null, reg.Factory);
-            Assert.Equal(Lifestyle.Transient, reg.Lifestyle);
+            Assert.Equal(Container.Lifestyle.Transient, reg.Lifestyle);
 
             var instance = container.GetInstance<ISomeClass>();
             Assert.IsType<SomeClass>(instance);
@@ -92,7 +92,7 @@ namespace InternalContainerTests.Tests.Register
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.SuperType);
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.ConcreteType);
             Assert.Equal(instance, reg.Instance);
-            Assert.Equal(Lifestyle.Singleton, reg.Lifestyle);
+            Assert.Equal(Container.Lifestyle.Singleton, reg.Lifestyle);
 
             Assert.Equal(instance, container.GetInstance<SomeClass>());
             Assert.Equal(instance, reg.Instance);
@@ -108,7 +108,7 @@ namespace InternalContainerTests.Tests.Register
             Assert.Equal(typeof(ISomeClass).GetTypeInfo(), reg.SuperType);
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.ConcreteType);
             Assert.Equal(instance, reg.Instance);
-            Assert.Equal(Lifestyle.Singleton, reg.Lifestyle);
+            Assert.Equal(Container.Lifestyle.Singleton, reg.Lifestyle);
 
             Assert.Equal(instance, container.GetInstance<ISomeClass>());
             Assert.Equal(instance, reg.Instance);
@@ -123,7 +123,7 @@ namespace InternalContainerTests.Tests.Register
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.SuperType);
             Assert.Equal(null, reg.ConcreteType);
             Assert.NotEqual(null, reg.Factory);
-            Assert.Equal(Lifestyle.Transient, reg.Lifestyle);
+            Assert.Equal(Container.Lifestyle.Transient, reg.Lifestyle);
 
             var instance = container.GetInstance<SomeClass>();
             Assert.NotEqual(instance, container.GetInstance<SomeClass>());
@@ -138,7 +138,7 @@ namespace InternalContainerTests.Tests.Register
             Assert.Equal(typeof(ISomeClass).GetTypeInfo(), reg.SuperType);
             Assert.Equal(null, reg.ConcreteType);
             Assert.NotEqual(null, reg.Factory);
-            Assert.Equal(Lifestyle.Transient, reg.Lifestyle);
+            Assert.Equal(Container.Lifestyle.Transient, reg.Lifestyle);
 
             var instance = container.GetInstance<ISomeClass>();
             Assert.NotEqual(instance, container.GetInstance<ISomeClass>());

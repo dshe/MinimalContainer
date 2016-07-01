@@ -14,7 +14,7 @@ namespace InternalContainerTests.Tests.Constructor
         public ConstructorArgumentTests(ITestOutputHelper output)
         {
             write = output.WriteLine;
-            container = new Container(autoLifestyle: Lifestyle.Singleton, log: write, assemblies: Assembly.GetExecutingAssembly());
+            container = new Container(autoLifestyle: Container.Lifestyle.Singleton, log: write, assemblies: Assembly.GetExecutingAssembly());
         }
 
         public class ClassWithValueTypeArgument

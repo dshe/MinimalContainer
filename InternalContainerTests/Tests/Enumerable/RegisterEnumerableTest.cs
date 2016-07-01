@@ -32,7 +32,7 @@ namespace InternalContainerTests.Tests.Enumerable
             Assert.Equal(4, container.GetRegistrations().Count);
             foreach (var m in container.GetRegistrations())
             {
-                Assert.Equal(Lifestyle.Singleton, m.Lifestyle);
+                Assert.Equal(Container.Lifestyle.Singleton, m.Lifestyle);
             }
             container.Log();
         }
