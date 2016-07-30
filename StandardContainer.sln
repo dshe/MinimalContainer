@@ -10,6 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{45A245
 		README.md = README.md
 		TypeResolutionFlowChart.png = TypeResolutionFlowChart.png
 		TypeResolutionFlowChart.sdr = TypeResolutionFlowChart.sdr
+		worm64.png = worm64.png
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StandardContainer", "StandardContainer\StandardContainer.csproj", "{95EB285C-2916-425C-B50F-AF42B94D650C}"
