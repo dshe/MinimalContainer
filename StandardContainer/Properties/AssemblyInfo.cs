@@ -6,9 +6,9 @@ using System.Runtime.CompilerServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("StandardContainer")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("A simple and portable inversion of control container")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Tangent")]
 [assembly: AssemblyProduct("StandardContainer")]
 [assembly: AssemblyCopyright("Copyright © 2016")]
 [assembly: AssemblyTrademark("")]
