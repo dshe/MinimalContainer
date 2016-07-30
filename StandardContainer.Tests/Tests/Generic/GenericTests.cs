@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Reflection;
-using StandardContainer;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace StandardContainerTests.Tests.Generic
+namespace StandardContainer.Tests.Tests.Generic
 {
     public class GenericTests
     {

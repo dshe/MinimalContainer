@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Reflection;
-using StandardContainer;
-using StandardContainerTests.Utilities;
+using StandardContainer.Tests.Utilities;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace StandardContainerTests.Tests.Constructor
+namespace StandardContainer.Tests.Tests.Constructor
 {
     public class ConstructorSelectionTests
     {

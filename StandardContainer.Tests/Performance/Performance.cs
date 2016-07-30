@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using StandardContainer;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace StandardContainerTests.Performance
+namespace StandardContainer.Tests.Performance
 {
     public class Performance
     {

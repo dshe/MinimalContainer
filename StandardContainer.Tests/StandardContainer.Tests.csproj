@@ -7,8 +7,8 @@
     <ProjectGuid>{AF9753AD-3F17-4787-A0FB-7A45B1C8DD88}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>StandardContainerTests</RootNamespace>
-    <AssemblyName>StandardContainerTests</AssemblyName>
+    <RootNamespace>StandardContainer.Tests</RootNamespace>
+    <AssemblyName>StandardContainer.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -72,7 +72,9 @@
     <Compile Include="Utilities\ExtensionMethods.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

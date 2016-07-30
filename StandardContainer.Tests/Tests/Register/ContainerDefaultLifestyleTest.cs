@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using StandardContainer;
-using StandardContainerTests.Utilities;
+using StandardContainer.Tests.Utilities;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace StandardContainerTests.Tests.Register
+namespace StandardContainer.Tests.Tests.Register
 {
     public class ContainerDefaultLifestyleTest
     {

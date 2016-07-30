@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using StandardContainer;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace StandardContainerTests.Examples
+namespace StandardContainer.Tests.Examples
 {
     public interface IClassB {}
     public class ClassB : IClassB {}

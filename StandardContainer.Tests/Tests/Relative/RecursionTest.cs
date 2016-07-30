@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Reflection;
-using StandardContainer;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace StandardContainerTests.Tests.Relative
+namespace StandardContainer.Tests.Tests.Relative
 {
     public class Class1
     {

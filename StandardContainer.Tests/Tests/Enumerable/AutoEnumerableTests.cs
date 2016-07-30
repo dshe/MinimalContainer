@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using StandardContainer;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace StandardContainerTests.Tests.Enumerable
+namespace StandardContainer.Tests.Tests.Enumerable
 {
     public class EnumerableTest
     {

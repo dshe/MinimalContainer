@@ -1,4 +1,4 @@
-﻿// StandardContainer.cs 1.25
+﻿// StandardContainer.cs 1.26
 // Copyright 2016 David Shepherd
 // Licensed under the Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0
 
@@ -14,20 +14,20 @@ using System.Text;
 namespace StandardContainer
 {
     [AttributeUsage(AttributeTargets.Constructor)]
-    internal sealed class ContainerConstructorAttribute : Attribute { }
+    public sealed class ContainerConstructorAttribute : Attribute { }
 
-    internal sealed class Container : IDisposable
+    public sealed class Container : IDisposable
     {
-        internal enum Lifestyle { AutoRegisterDisabled, Transient, Singleton };
+        public enum Lifestyle { AutoRegisterDisabled, Transient, Singleton };
 
-        internal sealed class Registration
+        public sealed class Registration
         {
-            internal readonly TypeInfo SuperType;
-            internal TypeInfo ConcreteType;
-            internal readonly Lifestyle Lifestyle;
+            public readonly TypeInfo SuperType;
+            public TypeInfo ConcreteType;
+            public readonly Lifestyle Lifestyle;
             internal Expression Expression;
-            internal Func<object> Factory;
-            internal object Instance;
+            public Func<object> Factory;
+            public object Instance;
 
             internal Registration(Type supertype, Type concretetype, Lifestyle lifestyle)
             {
@@ -88,7 +88,7 @@ namespace StandardContainer
 
         public Container RegisterFactory<TSuper>(Func<TSuper> factory) where TSuper : class =>
             RegisterFactory(typeof(TSuper), factory);
-        internal Container RegisterFactory(Type supertype, Func<object> factory) // used for testing performance
+        public Container RegisterFactory(Type supertype, Func<object> factory) // used for testing performance
         {
             if (factory == null)
                 throw new ArgumentNullException(nameof(factory));

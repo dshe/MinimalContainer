@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Linq;
-using StandardContainer;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace StandardContainerTests.Examples
+namespace StandardContainer.Tests.Examples
 {
     public class Examples
     {
