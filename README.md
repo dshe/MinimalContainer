@@ -11,8 +11,10 @@ A simple and portable IoC (Inversion of Control) container.
 - tested
 - fast
 
+<!--
 [![GitHub release](https://img.shields.io/github/release/qubyte/rubidium.svg?maxAge=2592000)]()
 [![GitHub tag](https://img.shields.io/github/tag/strongloop/express.svg?maxAge=2592000)]()
+-->
 
 #### example
 ```csharp
