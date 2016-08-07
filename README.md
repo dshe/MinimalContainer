@@ -1,5 +1,5 @@
 
-## StandardContainer`  `[![build status](https://ci.appveyor.com/api/projects/status/7u9s5a5cq4u53kry?svg=true)](https://ci.appveyor.com/project/dshe/standardcontainer)`  `[![release](https://img.shields.io/github/release/dshe/StandardContainer.svg)](https://github.com/dshe/StandardContainer/releases)`  `[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+## StandardContainer [![build status](https://ci.appveyor.com/api/projects/status/7u9s5a5cq4u53kry?svg=true)](https://ci.appveyor.com/project/dshe/standardcontainer) [![release](https://img.shields.io/github/release/dshe/StandardContainer.svg)](https://github.com/dshe/StandardContainer/releases) [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 A simple and portable IoC (Inversion of Control) container.
 - one C# 6.0 source file
