@@ -7,6 +7,7 @@ using Xunit.Abstractions;
 
 namespace StandardContainer.Tests.Performance
 {
+    [Trait("Category", "Performance")]
     public class Performance
     {
         private readonly Container container = new Container();
@@ -80,7 +81,6 @@ namespace StandardContainer.Tests.Performance
 
             Assert.True(true);
         }
-
 
     }
 }

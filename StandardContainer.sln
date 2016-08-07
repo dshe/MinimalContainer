@@ -3,14 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{45A24516-448B-45BA-AD58-92B41A1DD6E2}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{45A24516-448B-45BA-AD58-92B41A1DD6E2}"
 	ProjectSection(SolutionItems) = preProject
 		CONTRIBUTING.md = CONTRIBUTING.md
 		LICENSE.txt = LICENSE.txt
+		notes.txt = notes.txt
 		README.md = README.md
 		TypeResolutionFlowChart.png = TypeResolutionFlowChart.png
 		TypeResolutionFlowChart.sdr = TypeResolutionFlowChart.sdr
-		worm64.png = worm64.png
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StandardContainer", "StandardContainer\StandardContainer.csproj", "{95EB285C-2916-425C-B50F-AF42B94D650C}"

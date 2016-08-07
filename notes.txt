@@ -1,0 +1,45 @@
+distribution options:
+
+1) Nuget package which installs a portable assembly targeting netstandard1.0.
+	UWP apps error:
+	Package restore failed. Rolling back package changes for 'App'.
+	StandardContainer is not compatible with UAP,Version=v10.0.
+	nuget pack places dll files inside portable50 folder rather than the netstandard1.0 folder
+	https://github.com/NuGet/Home/issues/3108
+	http://dist.nuget.org/index.html
+	NuGet bugs.
+
+2) NuGet package which installs the one source file.
+	Could not install package:
+	You are trying to install this package into a project that targets '.NETFramework,Version=v4.6',
+	but the package does not contain any assembly references or content files that are compatible with that framework.
+	http://blog.nuget.org/20141001/targetframeworkfiltering.html
+	http://blog.nuget.org/20160126/nuget-contentFiles-demystified.html
+    NuGet bugs.
+
+3) Manual copy of source file to project.
+	inconvenient
+	no auto updates
+	no namespace modification
+	no download monitoring
+	no NuGet
+
+
+_desktop
+netstandard1.0, netstandard1.1, netstandard1.3, netstandard1.6
+dotnet
+net40, net45, net46, net463(linq)
+netcore451, netcore50
+netcoreapp1.0
+uap10.0
+MonoAndroid10, MonoTouch10
+
+===================================
+netstandard1.0
+
+netstandard1.1 =>
+
+netcoreapp1.0
+net45
+uap10.0
+
