@@ -1,4 +1,5 @@
-## StandardContainer
+## StandardContainer [![build status](https://ci.appveyor.com/api/projects/status/7u9s5a5cq4u53kry?svg=true)](https://ci.appveyor.com/project/dshe/standardcontainer) [![release](https://img.shields.io/github/release/dshe/StandardContainer.svg)](https://github.com/dshe/StandardContainer/releases)
+
 A simple and portable IoC (Inversion of Control) container.
 - one C# 6.0 source file
 - supports .NET Platform Standard 1.0 and higher
@@ -10,11 +11,6 @@ A simple and portable IoC (Inversion of Control) container.
 - fluent interface
 - tested
 - fast
-
-<!--
-[![GitHub release](https://img.shields.io/github/release/qubyte/rubidium.svg?maxAge=2592000)]()
-[![GitHub tag](https://img.shields.io/github/tag/strongloop/express.svg?maxAge=2592000)]()
--->
 
 #### example
 ```csharp
