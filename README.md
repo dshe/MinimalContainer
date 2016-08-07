@@ -9,7 +9,6 @@ A simple and portable IoC (Inversion of Control) container.
 - supports enumerables and generics
 - detects captive and recursive dependencies
 - fluent interface
-- tested
 - fast
 
 #### example
