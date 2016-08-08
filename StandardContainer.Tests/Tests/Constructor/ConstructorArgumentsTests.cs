@@ -20,6 +20,7 @@ namespace StandardContainer.Tests.Tests.Constructor
         {
             public ClassWithValueTypeArgument(int i) { }
         }
+
         [Fact]
         public void Test_ClassWithValueTypeArgument()
         {
