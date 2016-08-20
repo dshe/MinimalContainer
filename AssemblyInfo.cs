@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("StandardContainer")]
-[assembly: AssemblyDescription("A simple and portable inversion of control container.")]
+[assembly: AssemblyDescription("A simple and portable IoC container.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("dshe")]
 [assembly: AssemblyProduct("StandardContainer")]
@@ -25,5 +25,6 @@ using System.Runtime.CompilerServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.26.2")]
-[assembly: AssemblyFileVersion("1.26.2")]
+[assembly: AssemblyVersion("1.0.0")]
+[assembly: AssemblyFileVersion("1.0.0")]
+[assembly: AssemblyInformationalVersion("1.0.0")]

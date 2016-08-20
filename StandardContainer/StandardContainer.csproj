@@ -36,6 +36,9 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="project.json" />
+    <None Include="StandardContainer.nuspec">
+      <SubType>Designer</SubType>
+    </None>
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
