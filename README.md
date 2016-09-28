@@ -14,61 +14,52 @@ A simple and portable IoC (Inversion of Control) container.
 
 #### example
 ```csharp
-public class TSuper {}
-public class TConcrete : TSuper {}
+public interface IFoo {}
+public class Foo : IFoo {}
 
 var container = new Container();
 
-container.RegisterSingleton<TSuper,TConcrete>();
+container.RegisterSingleton<IFoo, Foo>();
 
-TSuper instance = container.GetInstance<TSuper>();
+IFoo instance = container.GetInstance<IFoo>();
 
 container.Dispose();
 ```
-`TSuper`, usually an interface, is a superType of `TConcrete`. 
-
 Disposing the container will dispose any registered disposable singleton instances.
 
 #### registration
 ```csharp
 container.RegisterSingleton<T>();
-container.RegisterSingleton(typeof(T));
-container.RegisterSingleton<TSuper, TConcrete>();
-container.RegisterSingleton(typeof(TSuper), typeof(TConcrete));
+container.RegisterSingleton<IFoo, Foo>();
 
 container.RegisterTransient<T>();
-container.RegisterTransient(typeof(T));
-container.RegisterTransient<TSuper, TConcrete>();
-container.RegisterTransient(typeof(TSuper), typeof(TConcrete));
+container.RegisterTransient<IFoo, Foo>();
 
-container.RegisterInstance(new TConcrete());
-container.RegisterInstance<TSuper>(new TConcrete());
-container.RegisterInstance(typeof(TSuper), new TConcrete());
+container.RegisterInstance(Foo instance);
+container.RegisterInstance<IFoo>(Foo instance);
 
-container.RegisterFactory(() => new TConcrete());
-container.RegisterFactory<TSuper>(() => new TConcrete());
-container.RegisterFactory(typeof(TSuper), () => new TConcrete());
+container.RegisterFactory(() => new Foo());
+container.RegisterFactory<IFoo>(() => new Foo());
 ```
 #### resolution
 ```csharp
-T instance = container.GetInstance<T>();
-T instance = (T)container.GetInstance(typeof(T));
+IFoo instance = container.GetInstance<IFoo>();
 ```
 #### enumerables
 ```csharp
-public class TSuper {}
-public class TConcrete1 : TSuper {}
-public class TConcrete2 : TSuper {}
+public class IFoo {}
+public class Foo1 : IFoo {}
+public class Foo2 : IFoo {}
 
 var container = new Container();
 
-container.RegisterSingleton<TConcrete1>();
-container.RegisterSingleton<TConcrete2>();
-container.RegisterSingleton<IEnumerable<TSuper>>();
+container.RegisterSingleton<Foo1>();
+container.RegisterSingleton<Foo2>();
+container.RegisterSingleton<IEnumerable<IFoo>>();
 
-IEnumerable<TSuper> enumerable = container.GetInstance<IEnumerable<TSuper>>();
+IEnumerable<IFoo> enumerable = container.GetInstance<IEnumerable<Ifoo>>();
 ```
-A list of instances of registered types which are assignable to `TSuper` is returned.
+A list of instances of registered types which are assignable to `IFoo` is returned.
 #### generics
 ```csharp
 public class GenericParameterClass {}
@@ -78,26 +69,26 @@ public class GenericClass<T>
     public GenericClass(T t) {}
 }
 
-public class SomeClass
+public class Foo
 {
-    public SomeClass(GenericClass<GenericParameterClass> g) {}
+    public Foo(GenericClass<GenericParameterClass> g) {}
 }
 
 var container = new Container();
 
 container.RegisterSingleton<GenericParameterClass>();
 container.RegisterSingleton<GenericClass<GenericParameterClass>>();
-container.RegisterSingleton<SomeClass>();
+container.RegisterSingleton<Foo>();
 
-SomeClass instance = container.GetInstance<SomeClass>();
+SomeClass instance = container.GetInstance<Foo>();
 ```
 #### automatic registration
 ```csharp
-public class TConcrete {}
+public class Foo {}
 
 var container = new Container(Lifestyle.Singleton, assemblies:someAssembly);
 
-TConcrete instance = container.GetInstance<TConcrete>();
+Foo instance = container.GetInstance<Foo>();
 ```
 To enable automatic registration, pass the desired lifestyle (singleton or transient) to be used for automatic registration in the container's constructor. Note however that the container will always register the dependencies of singleton instances as singletons.
 
@@ -153,12 +144,12 @@ The following graphic illustrates the automatic type resolution strategy:
 #### constructors
 The container can create instances of types using public and internal constructors. In case a class has more than one constructor, the constructor to be used may be indicated by decorating it with the 'ContainerConstructor' attribute. Otherwise, the type is constructed using the constructor with the smallest number of arguments.
 ```csharp
-public class ClassA
+public class Foo
 {
-    public ClassA() {}
+    public Foo() {}
 
     [ContainerConstructor]    
-    public ClassA(int i) {}
+    public Foo(Foo2 foo2) {}
 }
 ```
 #### logging
