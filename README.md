@@ -43,9 +43,11 @@ container.RegisterTransient(typeof(TSuper), typeof(TConcrete));
 
 container.RegisterInstance(new TConcrete());
 container.RegisterInstance<TSuper>(new TConcrete());
+container.RegisterInstance(typeof(TSuper), new TConcrete());
 
 container.RegisterFactory(() => new TConcrete());
 container.RegisterFactory<TSuper>(() => new TConcrete());
+container.RegisterFactory(typeof(TSuper), () => new TConcrete());
 ```
 #### resolution
 ```csharp
