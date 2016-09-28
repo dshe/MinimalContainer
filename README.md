@@ -90,7 +90,7 @@ var container = new Container(Lifestyle.Singleton, assemblies:someAssembly);
 
 Foo instance = container.GetInstance<Foo>();
 ```
-To enable automatic registration, pass the desired lifestyle (singleton or transient) to be used for automatic registration in the container's constructor. Note however that the container will always register the dependencies of singleton instances as singletons.
+To enable automatic registration, pass the lifestyle to be used (singleton or transient) in the container's constructor. Note that the container will always register the dependencies of singleton instances as singletons.
 
 If automatic type resolution requires scanning assemblies other than the current executing assembly, include references to those assemblies in the container's constructor.
 
