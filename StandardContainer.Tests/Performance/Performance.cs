@@ -22,7 +22,7 @@ namespace StandardContainer.Tests.Performance
         [Fact]
         public void Test_Performance1()
         {
-            var types = typeof(string).Assembly.GetTypes().Where(t => !t.IsAbstract).ToList();
+            var types = this.GetType().Assembly.GetTypes().Where(t => !t.IsAbstract && !(t == typeof(string))).ToList();
 
             sw.Start();
             RegisterFactories(types);

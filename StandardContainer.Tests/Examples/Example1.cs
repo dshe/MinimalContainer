@@ -6,25 +6,25 @@ using Xunit.Abstractions;
 
 namespace StandardContainer.Tests.Examples
 {
-    public interface IClassB {}
-    public class ClassB : IClassB {}
+    public interface IFoo2 {}
+    public class Foo2 : IFoo2 {}
 
-    public class ClassC<T> { }
-    public class ClassD { }
+    public class Foo3<T> { }
+    public class Foo4 { }
 
     public interface IClass {}
-    public class ClassE : IClass {}
-    public class ClassF : IClass {}
+    public class Foo5 : IClass {}
+    public class Foo6 : IClass {}
 
-    public class ClassA : IDisposable
+    public class Foo1 : IDisposable
     {
-        public ClassA(IClassB b, ClassC<ClassD> cd, IEnumerable<IClass> list) {}
+        public Foo1(IFoo2 b, Foo3<Foo4> cd, IEnumerable<IClass> list) {}
         public void Dispose() {}
     }
 
     public class Root
     {
-        public Root(ClassA a)
+        public Root(Foo1 a)
         {
             //Start();
         }
@@ -41,7 +41,7 @@ namespace StandardContainer.Tests.Examples
         [Fact]
         public void Start()
         {
-            using (var container = new Container(Container.Lifestyle.Singleton, log: write, assemblies:Assembly.GetExecutingAssembly()))
+            using (var container = new Container(Container.Lifestyle.Singleton, log:write, assemblies:Assembly.GetExecutingAssembly()))
             {
                 container.GetInstance<Root>();
                 container.Log();

@@ -7,8 +7,8 @@ namespace StandardContainer.Tests.Examples
 {
     public class Examples
     {
-        public interface IClassA { }
-        public class ClassA : IClassA { }
+        public interface IFoo { }
+        public class Foo : IFoo { }
         private readonly Action<string> write;
         public Examples(ITestOutputHelper output)
         {
@@ -20,11 +20,11 @@ namespace StandardContainer.Tests.Examples
         {
             var container = new Container(Container.Lifestyle.Singleton, log:write);
 
-            container.RegisterSingleton<IClassA, ClassA>();
+            container.RegisterSingleton<IFoo, Foo>();
 
-            var instance = container.GetInstance<IClassA>();
-            Assert.IsType<ClassA>(instance);
-            Assert.Equal(instance, container.GetInstance<IClassA>());
+            var instance = container.GetInstance<IFoo>();
+            Assert.IsType<Foo>(instance);
+            Assert.Equal(instance, container.GetInstance<IFoo>());
 
             write("");
             container.GetRegistrations().Select(x => x.ToString()).ToList().ForEach(write);

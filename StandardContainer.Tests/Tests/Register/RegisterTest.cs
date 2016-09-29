@@ -21,127 +21,83 @@ namespace StandardContainer.Tests.Tests.Register
         }
 
         [Fact]
-        public void Test_Register_Singleton()
+        public void T01_Register_Singleton()
         {
-            container.RegisterSingleton<SomeClass>();
+            container.RegisterSingleton(typeof(SomeClass));
             var reg = container.GetRegistrations().Last();
-            Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.SuperType);
-            Assert.Equal(null, reg.Factory);
             Assert.Equal(Container.Lifestyle.Singleton, reg.Lifestyle);
-
-            var instance = container.GetInstance<SomeClass>();
-            Assert.IsType<SomeClass>(instance);
-            Assert.Equal(instance, container.GetInstance(typeof(SomeClass)));
-            write(container.ToString());
-        }
-
-        [Fact]
-        public void Test_Register_Singleton_Interface()
-        {
-            container.RegisterSingleton<ISomeClass, SomeClass>();
-            var reg = container.GetRegistrations().Last();
-            Assert.Equal(typeof(ISomeClass).GetTypeInfo(), reg.SuperType);
+            Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.Type);
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.ConcreteType);
+            Assert.Equal(null, reg.Instance);
             Assert.Equal(null, reg.Factory);
+            container.Dispose();
+
+            container.RegisterSingleton(typeof(ISomeClass), typeof(SomeClass));
+            reg = container.GetRegistrations().Last();
             Assert.Equal(Container.Lifestyle.Singleton, reg.Lifestyle);
-
-            var instance = container.GetInstance<ISomeClass>();
-            Assert.IsType<SomeClass>(instance);
-            Assert.Equal(instance, container.GetInstance(typeof(ISomeClass)));
-            write(container.ToString());
-        }
-
-        [Fact]
-        public void Test_Register_Transient()
-        {
-            container.RegisterTransient<SomeClass>();
-            var reg = container.GetRegistrations().Last();
-            Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.SuperType);
+            Assert.Equal(typeof(ISomeClass).GetTypeInfo(), reg.Type);
+            Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.ConcreteType);
+            Assert.Equal(null, reg.Instance);
             Assert.Equal(null, reg.Factory);
-            Assert.Equal(Container.Lifestyle.Transient, reg.Lifestyle);
-
-            var instance = container.GetInstance<SomeClass>();
-            Assert.IsType<SomeClass>(instance);
-            Assert.NotEqual(instance, container.GetInstance(typeof(SomeClass)));
-            write(container.ToString());
         }
 
         [Fact]
-        public void Test_Register_Transient_Interface()
+        public void T02_Register_Transient()
         {
             container.RegisterTransient<ISomeClass, SomeClass>();
             var reg = container.GetRegistrations().Last();
-            Assert.Equal(typeof(ISomeClass).GetTypeInfo(), reg.SuperType);
-            Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.ConcreteType);
-            Assert.Equal(null, reg.Factory);
             Assert.Equal(Container.Lifestyle.Transient, reg.Lifestyle);
-
-            var instance = container.GetInstance<ISomeClass>();
-            Assert.IsType<SomeClass>(instance);
-            Assert.NotEqual(instance, container.GetInstance<ISomeClass>());
-            write(container.ToString());
+            Assert.Equal(typeof(ISomeClass).GetTypeInfo(), reg.Type);
+            Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.ConcreteType);
+            Assert.Equal(null, reg.Instance);
+            Assert.Equal(null, reg.Factory);
         }
 
         [Fact]
-        public void Test_Register_Instance()
+        public void T03_Register_Instance()
         {
             var instance = new SomeClass();
+
             container.RegisterInstance(instance);
             var reg = container.GetRegistrations().Last();
-            Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.SuperType);
+            Assert.Equal(Container.Lifestyle.Singleton, reg.Lifestyle);
+            Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.Type);
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.ConcreteType);
             Assert.Equal(instance, reg.Instance);
-            Assert.Equal(Container.Lifestyle.Singleton, reg.Lifestyle);
+            Assert.Equal(null, reg.Factory);
+            container.Dispose();
 
-            Assert.Equal(instance, container.GetInstance<SomeClass>());
-            Assert.Equal(instance, reg.Instance);
-            write(container.ToString());
-        }
-
-        [Fact]
-        public void Test_Register_Instance_Iface()
-        {
-            var instance = new SomeClass();
             container.RegisterInstance<ISomeClass>(instance);
-            var reg = container.GetRegistrations().Last();
-            Assert.Equal(typeof(ISomeClass).GetTypeInfo(), reg.SuperType);
+            reg = container.GetRegistrations().Last();
+            Assert.Equal(Container.Lifestyle.Singleton, reg.Lifestyle);
+            Assert.Equal(typeof(ISomeClass).GetTypeInfo(), reg.Type);
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.ConcreteType);
             Assert.Equal(instance, reg.Instance);
-            Assert.Equal(Container.Lifestyle.Singleton, reg.Lifestyle);
-
-            Assert.Equal(instance, container.GetInstance<ISomeClass>());
-            Assert.Equal(instance, reg.Instance);
-            write(container.ToString());
+            Assert.Equal(null, reg.Factory);
         }
 
         [Fact]
-        public void Test_Register_Factory()
+        public void T04_Register_Factory()
         {
-            container.RegisterFactory(() => new SomeClass());
-            var reg = container.GetRegistrations().Last();
-            Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.SuperType);
-            Assert.Equal(null, reg.ConcreteType);
-            Assert.NotEqual(null, reg.Factory);
-            Assert.Equal(Container.Lifestyle.Transient, reg.Lifestyle);
+            Func<SomeClass> factory = () => new SomeClass();
 
-            var instance = container.GetInstance<SomeClass>();
-            Assert.NotEqual(instance, container.GetInstance<SomeClass>());
-            write(container.ToString());
+            container.RegisterFactory(factory);
+            var reg = container.GetRegistrations().Last();
+            Assert.Equal(Container.Lifestyle.Transient, reg.Lifestyle);
+            Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.Type);
+            Assert.Equal(null, reg.ConcreteType);
+            Assert.Equal(null, reg.Instance);
+            Assert.Equal(factory, reg.Factory); 
+            container.Dispose();
+
+            container.RegisterFactory<ISomeClass>(factory);
+            reg = container.GetRegistrations().Last();
+            Assert.Equal(Container.Lifestyle.Transient, reg.Lifestyle);
+            Assert.Equal(typeof(ISomeClass).GetTypeInfo(), reg.Type);
+            Assert.Equal(null, reg.ConcreteType);
+            Assert.Equal(null, reg.Instance);
+            Assert.Equal(factory, reg.Factory);
         }
 
-        [Fact]
-        public void Test_Register_Factory_Iface()
-        {
-            container.RegisterFactory<ISomeClass>(() => new SomeClass());
-            var reg = container.GetRegistrations().Last();
-            Assert.Equal(typeof(ISomeClass).GetTypeInfo(), reg.SuperType);
-            Assert.Equal(null, reg.ConcreteType);
-            Assert.NotEqual(null, reg.Factory);
-            Assert.Equal(Container.Lifestyle.Transient, reg.Lifestyle);
-
-            var instance = container.GetInstance<ISomeClass>();
-            Assert.NotEqual(instance, container.GetInstance<ISomeClass>());
-            write(container.ToString());
-        }
     }
 }

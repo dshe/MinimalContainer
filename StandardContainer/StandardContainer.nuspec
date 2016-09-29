@@ -1,23 +1,20 @@
-<?xml version="1.0" encoding="utf-8"?>
-<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+<?xml version="1.0"?>
+<package>
   <metadata>
-    <id>$id$</id>
-    <version>$version$</version>
-    <title>$title$</title>
-    <authors>$author$</authors>
-    <owners>$author$</owners>
+    <id>StandardContainer</id>
+    <version>1.0</version>
+    <title>StandardContainer</title>
+    <authors>David Shepherd</authors>
+    <owners>David Shepherd</owners>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
     <projectUrl>https://github.com/dshe/StandardContainer</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/dshe/StandardContainer/master/worm64.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>$description$</description>
-    <copyright>Copyright � 2016</copyright>
-    <dependencies>
-      <group targetFramework=".NETStandard1.0">
-        <dependency id="NETStandard.Library" version="1.6.0" exclude="Build,Analyzers" />
-      </group>
-    </dependencies>
-    <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
+    <description>A simple IoC container.</description>
+    <copyright>Copyright 2016</copyright>
     <tags>IoC container dependency injection netstandard portable</tags>
   </metadata>
+  <files>
+    <file src="StandardContainer.cs" target="content\StandardContainer.cs" />
+  </files>
 </package>

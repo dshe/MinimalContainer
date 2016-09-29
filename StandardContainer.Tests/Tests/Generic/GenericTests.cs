@@ -43,7 +43,7 @@ namespace StandardContainer.Tests.Tests.Generic
         [Fact]
         public void Test_OpenGeneric()
         {
-            //container.RegisterType(typeof(GenericClass<>), null, Lifestyle.Singleton);
+            //container.RegisterSingleton(typeof(GenericClass<>));
             //container.GetInstance(typeof(GenericClass<>));
             //write(Environment.NewLine + container);
         }

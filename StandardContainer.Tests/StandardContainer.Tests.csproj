@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>StandardContainer.Tests</RootNamespace>
     <AssemblyName>StandardContainer.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
@@ -58,7 +58,7 @@
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Tests\Constructor\ConstructorSelectionTests.cs" />
-    <Compile Include="Tests\Register\ContainerDefaultLifestyleTest.cs" />
+    <Compile Include="Tests\Register\DefaultLifestyleTest.cs" />
     <Compile Include="Tests\Enumerable\AutoEnumerableTests.cs" />
     <Compile Include="Examples\Example2.cs" />
     <Compile Include="Tests\Generic\GenericTests.cs" />
@@ -71,16 +71,14 @@
     <Compile Include="Tests\Relative\CaptiveDependencyTest.cs" />
     <Compile Include="Tests\Relative\CreateInstanceTest.cs" />
     <Compile Include="Examples\Example1.cs" />
+    <Compile Include="Tests\Relative\MultipleInterfaces.cs" />
     <Compile Include="Tests\Relative\RecursionTest.cs" />
     <Compile Include="Tests\Relative\UniqueConcreteTest.cs" />
     <Compile Include="Utilities\ExtensionMethods.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\StandardContainer\StandardContainer.csproj">
       <Project>{95eb285c-2916-425c-b50f-af42b94d650c}</Project>

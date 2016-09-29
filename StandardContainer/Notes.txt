@@ -1,0 +1,38 @@
+﻿
+
+Type find concrete =>
+Type, ConcreteType
+	transient: set factory to create concrete type
+		complicated: 
+
+	singleton: create instance of concrete type, set instance
+		DOES depend on other registrations
+
+
+
+
+Instance: Expression = Expression.Constant(instance)
+	always singleton
+	instance is set, so nothing to do
+	does not depend on other registrations
+
+Factory: Expression<Func<object>> expression = () => factory();
+	transient
+	factory is set, so nothing to do
+	does not depend on other registrations
+
+
+	/*
+ * Register<Any> - determine single concrete
+ * Register<Any,Concrete>
+ 
+ * RegisterInstance<T>
+ * RegisterFactory<T>
+ * 
+ * key: AnyType => shared Registration ()
+ * Any Type -> Concrete
+ * instance, factory -> Concrete
+ */
+
+
+

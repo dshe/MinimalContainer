@@ -9,8 +9,8 @@ namespace StandardContainer.Tests.Tests.Relative
     public interface IMarker2 {}
 
     public class ClassA1 : IMarker1, IMarker2 {}
-    public class ClassA2 : IMarker1, IMarker2 { }
-    public class ClassA3 : IMarker1, IMarker2 { }
+    public class ClassA2 : IMarker1, IMarker2 {}
+    public class ClassA3 : IMarker1, IMarker2 {}
 
     public class UniqueConcreteTest
     {
@@ -34,12 +34,13 @@ namespace StandardContainer.Tests.Tests.Relative
         public void Test_RegistrationConcrete()
         {
             container.RegisterSingleton<ClassA1>();
-            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<IMarker1, ClassA1>());
+            //Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<IMarker1, ClassA1>());
+            //container.RegisterSingleton<IMarker1, ClassA1>();
 
-            container.RegisterSingleton<IMarker1, ClassA2>();
-            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<ClassA2>());
-            //Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<IMarker1, ClassA3>());
-            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<IMarker2, ClassA2>());
+            //container.RegisterSingleton<IMarker1, ClassA2>();
+            //Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<ClassA2>());
+            /////Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<IMarker1, ClassA3>());
+            //Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<IMarker2, ClassA2>());
         }
 
         [Fact]
