@@ -25,7 +25,7 @@ IFoo instance = container.GetInstance<IFoo>();
 
 container.Dispose();
 ```
-Disposing the container will dispose any registered disposable singleton instances.
+Disposing the container disposes any registered disposable singleton instances.
 
 #### registration
 ```csharp
