@@ -29,10 +29,12 @@ Disposing the container will dispose any registered disposable singleton instanc
 
 #### registration
 ```csharp
-container.RegisterSingleton<T>();
+container.RegisterSingleton<Foo>();
+container.RegisterSingleton<IFoo>();
 container.RegisterSingleton<IFoo, Foo>();
 
-container.RegisterTransient<T>();
+container.RegisterTransient<Foo>();
+container.RegisterTransient<IFoo>();
 container.RegisterTransient<IFoo, Foo>();
 
 container.RegisterInstance(Foo instance);
