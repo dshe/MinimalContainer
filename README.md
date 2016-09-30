@@ -111,11 +111,11 @@ public class ClassA : IDisposable
 public class Root
 {
     public Root(ClassA a) {}
-    public void Run() {}
+    public void StartApplication() {}
 }
 
 using (var container = new Container(Lifestyle.Singleton))
-    container.GetInstance<Root>().Run();
+    container.GetInstance<Root>().StartApplication();
 ```
 The complete object graph is created by simply resolving the compositional root. 
 #### fluent examples
