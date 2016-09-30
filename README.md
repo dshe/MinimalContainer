@@ -65,25 +65,25 @@ IList<IFoo> list = container.GetInstance<IList<Ifoo>>();
 A list of instances of registered types which are assignable to `IFoo` is returned.
 #### generics
 ```csharp
-public class GenericParameterClass {}
+public class Foo2 {}
 
-public class GenericClass<T>
+public class Foo1<T>
 {
-    public GenericClass(T t) {}
+    public Foo1(T t) {}
 }
 
 public class Foo
 {
-    public Foo(GenericClass<GenericParameterClass> g) {}
+    public Foo(Foo1<Foo2> g) {}
 }
 
 var container = new Container();
 
-container.RegisterSingleton<GenericParameterClass>();
-container.RegisterSingleton<GenericClass<GenericParameterClass>>();
+container.RegisterSingleton<Foo2>();
+container.RegisterSingleton<Foo1<Foo2>>();
 container.RegisterSingleton<Foo>();
 
-SomeClass instance = container.GetInstance<Foo>();
+Foo instance = container.GetInstance<Foo>();
 ```
 #### automatic registration
 ```csharp
