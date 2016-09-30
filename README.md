@@ -3,6 +3,7 @@
 
 A simple and portable IoC (Inversion of Control) container.
 - one C# 6.0 source file
+- no dependencies
 - supports .NET Platform Standard 1.0
 - supports public and internal constructor dependency injection
 - supports automatic and/or explicit type registration
@@ -25,14 +26,16 @@ IFoo instance = container.GetInstance<IFoo>();
 
 container.Dispose();
 ```
-Disposing the container will dispose any registered disposable singleton instances.
+Disposing the container disposes any registered disposable singleton instances.
 
 #### registration
 ```csharp
-container.RegisterSingleton<T>();
+container.RegisterSingleton<Foo>();
+container.RegisterSingleton<IFoo>();
 container.RegisterSingleton<IFoo, Foo>();
 
-container.RegisterTransient<T>();
+container.RegisterTransient<Foo>();
+container.RegisterTransient<IFoo>();
 container.RegisterTransient<IFoo, Foo>();
 
 container.RegisterInstance(Foo instance);
@@ -55,32 +58,32 @@ var container = new Container();
 
 container.RegisterSingleton<Foo1>();
 container.RegisterSingleton<Foo2>();
-container.RegisterSingleton<IEnumerable<IFoo>>();
+container.RegisterSingleton<IList<IFoo>>();
 
-IEnumerable<IFoo> enumerable = container.GetInstance<IEnumerable<Ifoo>>();
+IList<IFoo> list = container.GetInstance<IList<Ifoo>>();
 ```
 A list of instances of registered types which are assignable to `IFoo` is returned.
 #### generics
 ```csharp
-public class GenericParameterClass {}
+public class Foo2 {}
 
-public class GenericClass<T>
+public class Foo1<T>
 {
-    public GenericClass(T t) {}
+    public Foo1(T t) {}
 }
 
 public class Foo
 {
-    public Foo(GenericClass<GenericParameterClass> g) {}
+    public Foo(Foo1<Foo2> g) {}
 }
 
 var container = new Container();
 
-container.RegisterSingleton<GenericParameterClass>();
-container.RegisterSingleton<GenericClass<GenericParameterClass>>();
+container.RegisterSingleton<Foo2>();
+container.RegisterSingleton<Foo1<Foo2>>();
 container.RegisterSingleton<Foo>();
 
-SomeClass instance = container.GetInstance<Foo>();
+Foo instance = container.GetInstance<Foo>();
 ```
 #### automatic registration
 ```csharp
@@ -99,31 +102,22 @@ If automatic type resolution requires scanning assemblies other than the current
 public interface IClassB {}
 public class ClassB : IClassB {}
 
-public class ClassC<T> { }
-public class ClassD { }
-
-public interface IClass {}
-public class ClassE : IClass {}
-public class ClassF : IClass {}
-
 public class ClassA : IDisposable
 {
-    public ClassA(IClassB b, ClassC<ClassD> cd, IEnumerable<IClass> list) {}
+    public ClassA(IClassB b) {}
     public void Dispose() {}
 }
 
 public class Root
 {
-    public Root(ClassA a)
-    {
-        StartApplication();
-    }
+    public Root(ClassA a) {}
+    public void StartApplication() {}
 }
 
 using (var container = new Container(Lifestyle.Singleton))
-    container.GetInstance<Root>();
+    container.GetInstance<Root>().StartApplication();
 ```
-The complete object graph is created and the application is started by simply resolving the compositional root. 
+The complete object graph is created by simply resolving the compositional root. 
 #### fluent examples
 ```csharp
 var root = new Container(Lifestyle.Transient)
