@@ -42,6 +42,7 @@ namespace StandardContainer.Tests.Tests.Enumerable
         public void Test_List_Types()
         {
             container.GetInstance<IEnumerable<IMarker>>();
+            container.GetInstance<ICollection<IMarker>>();
             container.GetInstance<IList<IMarker>>();
         }
 

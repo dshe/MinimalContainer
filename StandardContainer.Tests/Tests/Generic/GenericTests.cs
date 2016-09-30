@@ -15,8 +15,7 @@ namespace StandardContainer.Tests.Tests.Generic
 
         internal class SomeClass
         {
-            public SomeClass(GenericClass<GenericParameterClass> generic)
-            { }
+            public SomeClass(GenericClass<GenericParameterClass> generic) { }
         }
 
         private readonly Container container;

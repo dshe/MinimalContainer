@@ -35,11 +35,22 @@ uap10.0
 MonoAndroid10, MonoTouch10
 
 ===================================
-netstandard1.0
 
-netstandard1.1 =>
 
-netcoreapp1.0
-net45
-uap10.0
+Type find concrete =>
+Type, ConcreteType
+	transient: set factory to create concrete type
+	singleton: create instance of concrete type, set instance
+		DOES depend on other registrations
 
+Instance: Expression = Expression.Constant(instance)
+	always singleton
+	instance is set, so nothing to do
+	does not depend on other registrations
+
+Factory: Expression<Func<object>> expression = () => factory();
+	transient
+	factory is set, so nothing to do
+	does not depend on other registrations
+
+ 
