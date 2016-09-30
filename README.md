@@ -102,31 +102,22 @@ If automatic type resolution requires scanning assemblies other than the current
 public interface IClassB {}
 public class ClassB : IClassB {}
 
-public class ClassC<T> { }
-public class ClassD { }
-
-public interface IClass {}
-public class ClassE : IClass {}
-public class ClassF : IClass {}
-
 public class ClassA : IDisposable
 {
-    public ClassA(IClassB b, ClassC<ClassD> cd, IEnumerable<IClass> list) {}
+    public ClassA(IClassB b) {}
     public void Dispose() {}
 }
 
 public class Root
 {
-    public Root(ClassA a)
-    {
-        StartApplication();
-    }
+    public Root(ClassA a) {}
+    public void Run() {}
 }
 
 using (var container = new Container(Lifestyle.Singleton))
-    container.GetInstance<Root>();
+    container.GetInstance<Root>().Run();
 ```
-The complete object graph is created and the application is started by simply resolving the compositional root. 
+The complete object graph is created by simply resolving the compositional root. 
 #### fluent examples
 ```csharp
 var root = new Container(Lifestyle.Transient)
