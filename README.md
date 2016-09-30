@@ -2,10 +2,10 @@
 ## StandardContainer&nbsp;&nbsp; [![release](https://img.shields.io/github/release/dshe/StandardContainer.svg)](https://github.com/dshe/StandardContainer/releases) [![status](https://ci.appveyor.com/api/projects/status/uuft89jhlm0xw22q/branch/master?svg=true)](https://ci.appveyor.com/project/dshe/standardcontainer/branch/master) [![License](https://img.shields.io/badge/license-Apache%202.0-7755BB.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ***A simple and portable IoC (Inversion of Control) container.***
-- C# 6.0 **single source file**
+- C# 6.0 single C# 6.0 source file
+- supports .NET Platform Standard 1.0
 - no dependencies
-- supports **.NET Platform Standard 1.0**
-- supports public and **internal** constructor injection
+- supports public and internal constructor injection
 - supports automatic and/or explicit type registration
 - supports transient and singleton (container) lifestyles
 - supports enumerables and generics
@@ -93,7 +93,7 @@ var container = new Container(Lifestyle.Singleton, assemblies:someAssembly);
 
 Foo instance = container.GetInstance<Foo>();
 ```
-To enable automatic registration, pass the lifestyle to be used (singleton or transient) in the container's constructor. Note that the container will always register the dependencies of singleton instances as singletons.
+To enable automatic registration, set the default lifestyle (singleton or transient) when constructing the container. Note that the container will always register the dependencies of singleton instances as singletons.
 
 If automatic type resolution requires scanning assemblies other than the current executing assembly, include references to those assemblies in the container's constructor.
 
@@ -136,7 +136,7 @@ The following graphic illustrates the automatic type resolution strategy:
 
 
 #### constructors
-The container can create instances of types using public and internal constructors. In case a class has more than one constructor, the constructor to be used may be indicated by decorating it with the 'ContainerConstructor' attribute. Otherwise, the type is constructed using the constructor with the smallest number of arguments.
+The container can create instances of types using public and internal constructors. In case a type has more than one constructor, the constructor to be used may be indicated by decorating it with the 'ContainerConstructor' attribute. Otherwise, the constructor with the smallest number of arguments is used.
 ```csharp
 public class Foo
 {
