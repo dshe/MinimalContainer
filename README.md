@@ -58,9 +58,9 @@ var container = new Container();
 
 container.RegisterSingleton<Foo1>();
 container.RegisterSingleton<Foo2>();
-container.RegisterSingleton<IEnumerable<IFoo>>();
+container.RegisterSingleton<IList<IFoo>>();
 
-IEnumerable<IFoo> enumerable = container.GetInstance<IEnumerable<Ifoo>>();
+IList<IFoo> list = container.GetInstance<IList<Ifoo>>();
 ```
 A list of instances of registered types which are assignable to `IFoo` is returned.
 #### generics
