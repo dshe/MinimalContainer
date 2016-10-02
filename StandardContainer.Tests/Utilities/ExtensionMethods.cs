@@ -2,7 +2,7 @@
 
 namespace StandardContainer.Tests.Utilities
 {
-    public static class TestExtensionMethods
+    public static class TestExtensions
     {
         public static Exception Output(this Exception ex, Action<string> write)
         {

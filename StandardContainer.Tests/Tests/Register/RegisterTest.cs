@@ -98,6 +98,5 @@ namespace StandardContainer.Tests.Tests.Register
             Assert.Equal(null, reg.Instance);
             Assert.Equal(factory, reg.Factory);
         }
-
     }
 }

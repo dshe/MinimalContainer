@@ -68,6 +68,7 @@
     <Compile Include="Tests\Register\RegisterErrorTest.cs" />
     <Compile Include="Tests\Register\RegisterTest.cs" />
     <Compile Include="Tests\Constructor\ConstructorArgumentsTests.cs" />
+    <Compile Include="Tests\Register\SingletonInterface.cs" />
     <Compile Include="Tests\Relative\CaptiveDependencyTest.cs" />
     <Compile Include="Tests\Relative\CreateInstanceTest.cs" />
     <Compile Include="Examples\Example1.cs" />

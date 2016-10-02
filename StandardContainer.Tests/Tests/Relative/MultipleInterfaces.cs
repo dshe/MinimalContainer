@@ -25,7 +25,7 @@ namespace StandardContainer.Tests.Tests.Relative
         {
             container.RegisterSingleton<IFoo1>();
             container.RegisterSingleton<IFoo2>();
-            Assert.NotEqual((Foo)container.GetInstance<IFoo1>(), (Foo)container.GetInstance<IFoo2>()); // why is cast required?
+            Assert.Equal((Foo)container.GetInstance<IFoo1>(), (Foo)container.GetInstance<IFoo2>()); // why is cast required?
         }
 
         [Fact]
@@ -33,7 +33,7 @@ namespace StandardContainer.Tests.Tests.Relative
         {
             container.RegisterSingleton<Foo>();
             container.RegisterSingleton<IFoo1>();
-            Assert.NotEqual(container.GetInstance<Foo>(), container.GetInstance<IFoo1>());
+            Assert.Equal(container.GetInstance<Foo>(), container.GetInstance<IFoo1>());
         }
 
     }

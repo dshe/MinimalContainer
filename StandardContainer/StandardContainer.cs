@@ -20,22 +20,24 @@ namespace StandardContainer
     public sealed class Container : IDisposable
     {
         public enum Lifestyle { AutoRegisterDisabled, Singleton, Transient };
+        public enum Origin { Type, Instance, Factory };
 
         public sealed class Registration
         {
             public Lifestyle Lifestyle;
+            public Origin Origin;
             public TypeInfo Type;
             public TypeInfo ConcreteType;
             public object Instance;
             public Func<object> Factory;
             internal Expression Expression;
             public override string ToString() =>
-                $"'{(Equals(ConcreteType, null) || Equals(ConcreteType, Type) ? "" : ConcreteType.AsString() + "->")}" +
-                $"{Type.AsString()}', {Lifestyle}.";
+                $"'{(Equals(ConcreteType, null) || Equals(ConcreteType, Type) ? "" : ConcreteType.AsString() + "->")}"
+                + $"{Type.AsString()}', {Lifestyle}.";
         }
 
         private readonly Lifestyle autoLifestyle;
-        private readonly Lazy<List<TypeInfo>> allConcreteTypes;
+        private readonly List<TypeInfo> concreteTypes;
         private readonly Dictionary<Type, Registration> registrations = new Dictionary<Type, Registration>();
         private readonly Stack<TypeInfo> typeStack = new Stack<TypeInfo>();
         private readonly Action<string> log;
@@ -45,10 +47,10 @@ namespace StandardContainer
             this.autoLifestyle = autoLifestyle;
             this.log = log;
             Log("Creating Container.");
-            allConcreteTypes = new Lazy<List<TypeInfo>>(() =>
-                (assemblies.Any() ? assemblies : new[] { this.GetType().GetTypeInfo().Assembly })
+            concreteTypes = (assemblies.Any() ? assemblies : new[] {this.GetType().GetTypeInfo().Assembly})
                 .Select(a => a.DefinedTypes.Where(t => t.IsClass && !t.IsAbstract).ToList())
-                .SelectMany(x => x).ToList());
+                .SelectMany(x => x)
+                .ToList();
             RegisterInstance(this); // container self-register
         }
 
@@ -56,20 +58,20 @@ namespace StandardContainer
         public Container RegisterSingleton<T, TConcrete>() where TConcrete : T 
             => RegisterSingleton(typeof(T), typeof(TConcrete));
         public Container RegisterSingleton(Type type, Type concreteType = null)
-            => Register(Lifestyle.Singleton, type, concreteType);
+            => Register(Lifestyle.Singleton, Origin.Type, type, concreteType);
           
         public Container RegisterTransient<T>() => RegisterTransient(typeof(T));
         public Container RegisterTransient<T, TConcrete>() where TConcrete : T 
             => RegisterTransient(typeof(T), typeof(TConcrete));
         public Container RegisterTransient(Type type, Type concreteType = null)
-            => Register(Lifestyle.Transient, type, concreteType);
+            => Register(Lifestyle.Transient, Origin.Type, type, concreteType);
 
         public Container RegisterInstance<T>(T instance) => RegisterInstance(typeof(T), instance);
         public Container RegisterInstance(Type type, object instance)
         {
             if (instance == null)
                 throw new ArgumentNullException(nameof(instance));
-            return Register(Lifestyle.Singleton, type, instance.GetType(), instance);
+            return Register(Lifestyle.Singleton, Origin.Instance, type, instance.GetType(), instance);
         }
 
         public Container RegisterFactory<T>(Func<T> factory) where T : class => RegisterFactory(typeof(T), factory);
@@ -77,25 +79,25 @@ namespace StandardContainer
         {
             if (factory == null)
                 throw new ArgumentNullException(nameof(factory));
-            return Register(Lifestyle.Transient, type, null, null, factory);
+            return Register(Lifestyle.Transient, Origin.Factory, type, null, null, factory);
         }
 
-        private Container Register(Lifestyle lifestyle, Type type, Type concreteType = null, object instance = null,
+        private Container Register(Lifestyle lifestyle, Origin origin, Type type, Type concreteType, object instance = null,
             Func<object> factory = null, [CallerMemberName] string caller = null)
         {
-            AddRegistration(lifestyle, type?.GetTypeInfo(), concreteType?.GetTypeInfo(), instance, factory, caller);
+            AddRegistration(lifestyle, origin, type?.GetTypeInfo(), concreteType?.GetTypeInfo(), instance, factory, caller);
             return this;
         }
 
-        ///////////////////////////
+        //////////////////////////////////////////////////////////////////////////////
 
-        private Registration AddRegistration(Lifestyle lifestyle, TypeInfo type, TypeInfo concreteType,
+        private Registration AddRegistration(Lifestyle lifestyle, Origin origin, TypeInfo type, TypeInfo concreteType,
             object instance, Func<object> factory, string caller)
         {
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
-            if (concreteType == null && instance == null && factory == null)
-                concreteType = FindConcreteType(type);
+            if (concreteType == null && origin == Origin.Type)
+                concreteType = concreteTypes.FindConcreteType(type);
             if (concreteType != null)
             {
                 if (!type.IsAssignableFrom(concreteType))
@@ -107,15 +109,16 @@ namespace StandardContainer
                     throw new TypeAccessException("Cannot register type 'string'.");
             }
             lock (registrations)
-                return AddRegistration2(lifestyle, type, concreteType, instance, factory, caller);
+                return AddRegistration2(lifestyle, origin, type, concreteType, instance, factory, caller);
         }
 
-        private Registration AddRegistration2(Lifestyle lifestyle, TypeInfo type, TypeInfo concreteType,
+        private Registration AddRegistration2(Lifestyle lifestyle, Origin origin, TypeInfo type, TypeInfo concreteType,
             object instance, Func<object> factory, string caller)
         {
             var reg = new Registration
             {
                 Lifestyle = lifestyle,
+                Origin = origin,
                 Type = type,
                 ConcreteType = concreteType,
                 Instance = instance,
@@ -138,16 +141,6 @@ namespace StandardContainer
                 throw new TypeAccessException($"Type '{type.AsString()}' is already registered.", ex);
             }
             return reg;
-        }
-
-        private TypeInfo FindConcreteType(TypeInfo type)
-        {
-            if (!type.IsAbstract || type.IsGenericType || typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(type))
-                return type;
-            var types = allConcreteTypes.Value.Where(type.IsAssignableFrom).ToList(); // slow
-            if (types.Count != 1)
-                throw new TypeAccessException($"{types.Count} types found assignable to '{type.AsString()}'.");
-            return types.Single();
         }
 
         //////////////////////////////////////////////////////////////////////////////
@@ -182,7 +175,7 @@ namespace StandardContainer
                 if (autoLifestyle == Lifestyle.AutoRegisterDisabled)
                     throw new TypeAccessException($"Cannot resolve unregistered type '{type.AsString()}'.");
                 var lifestyle = dependent?.Lifestyle == Lifestyle.Singleton ? Lifestyle.Singleton : autoLifestyle;
-                reg = AddRegistration(lifestyle, type.GetTypeInfo(), null, null, null, "Auto-registration");
+                reg = AddRegistration(lifestyle, Origin.Type, type.GetTypeInfo(), null, null, null, "Auto-registration");
             }
             if (reg.Instance == null && reg.Factory == null)
                 Initialize(reg, dependent);
@@ -207,6 +200,19 @@ namespace StandardContainer
 
         private void Initialize(Registration reg)
         {
+            if (reg.Lifestyle == Lifestyle.Singleton && reg.Origin == Origin.Type)
+            {
+                var previousReg = registrations.Values.SingleOrDefault(r =>
+                    Equals(r.ConcreteType, reg.ConcreteType) &&
+                    r.Origin == Origin.Type &&
+                    r.Lifestyle == Lifestyle.Singleton &&
+                    r.Instance != null);
+                if (previousReg != null)
+                {
+                    reg.Instance = previousReg.Instance;
+                    return;
+                }
+            }
             if (typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(reg.Type))
                 SetExpressionArray(reg);
             else
@@ -222,7 +228,7 @@ namespace StandardContainer
         private void SetExpressionNew(Registration reg)
         {
             var type = reg.ConcreteType;
-            var ctor = GetConstructor(type);
+            var ctor = type.GetConstructor();
             var parameters = ctor.GetParameters()
                 .Select(p => p.HasDefaultValue ? Expression.Constant(p.DefaultValue, p.ParameterType) : GetRegistration(p.ParameterType, reg).Expression)
                 .ToList();
@@ -233,7 +239,7 @@ namespace StandardContainer
         private void SetExpressionArray(Registration reg)
         {
             var genericType = reg.ConcreteType.GenericTypeArguments.Single().GetTypeInfo();
-            var expressions = allConcreteTypes.Value
+            var expressions = concreteTypes
                 .Where(t => genericType.IsAssignableFrom(t))
                 .Select(x => GetRegistration(x.AsType(), reg).Expression)
                 .ToList();
@@ -245,27 +251,10 @@ namespace StandardContainer
 
         //////////////////////////////////////////////////////////////////////////////
 
-        private static ConstructorInfo GetConstructor(TypeInfo type)
-        {
-            var ctors = type.DeclaredConstructors.Where(c => !c.IsPrivate).ToList();
-            if (ctors.Count == 1)
-                return ctors.Single();
-            if (!ctors.Any())
-                throw new TypeAccessException($"Type '{type.AsString()}' has no public or internal constructor.");
-            var ctorsWithAttribute = ctors.Where(c => c.GetCustomAttribute<ContainerConstructorAttribute>() != null).ToList();
-            if (ctorsWithAttribute.Count == 1)
-                return ctorsWithAttribute.Single();
-            if (ctorsWithAttribute.Count > 1)
-                throw new TypeAccessException($"Type '{type.AsString()}' has more than one constructor decorated with '{nameof(ContainerConstructorAttribute)}'.");
-            return ctors.OrderBy(c => c.GetParameters().Length).First();
-        }
-
-        //////////////////////////////////////////////////////////////////////////////
-
         public List<Registration> GetRegistrations()
         {
             lock (registrations)
-                return registrations.Values.Distinct().OrderBy(r => r.Type.Name).ToList();
+                return registrations.Values.OrderBy(r => r.Type.Name).ToList();
         }
 
         public void Log() => Log(ToString());
@@ -305,7 +294,7 @@ namespace StandardContainer
         }
     }
 
-    internal static class StandardContainerExtensionMethods
+    internal static class StandardContainerExtensions
     {
         internal static string JoinString(this IEnumerable<string> strings, string separator) =>
             string.Join(separator, strings);
@@ -326,6 +315,32 @@ namespace StandardContainer
                 .JoinString(",");
             return $"{name}<{args}>";
         }
+
+        internal static ConstructorInfo GetConstructor(this TypeInfo type)
+        {
+            var ctors = type.DeclaredConstructors.Where(c => !c.IsPrivate).ToList();
+            if (ctors.Count == 1)
+                return ctors.Single();
+            if (!ctors.Any())
+                throw new TypeAccessException($"Type '{type.AsString()}' has no public or internal constructor.");
+            var ctorsWithAttribute = ctors.Where(c => c.GetCustomAttribute<ContainerConstructorAttribute>() != null).ToList();
+            if (ctorsWithAttribute.Count == 1)
+                return ctorsWithAttribute.Single();
+            if (ctorsWithAttribute.Count > 1)
+                throw new TypeAccessException($"Type '{type.AsString()}' has more than one constructor decorated with '{nameof(ContainerConstructorAttribute)}'.");
+            return ctors.OrderBy(c => c.GetParameters().Length).First();
+        }
+
+        internal static TypeInfo FindConcreteType(this List<TypeInfo> concreteTypes, TypeInfo type)
+        {
+            if (!type.IsAbstract || type.IsGenericType || typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(type))
+                return type;
+            var assignableTypes = concreteTypes.Where(type.IsAssignableFrom).ToList(); // slow
+            if (assignableTypes.Count != 1)
+                throw new TypeAccessException($"{assignableTypes.Count} types found assignable to '{type.AsString()}'.");
+            return assignableTypes.Single();
+        }
+
     }
 
 }
