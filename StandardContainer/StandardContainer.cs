@@ -37,7 +37,7 @@ namespace StandardContainer
         }
 
         private readonly Lifestyle autoLifestyle;
-        private readonly List<TypeInfo> concreteTypes;
+        private readonly List<TypeInfo> allConcreteTypes;
         private readonly Dictionary<Type, Registration> registrations = new Dictionary<Type, Registration>();
         private readonly Stack<TypeInfo> typeStack = new Stack<TypeInfo>();
         private readonly Action<string> log;
@@ -47,7 +47,7 @@ namespace StandardContainer
             this.autoLifestyle = autoLifestyle;
             this.log = log;
             Log("Creating Container.");
-            concreteTypes = (assemblies.Any() ? assemblies : new[] {this.GetType().GetTypeInfo().Assembly})
+            allConcreteTypes = (assemblies.Any() ? assemblies : new[] {this.GetType().GetTypeInfo().Assembly})
                 .Select(a => a.DefinedTypes.Where(t => t.IsClass && !t.IsAbstract).ToList())
                 .SelectMany(x => x)
                 .ToList();
@@ -97,7 +97,7 @@ namespace StandardContainer
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
             if (concreteType == null && origin == Origin.Type)
-                concreteType = concreteTypes.FindConcreteType(type);
+                concreteType = allConcreteTypes.FindConcreteType(type); // slow
             if (concreteType != null)
             {
                 if (!type.IsAssignableFrom(concreteType))
@@ -124,13 +124,6 @@ namespace StandardContainer
                 Instance = instance,
                 Factory = factory
             };
-            if (reg.Instance != null)
-                reg.Expression = Expression.Constant(instance);
-            else if (reg.Factory != null)
-            {
-                Expression<Func<object>> expression = () => factory();
-                reg.Expression = expression;
-            }
             Log(() => $"{caller}: {reg}");
             try
             {
@@ -184,6 +177,17 @@ namespace StandardContainer
 
         private void Initialize(Registration reg, Registration dependent)
         {
+            if (reg.Instance != null)
+            {
+                reg.Expression = Expression.Constant(reg.Instance);
+                return;
+            }
+            if (reg.Factory != null)
+            {
+                Expression<Func<object>> expression = () => reg.Factory();
+                reg.Expression = expression;
+                return;
+            }
             if (dependent == null)
             {
                 typeStack.Clear();
@@ -239,7 +243,7 @@ namespace StandardContainer
         private void SetExpressionArray(Registration reg)
         {
             var genericType = reg.ConcreteType.GenericTypeArguments.Single().GetTypeInfo();
-            var expressions = concreteTypes
+            var expressions = allConcreteTypes
                 .Where(t => genericType.IsAssignableFrom(t))
                 .Select(x => GetRegistration(x.AsType(), reg).Expression)
                 .ToList();
