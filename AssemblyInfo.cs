@@ -29,3 +29,4 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyFileVersion("0.1.1.1")]
 [assembly: AssemblyInformationalVersion("0.1.*")]
 [assembly: InternalsVisibleTo("StandardContainer.Tests")]
+[assembly: System.CLSCompliant(true)]

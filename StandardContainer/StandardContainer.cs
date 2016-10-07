@@ -35,8 +35,7 @@ namespace StandardContainer
             public Func<object> Factory;
             internal Expression Expression;
             public override string ToString() =>
-                $"'{(Equals(ConcreteType, null) || Equals(ConcreteType, Type) ? "" : ConcreteType.AsString() + "->")}"
-                + $"{Type.AsString()}', {Style}.";
+                $"'{(Equals(ConcreteType, null) || Equals(ConcreteType, Type) ? "" : ConcreteType.AsString() + "->")}{Type.AsString()}', {Style}.";
         }
 
         private readonly DefaultLifestyle defaultLifestyle;
