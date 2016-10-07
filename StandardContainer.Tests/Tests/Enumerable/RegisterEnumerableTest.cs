@@ -29,10 +29,6 @@ namespace StandardContainer.Tests.Tests.Enumerable
             var instance = container.GetInstance<IEnumerable<ISomeClass>>();
             Assert.Equal(instance, container.GetInstance(typeof (IEnumerable<ISomeClass>)));
             Assert.Equal(4, container.GetRegistrations().Count);
-            foreach (var m in container.GetRegistrations())
-            {
-                Assert.Equal(Container.Lifestyle.Singleton, m.Lifestyle);
-            }
             container.Log();
         }
 

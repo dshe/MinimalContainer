@@ -30,7 +30,7 @@ namespace StandardContainer.Tests.Tests.Register
         [Fact]
         public void T02_Register_Singleton_Auto()
         {
-            var container = new Container(autoLifestyle:Container.Lifestyle.Singleton, log: write, assemblies: Assembly.GetExecutingAssembly());
+            var container = new Container(Container.DefaultLifestyle.Singleton, log: write, assemblies: Assembly.GetExecutingAssembly());
             Assert.Equal(container.GetInstance<ISomeClass>(), container.GetInstance<SomeClass>());
         }
 

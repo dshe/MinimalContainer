@@ -18,7 +18,7 @@ namespace StandardContainer.Tests.Examples
         [Fact]
         public void Test_Usage()
         {
-            var container = new Container(Container.Lifestyle.Singleton, log:write);
+            var container = new Container(Container.DefaultLifestyle.Singleton, log:write);
 
             container.RegisterSingleton<IFoo, Foo>();
 

@@ -41,7 +41,7 @@ namespace StandardContainer.Tests.Examples
         [Fact]
         public void Start()
         {
-            using (var container = new Container(Container.Lifestyle.Singleton, log:write, assemblies:Assembly.GetExecutingAssembly()))
+            using (var container = new Container(Container.DefaultLifestyle.Singleton, log:write, assemblies:Assembly.GetExecutingAssembly()))
             {
                 container.GetInstance<Root>();
                 container.Log();

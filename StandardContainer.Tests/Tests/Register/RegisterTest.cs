@@ -25,7 +25,7 @@ namespace StandardContainer.Tests.Tests.Register
         {
             container.RegisterSingleton(typeof(SomeClass));
             var reg = container.GetRegistrations().Last();
-            Assert.Equal(Container.Lifestyle.Singleton, reg.Lifestyle);
+            Assert.Equal(Container.Style.Singleton, reg.Style);
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.Type);
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.ConcreteType);
             Assert.Equal(null, reg.Instance);
@@ -34,7 +34,7 @@ namespace StandardContainer.Tests.Tests.Register
 
             container.RegisterSingleton(typeof(ISomeClass), typeof(SomeClass));
             reg = container.GetRegistrations().Last();
-            Assert.Equal(Container.Lifestyle.Singleton, reg.Lifestyle);
+            Assert.Equal(Container.Style.Singleton, reg.Style);
             Assert.Equal(typeof(ISomeClass).GetTypeInfo(), reg.Type);
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.ConcreteType);
             Assert.Equal(null, reg.Instance);
@@ -46,7 +46,7 @@ namespace StandardContainer.Tests.Tests.Register
         {
             container.RegisterTransient<ISomeClass, SomeClass>();
             var reg = container.GetRegistrations().Last();
-            Assert.Equal(Container.Lifestyle.Transient, reg.Lifestyle);
+            Assert.Equal(Container.Style.Transient, reg.Style);
             Assert.Equal(typeof(ISomeClass).GetTypeInfo(), reg.Type);
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.ConcreteType);
             Assert.Equal(null, reg.Instance);
@@ -60,7 +60,7 @@ namespace StandardContainer.Tests.Tests.Register
 
             container.RegisterInstance(instance);
             var reg = container.GetRegistrations().Last();
-            Assert.Equal(Container.Lifestyle.Singleton, reg.Lifestyle);
+            Assert.Equal(Container.Style.Instance, reg.Style);
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.Type);
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.ConcreteType);
             Assert.Equal(instance, reg.Instance);
@@ -69,7 +69,7 @@ namespace StandardContainer.Tests.Tests.Register
 
             container.RegisterInstance<ISomeClass>(instance);
             reg = container.GetRegistrations().Last();
-            Assert.Equal(Container.Lifestyle.Singleton, reg.Lifestyle);
+            Assert.Equal(Container.Style.Instance, reg.Style);
             Assert.Equal(typeof(ISomeClass).GetTypeInfo(), reg.Type);
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.ConcreteType);
             Assert.Equal(instance, reg.Instance);
@@ -83,7 +83,7 @@ namespace StandardContainer.Tests.Tests.Register
 
             container.RegisterFactory(factory);
             var reg = container.GetRegistrations().Last();
-            Assert.Equal(Container.Lifestyle.Transient, reg.Lifestyle);
+            Assert.Equal(Container.Style.Factory, reg.Style);
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.Type);
             Assert.Equal(null, reg.ConcreteType);
             Assert.Equal(null, reg.Instance);
@@ -92,7 +92,7 @@ namespace StandardContainer.Tests.Tests.Register
 
             container.RegisterFactory<ISomeClass>(factory);
             reg = container.GetRegistrations().Last();
-            Assert.Equal(Container.Lifestyle.Transient, reg.Lifestyle);
+            Assert.Equal(Container.Style.Factory, reg.Style);
             Assert.Equal(typeof(ISomeClass).GetTypeInfo(), reg.Type);
             Assert.Equal(null, reg.ConcreteType);
             Assert.Equal(null, reg.Instance);
