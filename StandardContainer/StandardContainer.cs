@@ -15,18 +15,18 @@ using System.Text;
 
 namespace StandardContainer
 {
-    public enum DefaultLifestyle { AutoRegisterDisabled, Transient, Singleton };
-    public enum Style { Transient, Singleton, Instance, Factory };
+    public enum Lifestyle { Transient, Singleton, Instance, Factory };
+    public enum DefaultLifestyle { Transient, Singleton, None };
 
     public sealed class Registration
     {
-        public Style Style;
+        public Lifestyle Lifestyle;
         public TypeInfo Type, ConcreteType;
         public object Instance;
         public Func<object> Factory;
         internal Expression Expression;
         public override string ToString() =>
-            $"'{(ConcreteType == null || Equals(ConcreteType, Type) ? "" : ConcreteType.AsString() + "->")}{Type.AsString()}', {Style}.";
+            $"'{(ConcreteType == null || Equals(ConcreteType, Type) ? "" : ConcreteType.AsString() + "->")}{Type.AsString()}', {Lifestyle}.";
     }
 
     public sealed class Container : IDisposable
@@ -38,7 +38,7 @@ namespace StandardContainer
         private readonly Stack<TypeInfo> typeStack = new Stack<TypeInfo>();
         private readonly Action<string> log;
 
-        public Container(DefaultLifestyle defaultLifestyle = DefaultLifestyle.AutoRegisterDisabled, Action<string> log = null, params Assembly[] assemblies)
+        public Container(DefaultLifestyle defaultLifestyle = DefaultLifestyle.None, Action<string> log = null, params Assembly[] assemblies)
         {
             this.defaultLifestyle = defaultLifestyle;
             this.log = log;
@@ -51,23 +51,19 @@ namespace StandardContainer
         }
 
         public Container RegisterTransient<T>() => RegisterTransient(typeof(T));
-        public Container RegisterTransient<T, TConcrete>() where TConcrete : T
-            => RegisterTransient(typeof(T), typeof(TConcrete));
-        public Container RegisterTransient(Type type, Type concreteType = null)
-            => Register(Style.Transient, type, concreteType);
+        public Container RegisterTransient<T, TConcrete>() where TConcrete : T => RegisterTransient(typeof(T), typeof(TConcrete));
+        public Container RegisterTransient(Type type, Type concreteType = null) => Register(Lifestyle.Transient, type, concreteType);
 
         public Container RegisterSingleton<T>() => RegisterSingleton(typeof(T));
-        public Container RegisterSingleton<T, TConcrete>() where TConcrete : T
-            => RegisterSingleton(typeof(T), typeof(TConcrete));
-        public Container RegisterSingleton(Type type, Type concreteType = null)
-            => Register(Style.Singleton, type, concreteType);
+        public Container RegisterSingleton<T, TConcrete>() where TConcrete : T => RegisterSingleton(typeof(T), typeof(TConcrete));
+        public Container RegisterSingleton(Type type, Type concreteType = null) => Register(Lifestyle.Singleton, type, concreteType);
 
         public Container RegisterInstance<T>(T instance) => RegisterInstance(typeof(T), instance);
         public Container RegisterInstance(Type type, object instance)
         {
             if (instance == null)
                 throw new ArgumentNullException(nameof(instance));
-            return Register(Style.Instance, type, instance.GetType(), instance);
+            return Register(Lifestyle.Instance, type, instance.GetType(), instance);
         }
 
         public Container RegisterFactory<T>(Func<T> factory) where T : class => RegisterFactory(typeof(T), factory);
@@ -75,24 +71,24 @@ namespace StandardContainer
         {
             if (factory == null)
                 throw new ArgumentNullException(nameof(factory));
-            return Register(Style.Factory, type, null, null, factory);
+            return Register(Lifestyle.Factory, type, null, null, factory);
         }
 
-        private Container Register(Style style, Type type, Type concreteType, object instance = null,
+        private Container Register(Lifestyle lifestyle, Type type, Type concreteType, object instance = null,
             Func<object> factory = null, [CallerMemberName] string caller = null)
         {
-            AddRegistration(style, type?.GetTypeInfo(), concreteType?.GetTypeInfo(), instance, factory, caller);
+            AddRegistration(lifestyle, type?.GetTypeInfo(), concreteType?.GetTypeInfo(), instance, factory, caller);
             return this;
         }
 
         //////////////////////////////////////////////////////////////////////////////
 
-        private Registration AddRegistration(Style style, TypeInfo type, TypeInfo concreteType,
+        private Registration AddRegistration(Lifestyle lifestyle, TypeInfo type, TypeInfo concreteType,
             object instance, Func<object> factory, string caller)
         {
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
-            if (concreteType == null && (style == Style.Transient || style == Style.Singleton))
+            if (concreteType == null && (lifestyle == Lifestyle.Transient || lifestyle == Lifestyle.Singleton))
                 concreteType = allConcreteTypes.FindConcreteType(type);
             if (concreteType != null)
             {
@@ -105,15 +101,15 @@ namespace StandardContainer
                     throw new TypeAccessException("Cannot register type 'string'.");
             }
             lock (registrations)
-                return AddRegistrationCore(style, type, concreteType, instance, factory, caller);
+                return AddRegistrationCore(lifestyle, type, concreteType, instance, factory, caller);
         }
 
-        private Registration AddRegistrationCore(Style style, TypeInfo type, TypeInfo concreteType,
+        private Registration AddRegistrationCore(Lifestyle lifestyle, TypeInfo type, TypeInfo concreteType,
             object instance, Func<object> factory, string caller)
         {
             var reg = new Registration
             {
-                Style = style,
+                Lifestyle = lifestyle,
                 Type = type,
                 ConcreteType = concreteType,
                 Instance = instance,
@@ -167,10 +163,10 @@ namespace StandardContainer
             Registration reg;
             if (!registrations.TryGetValue(type, out reg))
             {
-                if (defaultLifestyle == DefaultLifestyle.AutoRegisterDisabled)
+                if (defaultLifestyle == DefaultLifestyle.None)
                     throw new TypeAccessException($"Cannot resolve unregistered type '{type.AsString()}'.");
-                var style = (dependent?.Style == Style.Singleton || dependent?.Style == Style.Instance || defaultLifestyle == DefaultLifestyle.Singleton)
-                    ? Style.Singleton : Style.Transient;
+                var style = (dependent?.Lifestyle == Lifestyle.Singleton || dependent?.Lifestyle == Lifestyle.Instance || defaultLifestyle == DefaultLifestyle.Singleton)
+                    ? Lifestyle.Singleton : Lifestyle.Transient;
                 reg = AddRegistration(style, type.GetTypeInfo(), null, null, null, "Auto-registration");
             }
             if (reg.Instance == null && reg.Factory == null)
@@ -188,7 +184,7 @@ namespace StandardContainer
             typeStack.Push(reg.Type);
             if (typeStack.Count(t => t.Equals(reg.Type)) > 1)
                 throw new TypeAccessException("Recursive dependency.");
-            if (dependent?.Style == Style.Singleton && reg.Style == Style.Transient)
+            if (dependent?.Lifestyle == Lifestyle.Singleton && reg.Lifestyle == Lifestyle.Transient)
                 throw new TypeAccessException($"Captive dependency: the singleton '{dependent.Type.AsString()}' depends on transient '{reg.Type.AsString()}'.");
             Initialize(reg);
             typeStack.Pop();
@@ -197,11 +193,11 @@ namespace StandardContainer
         private void Initialize(Registration reg)
         {
             // For singleton registrations, use a previously registered singleton instance, if any.
-            if (reg.Style == Style.Singleton)
+            if (reg.Lifestyle == Lifestyle.Singleton)
             {
                 reg.Instance = registrations.Values.Where(r =>
                         Equals(r.ConcreteType, reg.ConcreteType) &&
-                        r.Style == Style.Singleton &&
+                        r.Lifestyle == Lifestyle.Singleton &&
                         r.Instance != null)
                     .Select(r => r.Instance)
                     .SingleOrDefault();
@@ -213,7 +209,7 @@ namespace StandardContainer
             else
                 SetExpressionNew(reg);
             reg.Factory = Expression.Lambda<Func<object>>(reg.Expression).Compile();
-            if (reg.Style == Style.Transient)
+            if (reg.Lifestyle == Lifestyle.Transient)
                 return;
             reg.Instance = reg.Factory();
             reg.Expression = Expression.Constant(reg.Instance);
@@ -227,7 +223,7 @@ namespace StandardContainer
             var parameters = ctor.GetParameters()
                 .Select(p => p.HasDefaultValue ? Expression.Constant(p.DefaultValue, p.ParameterType) : GetRegistration(p.ParameterType, reg).Expression)
                 .ToList();
-            Log(() => $"Constructing {reg.Style} instance: '{type.AsString()}({parameters.Select(p => p?.Type.AsString()).JoinStrings(", ")})'.");
+            Log(() => $"Constructing {reg.Lifestyle} instance: '{type.AsString()}({parameters.Select(p => p?.Type.AsString()).JoinStrings(", ")})'.");
             reg.Expression = Expression.New(ctor, parameters);
         }
 
@@ -326,10 +322,8 @@ namespace StandardContainer
             return ctors.OrderBy(c => c.GetParameters().Length).First();
         }
 
-        internal static string JoinStrings(this IEnumerable<string> strings, string separator) 
-            => string.Join(separator, strings);
-        internal static string AsString(this Type type)
-            => type.GetTypeInfo().AsString();
+        internal static string JoinStrings(this IEnumerable<string> strings, string separator) => string.Join(separator, strings);
+        internal static string AsString(this Type type) => type.GetTypeInfo().AsString();
         internal static string AsString(this TypeInfo type)
         {
             if (type == null)

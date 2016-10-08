@@ -36,7 +36,7 @@ namespace StandardContainer.Tests.Tests.Register
             var c = new Container(DefaultLifestyle.Singleton, log:write, assemblies:Assembly.GetExecutingAssembly());
             var instance = c.GetInstance<SomeClass>();
             var reg = c.GetRegistrations().Last();
-            Assert.Equal(Style.Singleton, reg.Style);
+            Assert.Equal(Lifestyle.Singleton, reg.Lifestyle);
             Assert.Equal(instance, c.GetInstance<SomeClass>());
         }
 
@@ -46,7 +46,7 @@ namespace StandardContainer.Tests.Tests.Register
             var c = new Container(DefaultLifestyle.Transient, log:write, assemblies: Assembly.GetExecutingAssembly());
             var instance = c.GetInstance<SomeClass>();
             var reg = c.GetRegistrations().Last();
-            Assert.Equal(Style.Transient, reg.Style);
+            Assert.Equal(Lifestyle.Transient, reg.Lifestyle);
             Assert.NotEqual(instance, c.GetInstance<SomeClass>());
         }
     }

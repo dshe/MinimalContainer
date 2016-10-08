@@ -1,18 +1,20 @@
 <?xml version="1.0"?>
-<package >
+<package>
   <metadata>
     <id>StandardContainer</id>
-    <version>$version$</version>
-    <title>$title$</title>
-    <authors>author</authors>
-    <owners>$author$</owners>
-    <licenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</licenseUrl>
-    <projectUrl>http://PROJECT_URL_HERE_OR_DELETE_THIS_LINE</projectUrl>
-    <iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>
+    <version>1.0</version>
+    <title>StandardContainer</title>
+    <authors>dshe</authors>
+    <owners>dshe</owners>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <projectUrl>https://github.com/dshe/StandardContainer</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/dshe/StandardContainer/master/worm64.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>description</description>
-    <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
+    <description>A simple and portable IoC container.</description>
     <copyright>Copyright 2016</copyright>
-    <tags>Tag1 Tag2</tags>
+    <tags>IoC container dependency injection netstandard1.0 portable</tags>
   </metadata>
+  <files>
+    <file src="StandardContainer.cs" target="content\StandardContainer.cs" />
+  </files>
 </package>
