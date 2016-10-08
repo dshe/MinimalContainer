@@ -5,7 +5,7 @@ using StandardContainer.Tests.Utilities;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace StandardContainer.Tests.Tests.Register
+namespace StandardContainer.Tests.Tests.Core
 {
     public class RegisterErrorTest
     {

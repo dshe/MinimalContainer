@@ -25,8 +25,9 @@ namespace StandardContainer
         public object Instance;
         public Func<object> Factory;
         internal Expression Expression;
+        public int Count;
         public override string ToString() =>
-            $"'{(ConcreteType == null || Equals(ConcreteType, Type) ? "" : ConcreteType.AsString() + "->")}{Type.AsString()}', {Lifestyle}.";
+            $"{(ConcreteType == null || Equals(ConcreteType, Type) ? "" : ConcreteType.AsString() + "->")}{Type.AsString()}, {Lifestyle}({Count})";
     }
 
     public sealed class Container : IDisposable
@@ -116,7 +117,10 @@ namespace StandardContainer
                 Factory = factory
             };
             if (reg.Instance != null)
+            {
                 reg.Expression = Expression.Constant(reg.Instance);
+                reg.Count = 1;
+            }
             if (reg.Factory != null)
             {
                 Expression<Func<object>> expression = () => reg.Factory();
@@ -171,6 +175,7 @@ namespace StandardContainer
             }
             if (reg.Instance == null && reg.Factory == null)
                 Initialize(reg, dependent);
+            reg.Count = reg.Instance == null ? reg.Count + 1 : 1;
             return reg;
         }
 
@@ -293,10 +298,8 @@ namespace StandardContainer
 
     internal static class StandardContainerEx
     {
-        /// <summary>
         /// When a non-concrete type is indicated (register or get instance), the concrete type is determined automatically.
         /// In this case, the non-concrete type must be assignable to exactly one concrete type.
-        /// </summary>
         internal static TypeInfo FindConcreteType(this List<TypeInfo> concreteTypes, TypeInfo type)
         {
             if (!type.IsAbstract || type.IsGenericType || typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(type))

@@ -58,17 +58,18 @@
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Tests\Constructor\ConstructorSelectionTests.cs" />
-    <Compile Include="Tests\Register\DefaultLifestyleTest.cs" />
+    <Compile Include="Tests\Core\DefaultLifestyleTest.cs" />
+    <Compile Include="Tests\Core\GetInstanceTests.cs" />
     <Compile Include="Tests\Enumerable\AutoEnumerableTests.cs" />
     <Compile Include="Examples\Example2.cs" />
     <Compile Include="Tests\Generic\GenericTests.cs" />
     <Compile Include="Tests\Generic\AutoGenericTests.cs" />
     <Compile Include="Performance\Performance.cs" />
     <Compile Include="Tests\Enumerable\RegisterEnumerableTest.cs" />
-    <Compile Include="Tests\Register\RegisterErrorTest.cs" />
-    <Compile Include="Tests\Register\RegisterTest.cs" />
+    <Compile Include="Tests\Core\RegisterErrorTest.cs" />
+    <Compile Include="Tests\Core\RegisterTest.cs" />
     <Compile Include="Tests\Constructor\ConstructorArgumentsTests.cs" />
-    <Compile Include="Tests\Register\SingletonInterface.cs" />
+    <Compile Include="Tests\Core\SingletonInterface.cs" />
     <Compile Include="Tests\Relative\CaptiveDependencyTest.cs" />
     <Compile Include="Tests\Relative\CreateInstanceTest.cs" />
     <Compile Include="Examples\Example1.cs" />

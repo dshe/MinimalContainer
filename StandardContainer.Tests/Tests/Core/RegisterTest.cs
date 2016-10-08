@@ -4,7 +4,7 @@ using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace StandardContainer.Tests.Tests.Register
+namespace StandardContainer.Tests.Tests.Core
 {
     public class RegisterTest
     {
@@ -30,6 +30,13 @@ namespace StandardContainer.Tests.Tests.Register
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.ConcreteType);
             Assert.Equal(null, reg.Instance);
             Assert.Equal(null, reg.Factory);
+            Assert.Equal(0, reg.Count);
+            var instance = container.GetInstance<SomeClass>();
+            Assert.Equal(1, reg.Count);
+
+
+
+
             container.Dispose();
 
             container.RegisterSingleton(typeof(ISomeClass), typeof(SomeClass));
@@ -39,6 +46,7 @@ namespace StandardContainer.Tests.Tests.Register
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.ConcreteType);
             Assert.Equal(null, reg.Instance);
             Assert.Equal(null, reg.Factory);
+            Assert.Equal(0, reg.Count);
         }
 
         [Fact]
@@ -51,6 +59,7 @@ namespace StandardContainer.Tests.Tests.Register
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.ConcreteType);
             Assert.Equal(null, reg.Instance);
             Assert.Equal(null, reg.Factory);
+            Assert.Equal(0, reg.Count);
         }
 
         [Fact]
@@ -65,6 +74,7 @@ namespace StandardContainer.Tests.Tests.Register
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.ConcreteType);
             Assert.Equal(instance, reg.Instance);
             Assert.Equal(null, reg.Factory);
+            Assert.Equal(1, reg.Count);
             container.Dispose();
 
             container.RegisterInstance<ISomeClass>(instance);
@@ -74,6 +84,7 @@ namespace StandardContainer.Tests.Tests.Register
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.ConcreteType);
             Assert.Equal(instance, reg.Instance);
             Assert.Equal(null, reg.Factory);
+            Assert.Equal(1, reg.Count);
         }
 
         [Fact]
@@ -87,7 +98,8 @@ namespace StandardContainer.Tests.Tests.Register
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.Type);
             Assert.Equal(null, reg.ConcreteType);
             Assert.Equal(null, reg.Instance);
-            Assert.Equal(factory, reg.Factory); 
+            Assert.Equal(factory, reg.Factory);
+            Assert.Equal(0, reg.Count);
             container.Dispose();
 
             container.RegisterFactory<ISomeClass>(factory);
@@ -97,6 +109,7 @@ namespace StandardContainer.Tests.Tests.Register
             Assert.Equal(null, reg.ConcreteType);
             Assert.Equal(null, reg.Instance);
             Assert.Equal(factory, reg.Factory);
+            Assert.Equal(0, reg.Count);
         }
     }
 }
