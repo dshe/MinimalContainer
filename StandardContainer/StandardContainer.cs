@@ -15,32 +15,26 @@ using System.Text;
 
 namespace StandardContainer
 {
-    /// <summary>
-    /// For types with multiple constructors, the constructor to be used
-    /// may be indicated by decorating it with the following attribute.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Constructor)]
-    public sealed class ContainerConstructorAttribute : Attribute { }
+    public enum DefaultLifestyle { AutoRegisterDisabled, Transient, Singleton };
+    public enum Style { Transient, Singleton, Instance, Factory };
+
+    public sealed class Registration
+    {
+        public Style Style;
+        public TypeInfo Type, ConcreteType;
+        public object Instance;
+        public Func<object> Factory;
+        internal Expression Expression;
+        public override string ToString() =>
+            $"'{(ConcreteType == null || Equals(ConcreteType, Type) ? "" : ConcreteType.AsString() + "->")}{Type.AsString()}', {Style}.";
+    }
 
     public sealed class Container : IDisposable
     {
-        public enum DefaultLifestyle { AutoRegisterDisabled, Transient, Singleton };
-        public enum Style { Transient, Singleton, Instance, Factory };
-
-        public sealed class Registration
-        {
-            public Style Style;
-            public TypeInfo Type, ConcreteType;
-            public object Instance;
-            public Func<object> Factory;
-            internal Expression Expression;
-            public override string ToString() =>
-                $"{(ConcreteType ==  null || Equals(ConcreteType, Type) ? "" : ConcreteType.AsString() + "->")}{Type.AsString()}, {Style}.";
-        }
-
         private readonly DefaultLifestyle defaultLifestyle;
         private readonly List<TypeInfo> allConcreteTypes;
         private readonly Dictionary<Type, Registration> registrations = new Dictionary<Type, Registration>();
+        public IList<Registration> GetRegistrations() => registrations.Values.OrderBy(r => r.Type.Name).ToList();
         private readonly Stack<TypeInfo> typeStack = new Stack<TypeInfo>();
         private readonly Action<string> log;
 
@@ -162,7 +156,7 @@ namespace StandardContainer
                 {
                     if (!typeStack.Any())
                         throw new TypeAccessException($"Could not get instance of type '{type}'. {ex.Message}", ex);
-                    var typePath = typeStack.Select(t => t.AsString()).JoinString("->");
+                    var typePath = typeStack.Select(t => t.AsString()).JoinStrings("->");
                     throw new TypeAccessException($"Could not get instance of type '{typePath}'. {ex.Message}", ex);
                 }
             }
@@ -233,7 +227,7 @@ namespace StandardContainer
             var parameters = ctor.GetParameters()
                 .Select(p => p.HasDefaultValue ? Expression.Constant(p.DefaultValue, p.ParameterType) : GetRegistration(p.ParameterType, reg).Expression)
                 .ToList();
-            Log(() => $"Constructing {reg.Style} instance: '{type.AsString()}({parameters.Select(p => p?.Type.AsString()).JoinString(", ")})'.");
+            Log(() => $"Constructing {reg.Style} instance: '{type.AsString()}({parameters.Select(p => p?.Type.AsString()).JoinStrings(", ")})'.");
             reg.Expression = Expression.New(ctor, parameters);
         }
 
@@ -252,18 +246,12 @@ namespace StandardContainer
 
         //////////////////////////////////////////////////////////////////////////////
 
-        public IList<Registration> GetRegistrations()
-        {
-            lock (registrations)
-                return registrations.Values.OrderBy(r => r.Type.Name).ToList();
-        }
-
         public override string ToString()
         {
             var reg = GetRegistrations();
             return new StringBuilder()
                 .AppendLine($"Container: {defaultLifestyle}, {reg.Count} registered types:")
-                .AppendLine(reg.Select(x => x.ToString()).JoinString(Environment.NewLine))
+                .AppendLine(reg.Select(x => x.ToString()).JoinStrings(Environment.NewLine))
                 .ToString();
         }
 
@@ -299,7 +287,15 @@ namespace StandardContainer
         }
     }
 
-    internal static class StandardContainerExtensions
+    /// <summary>
+    /// The container can create instances of types using public and internal constructors. 
+    /// In case a type has more than one constructor, indicate the constructor to be used with the 'ContainerConstructor' attribute.
+    /// Otherwise, the constructor with the smallest number of arguments is selected.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Constructor)]
+    public sealed class ContainerConstructorAttribute : Attribute { }
+
+    internal static class StandardContainerEx
     {
         /// <summary>
         /// When a non-concrete type is indicated (register or get instance), the concrete type is determined automatically.
@@ -315,11 +311,6 @@ namespace StandardContainer
             return assignableTypes.Single();
         }
 
-        /// <summary>
-        /// The container can create instances of types using public and internal constructors. 
-        /// In case a type has more than one constructor, indicate the constructor to be used with the 'ContainerConstructor' attribute.
-        /// Otherwise, the constructor with the smallest number of arguments is selected.
-        /// </summary>
         internal static ConstructorInfo GetConstructor(this TypeInfo type)
         {
             var ctors = type.DeclaredConstructors.Where(c => !c.IsPrivate).ToList();
@@ -335,10 +326,10 @@ namespace StandardContainer
             return ctors.OrderBy(c => c.GetParameters().Length).First();
         }
 
-        internal static string JoinString(this IEnumerable<string> strings, string separator) =>
-            string.Join(separator, strings);
-        internal static string AsString(this Type type) =>
-            type.GetTypeInfo().AsString();
+        internal static string JoinStrings(this IEnumerable<string> strings, string separator) 
+            => string.Join(separator, strings);
+        internal static string AsString(this Type type)
+            => type.GetTypeInfo().AsString();
         internal static string AsString(this TypeInfo type)
         {
             if (type == null)
@@ -351,9 +342,8 @@ namespace StandardContainer
                 name = name.Substring(0, index);
             var args = type.GenericTypeArguments
                 .Select(a => a.GetTypeInfo().AsString())
-                .JoinString(",");
+                .JoinStrings(",");
             return $"{name}<{args}>";
         }
     }
-
 }

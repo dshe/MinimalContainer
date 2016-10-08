@@ -33,20 +33,20 @@ namespace StandardContainer.Tests.Tests.Register
         [Fact]
         public void T02_Singleton()
         {
-            var c = new Container(Container.DefaultLifestyle.Singleton, log:write, assemblies:Assembly.GetExecutingAssembly());
+            var c = new Container(DefaultLifestyle.Singleton, log:write, assemblies:Assembly.GetExecutingAssembly());
             var instance = c.GetInstance<SomeClass>();
             var reg = c.GetRegistrations().Last();
-            Assert.Equal(Container.Style.Singleton, reg.Style);
+            Assert.Equal(Style.Singleton, reg.Style);
             Assert.Equal(instance, c.GetInstance<SomeClass>());
         }
 
         [Fact]
         public void T03_Transient()
         {
-            var c = new Container(Container.DefaultLifestyle.Transient, log:write, assemblies: Assembly.GetExecutingAssembly());
+            var c = new Container(DefaultLifestyle.Transient, log:write, assemblies: Assembly.GetExecutingAssembly());
             var instance = c.GetInstance<SomeClass>();
             var reg = c.GetRegistrations().Last();
-            Assert.Equal(Container.Style.Transient, reg.Style);
+            Assert.Equal(Style.Transient, reg.Style);
             Assert.NotEqual(instance, c.GetInstance<SomeClass>());
         }
     }

@@ -18,7 +18,7 @@ namespace StandardContainer.Tests.Tests.Relative
 
         public UniqueConcreteTest(ITestOutputHelper output)
         {
-            container = new Container(Container.DefaultLifestyle.Singleton, log: output.WriteLine, assemblies:Assembly.GetExecutingAssembly());
+            container = new Container(DefaultLifestyle.Singleton, log: output.WriteLine, assemblies:Assembly.GetExecutingAssembly());
         }
 
         [Fact]

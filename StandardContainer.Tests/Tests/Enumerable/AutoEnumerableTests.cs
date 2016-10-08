@@ -18,7 +18,7 @@ namespace StandardContainer.Tests.Tests.Enumerable
         public EnumerableTest(ITestOutputHelper output)
         {
             write = output.WriteLine;
-            container = new Container(Container.DefaultLifestyle.Singleton, log:output.WriteLine, assemblies:Assembly.GetExecutingAssembly());
+            container = new Container(DefaultLifestyle.Singleton, log:output.WriteLine, assemblies:Assembly.GetExecutingAssembly());
         }
 
         [Fact]
