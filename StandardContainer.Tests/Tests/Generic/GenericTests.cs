@@ -7,6 +7,15 @@ namespace StandardContainer.Tests.Tests.Generic
 {
     public class GenericTests
     {
+        private readonly Container container;
+        private readonly Action<string> write;
+
+        public GenericTests(ITestOutputHelper output)
+        {
+            write = output.WriteLine;
+            container = new Container(log: write, assemblies: Assembly.GetExecutingAssembly());
+        }
+
         internal class GenericParameterClass { }
         internal class GenericClass<T>
         {
@@ -16,15 +25,6 @@ namespace StandardContainer.Tests.Tests.Generic
         internal class SomeClass
         {
             public SomeClass(GenericClass<GenericParameterClass> generic) { }
-        }
-
-        private readonly Container container;
-        private readonly Action<string> write;
-
-        public GenericTests(ITestOutputHelper output)
-        {
-            write = output.WriteLine;
-            container = new Container(log: write, assemblies: Assembly.GetExecutingAssembly());
         }
 
         [Fact]
@@ -46,5 +46,6 @@ namespace StandardContainer.Tests.Tests.Generic
             //container.GetInstance(typeof(GenericClass<>));
             //write(Environment.NewLine + container);
         }
+
     }
 }

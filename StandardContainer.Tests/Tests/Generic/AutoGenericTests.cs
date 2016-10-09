@@ -51,6 +51,25 @@ namespace StandardContainer.Tests.Tests.Generic
         }
 
 
+        public class Test
+        {
+            public Test(IObservable<object> obs) { }
+        }
 
+        public class ObsConcrete : IObservable<object>
+        {
+            public IDisposable Subscribe(IObserver<object> observer)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        [Fact]
+        public void Test_03()
+        {
+            var b = container.GetInstance<ObsConcrete>();
+            var x = container.GetInstance<Test>();
+            write(Environment.NewLine + container);
+        }
     }
 }

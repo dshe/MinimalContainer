@@ -12,12 +12,10 @@ namespace StandardContainer.Tests.Tests.Core
         public class SomeClass : ISomeClass { }
 
         private readonly Container container;
-        private readonly Action<string> write;
 
         public RegisterTest(ITestOutputHelper output)
         {
-            write = output.WriteLine;
-            container = new Container(log: write, assemblies:Assembly.GetExecutingAssembly());
+            container = new Container(log: output.WriteLine, assemblies:Assembly.GetExecutingAssembly());
         }
 
         [Fact]
@@ -31,12 +29,8 @@ namespace StandardContainer.Tests.Tests.Core
             Assert.Equal(null, reg.Instance);
             Assert.Equal(null, reg.Factory);
             Assert.Equal(0, reg.Count);
-            var instance = container.GetInstance<SomeClass>();
+            container.GetInstance<SomeClass>();
             Assert.Equal(1, reg.Count);
-
-
-
-
             container.Dispose();
 
             container.RegisterSingleton(typeof(ISomeClass), typeof(SomeClass));
@@ -98,7 +92,7 @@ namespace StandardContainer.Tests.Tests.Core
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.Type);
             Assert.Equal(null, reg.ConcreteType);
             Assert.Equal(null, reg.Instance);
-            Assert.Equal(factory, reg.Factory);
+            Assert.NotEqual(factory, reg.Factory); // reg.Factory has been compiled
             Assert.Equal(0, reg.Count);
             container.Dispose();
 
@@ -108,7 +102,7 @@ namespace StandardContainer.Tests.Tests.Core
             Assert.Equal(typeof(ISomeClass).GetTypeInfo(), reg.Type);
             Assert.Equal(null, reg.ConcreteType);
             Assert.Equal(null, reg.Instance);
-            Assert.Equal(factory, reg.Factory);
+            Assert.NotEqual(factory, reg.Factory); // reg.Factory has been compiled
             Assert.Equal(0, reg.Count);
         }
     }
