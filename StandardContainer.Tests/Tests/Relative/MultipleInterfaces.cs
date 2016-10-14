@@ -17,7 +17,7 @@ namespace StandardContainer.Tests.Tests.Relative
 
         public MultipleInterfaces(ITestOutputHelper output)
         {
-            container = new Container(DefaultLifestyle.None, log: output.WriteLine, assemblies: Assembly.GetExecutingAssembly());
+            container = new Container(DefaultLifestyle.None, log: output.WriteLine);
         }
 
         [Fact]

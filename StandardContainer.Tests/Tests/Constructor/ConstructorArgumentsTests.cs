@@ -13,7 +13,7 @@ namespace StandardContainer.Tests.Tests.Constructor
         public ConstructorArgumentTests(ITestOutputHelper output)
         {
             write = output.WriteLine;
-            container = new Container(DefaultLifestyle.Singleton, log: write, assemblies: Assembly.GetExecutingAssembly());
+            container = new Container(DefaultLifestyle.Singleton, log: write);
         }
 
         public class ClassWithValueTypeArgument
@@ -27,6 +27,7 @@ namespace StandardContainer.Tests.Tests.Constructor
             container.RegisterSingleton<ClassWithValueTypeArgument>();
             var ex = Assert.Throws<TypeAccessException>(() => container.GetInstance<ClassWithValueTypeArgument>());
             write(ex.Message);
+            new ClassWithValueTypeArgument(0);
         }
 
         public class ClassWithDefaultValueTypeArgument
@@ -52,6 +53,7 @@ namespace StandardContainer.Tests.Tests.Constructor
             container.RegisterSingleton<ClassWithStringArgument>();
             var ex = Assert.Throws<TypeAccessException>(() => container.GetInstance<ClassWithStringArgument>());
             write(ex.Message);
+            new ClassWithStringArgument(null);
         }
 
         public class ClassWithDefaultStringArgument

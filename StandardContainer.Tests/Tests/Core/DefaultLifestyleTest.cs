@@ -33,7 +33,7 @@ namespace StandardContainer.Tests.Tests.Core
         [Fact]
         public void T02_Singleton()
         {
-            var c = new Container(DefaultLifestyle.Singleton, log:write, assemblies:Assembly.GetExecutingAssembly());
+            var c = new Container(DefaultLifestyle.Singleton, log:write);
             var instance = c.GetInstance<SomeClass>();
             var reg = c.GetRegistrations().Last();
             Assert.Equal(Lifestyle.Singleton, reg.Lifestyle);
@@ -43,7 +43,7 @@ namespace StandardContainer.Tests.Tests.Core
         [Fact]
         public void T03_Transient()
         {
-            var c = new Container(DefaultLifestyle.Transient, log:write, assemblies: Assembly.GetExecutingAssembly());
+            var c = new Container(DefaultLifestyle.Transient, log:write);
             var instance = c.GetInstance<SomeClass>();
             var reg = c.GetRegistrations().Last();
             Assert.Equal(Lifestyle.Transient, reg.Lifestyle);

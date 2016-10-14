@@ -31,7 +31,7 @@ namespace StandardContainer.Tests.Tests.Generic
         public AutoGenericTests(ITestOutputHelper output)
         {
             write = output.WriteLine;
-            container = new Container(DefaultLifestyle.Singleton, log:output.WriteLine, assemblies:Assembly.GetExecutingAssembly());
+            container = new Container(DefaultLifestyle.Singleton, log:output.WriteLine);
         }
 
         [Fact]

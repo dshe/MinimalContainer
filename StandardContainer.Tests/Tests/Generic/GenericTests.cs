@@ -13,7 +13,7 @@ namespace StandardContainer.Tests.Tests.Generic
         public GenericTests(ITestOutputHelper output)
         {
             write = output.WriteLine;
-            container = new Container(log: write, assemblies: Assembly.GetExecutingAssembly());
+            container = new Container(log: write);
         }
 
         internal class GenericParameterClass { }

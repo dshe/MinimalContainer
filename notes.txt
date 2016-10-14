@@ -25,4 +25,5 @@ distribution options:
 	no NuGet
 
 ===================================
- 
+ IFoo
+ IBar

@@ -15,7 +15,13 @@ namespace StandardContainer.Tests.Tests.Core
 
         public RegisterTest(ITestOutputHelper output)
         {
-            container = new Container(log: output.WriteLine, assemblies:Assembly.GetExecutingAssembly());
+            container = new Container(log: output.WriteLine);
+        }
+
+        [Fact]
+        public void T00_Register_Singleton()
+        {
+            //container.RegisterSingleton(null);
         }
 
         [Fact]
@@ -25,7 +31,7 @@ namespace StandardContainer.Tests.Tests.Core
             var reg = container.GetRegistrations().Last();
             Assert.Equal(Lifestyle.Singleton, reg.Lifestyle);
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.Type);
-            Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.ConcreteType);
+            Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.TypeConcrete);
             Assert.Equal(null, reg.Instance);
             Assert.Equal(null, reg.Factory);
             Assert.Equal(0, reg.Count);
@@ -37,7 +43,7 @@ namespace StandardContainer.Tests.Tests.Core
             reg = container.GetRegistrations().Last();
             Assert.Equal(Lifestyle.Singleton, reg.Lifestyle);
             Assert.Equal(typeof(ISomeClass).GetTypeInfo(), reg.Type);
-            Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.ConcreteType);
+            Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.TypeConcrete);
             Assert.Equal(null, reg.Instance);
             Assert.Equal(null, reg.Factory);
             Assert.Equal(0, reg.Count);
@@ -50,7 +56,7 @@ namespace StandardContainer.Tests.Tests.Core
             var reg = container.GetRegistrations().Last();
             Assert.Equal(Lifestyle.Transient, reg.Lifestyle);
             Assert.Equal(typeof(ISomeClass).GetTypeInfo(), reg.Type);
-            Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.ConcreteType);
+            Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.TypeConcrete);
             Assert.Equal(null, reg.Instance);
             Assert.Equal(null, reg.Factory);
             Assert.Equal(0, reg.Count);
@@ -65,7 +71,7 @@ namespace StandardContainer.Tests.Tests.Core
             var reg = container.GetRegistrations().Last();
             Assert.Equal(Lifestyle.Instance, reg.Lifestyle);
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.Type);
-            Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.ConcreteType);
+            Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.TypeConcrete);
             Assert.Equal(instance, reg.Instance);
             Assert.Equal(null, reg.Factory);
             Assert.Equal(1, reg.Count);
@@ -75,7 +81,7 @@ namespace StandardContainer.Tests.Tests.Core
             reg = container.GetRegistrations().Last();
             Assert.Equal(Lifestyle.Instance, reg.Lifestyle);
             Assert.Equal(typeof(ISomeClass).GetTypeInfo(), reg.Type);
-            Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.ConcreteType);
+            Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.TypeConcrete);
             Assert.Equal(instance, reg.Instance);
             Assert.Equal(null, reg.Factory);
             Assert.Equal(1, reg.Count);
@@ -90,7 +96,7 @@ namespace StandardContainer.Tests.Tests.Core
             var reg = container.GetRegistrations().Last();
             Assert.Equal(Lifestyle.Factory, reg.Lifestyle);
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.Type);
-            Assert.Equal(null, reg.ConcreteType);
+            Assert.Equal(null, reg.TypeConcrete);
             Assert.Equal(null, reg.Instance);
             Assert.NotEqual(factory, reg.Factory); // reg.Factory has been compiled
             Assert.Equal(0, reg.Count);
@@ -100,7 +106,7 @@ namespace StandardContainer.Tests.Tests.Core
             reg = container.GetRegistrations().Last();
             Assert.Equal(Lifestyle.Factory, reg.Lifestyle);
             Assert.Equal(typeof(ISomeClass).GetTypeInfo(), reg.Type);
-            Assert.Equal(null, reg.ConcreteType);
+            Assert.Equal(null, reg.TypeConcrete);
             Assert.Equal(null, reg.Instance);
             Assert.NotEqual(factory, reg.Factory); // reg.Factory has been compiled
             Assert.Equal(0, reg.Count);

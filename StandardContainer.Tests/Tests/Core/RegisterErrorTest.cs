@@ -18,7 +18,7 @@ namespace StandardContainer.Tests.Tests.Core
         public RegisterErrorTest(ITestOutputHelper output)
         {
             write = output.WriteLine;
-            container = new Container(log: write,assemblies:Assembly.GetExecutingAssembly());
+            container = new Container(log: write);
         }
 
         [Fact]

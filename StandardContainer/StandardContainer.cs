@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -21,19 +22,19 @@ namespace StandardContainer
     public sealed class Registration
     {
         public Lifestyle Lifestyle;
-        public TypeInfo Type, ConcreteType;
+        public TypeInfo Type, TypeConcrete;
         public object Instance;
         public Func<object> Factory;
         internal Expression Expression;
         public int Count;
         public override string ToString() =>
-            $"{(ConcreteType == null || Equals(ConcreteType, Type) ? "" : ConcreteType.AsString() + "->")}{Type.AsString()}, {Lifestyle}({Count})";
+            $"{(TypeConcrete == null || Equals(TypeConcrete, Type) ? "" : TypeConcrete.AsString() + "->")}{Type.AsString()}, {Lifestyle}({Count})";
     }
 
     public sealed class Container : IDisposable
     {
         private readonly DefaultLifestyle defaultLifestyle;
-        private readonly List<TypeInfo> allConcreteTypes;
+        private readonly List<TypeInfo> allTypesConcrete;
         private readonly Dictionary<Type, Registration> registrations = new Dictionary<Type, Registration>();
         public IList<Registration> GetRegistrations() => registrations.Values.OrderBy(r => r.Type.Name).ToList();
         private readonly Stack<TypeInfo> typeStack = new Stack<TypeInfo>();
@@ -44,7 +45,13 @@ namespace StandardContainer
             this.defaultLifestyle = defaultLifestyle;
             this.log = log;
             Log("Creating Container.");
-            allConcreteTypes = (assemblies.Any() ? assemblies : new[] { this.GetType().GetTypeInfo().Assembly })
+            var assemblyList = assemblies.ToList();
+            if (!assemblyList.Any())
+                assemblyList.Add((Assembly) typeof(Assembly)
+                    .GetTypeInfo()
+                    .GetDeclaredMethod("GetCallingAssembly")
+                    .Invoke(null, new object[0]));
+            allTypesConcrete = assemblyList
                 .Select(a => a.DefinedTypes.Where(t => t.IsClass && !t.IsAbstract).ToList())
                 .SelectMany(x => x)
                 .ToList();
@@ -90,12 +97,11 @@ namespace StandardContainer
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
             if (concreteType == null && lifestyle != Lifestyle.Instance && lifestyle != Lifestyle.Factory)
-                concreteType = allConcreteTypes.FindConcreteType(type);
+                concreteType = allTypesConcrete.FindConcreteType(type);
             if (concreteType != null)
             {
                 if (!type.IsAssignableFrom(concreteType))
-                    throw new TypeAccessException(
-                        $"Type {concreteType.AsString()} is not assignable to type {type.AsString()}.");
+                    throw new TypeAccessException($"Type {concreteType.AsString()} is not assignable to type {type.AsString()}.");
                 if (concreteType.IsValueType)
                     throw new TypeAccessException("Cannot register value type.");
                 if (typeof(string).GetTypeInfo().IsAssignableFrom(concreteType))
@@ -112,7 +118,7 @@ namespace StandardContainer
             {
                 Lifestyle = lifestyle,
                 Type = type,
-                ConcreteType = concreteType,
+                TypeConcrete = concreteType,
                 Instance = instance,
                 Factory = factory
             };
@@ -209,7 +215,7 @@ namespace StandardContainer
             if (reg.Lifestyle == Lifestyle.Singleton)
             {
                 var expression = registrations.Values.Where(r =>
-                        Equals(r.ConcreteType, reg.ConcreteType) &&
+                        Equals(r.TypeConcrete, reg.TypeConcrete) &&
                         r.Lifestyle == Lifestyle.Singleton &&
                         r.Expression != null)
                     .Select(r => r.Expression)
@@ -224,7 +230,7 @@ namespace StandardContainer
 
         private Expression GetExpressionNew(Registration reg)
         {
-            var type = reg.ConcreteType;
+            var type = reg.TypeConcrete;
             var ctor = type.GetConstructor();
             var parameters = ctor.GetParameters()
                 .Select(p => p.HasDefaultValue ? Expression.Constant(p.DefaultValue, p.ParameterType) : GetRegistration(p.ParameterType, reg).Expression)
@@ -235,8 +241,8 @@ namespace StandardContainer
 
         private Expression GetExpressionArray(Registration reg)
         {
-            var genericType = reg.ConcreteType.GenericTypeArguments.Single().GetTypeInfo();
-            var expressions = allConcreteTypes
+            var genericType = reg.TypeConcrete.GenericTypeArguments.Single().GetTypeInfo();
+            var expressions = allTypesConcrete
                 .Where(t => genericType.IsAssignableFrom(t))
                 .Select(x => GetRegistration(x.AsType(), reg).Expression)
                 .ToList();
@@ -303,7 +309,6 @@ namespace StandardContainer
         /// In this case, the non-concrete type must be assignable to exactly one concrete type.
         internal static TypeInfo FindConcreteType(this List<TypeInfo> concreteTypes, TypeInfo type)
         {
-            //if (!type.IsAbstract || type.IsGenericType || typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(type))
             if (!type.IsAbstract || typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(type))
                 return type;
             var assignableTypes = concreteTypes.Where(type.IsAssignableFrom).ToList(); // slow
@@ -331,8 +336,6 @@ namespace StandardContainer
         internal static string AsString(this Type type) => type.GetTypeInfo().AsString();
         internal static string AsString(this TypeInfo type)
         {
-            if (type == null)
-                return null;
             var name = type.Name;
             if (type.IsGenericParameter || !type.IsGenericType)
                 return name;

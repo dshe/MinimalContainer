@@ -25,7 +25,7 @@ namespace StandardContainer.Tests.Tests.Relative
 
         public RecursionTest(ITestOutputHelper output)
         {
-            container = new Container(DefaultLifestyle.Singleton, log: output.WriteLine, assemblies:Assembly.GetExecutingAssembly());
+            container = new Container(DefaultLifestyle.Singleton, log: output.WriteLine);
         }
 
         [Fact]

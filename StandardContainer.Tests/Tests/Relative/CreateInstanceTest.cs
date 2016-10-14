@@ -26,7 +26,7 @@ namespace StandardContainer.Tests.Tests.Relative
 
         public CreateInstanceTest(ITestOutputHelper output)
         {
-            container = new Container(DefaultLifestyle.Singleton, log: output.WriteLine, assemblies:Assembly.GetExecutingAssembly());
+            container = new Container(DefaultLifestyle.Singleton, log: output.WriteLine);
         }
 
         [Fact]
