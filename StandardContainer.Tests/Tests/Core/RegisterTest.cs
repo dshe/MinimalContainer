@@ -19,15 +19,10 @@ namespace StandardContainer.Tests.Tests.Core
         }
 
         [Fact]
-        public void T00_Register_Singleton()
-        {
-            //container.RegisterSingleton(null);
-        }
-
-        [Fact]
         public void T01_Register_Singleton()
         {
             container.RegisterSingleton(typeof(SomeClass));
+
             var reg = container.GetRegistrations().Last();
             Assert.Equal(Lifestyle.Singleton, reg.Lifestyle);
             Assert.Equal(typeof(SomeClass).GetTypeInfo(), reg.Type);

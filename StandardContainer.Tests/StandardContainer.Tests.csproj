@@ -57,6 +57,8 @@
     <Compile Include="..\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Tests\Core\AssemblyTest.cs" />
+    <Compile Include="Tests\Core\DisposeTest.cs" />
     <Compile Include="Tests\Extensions\Class1.cs" />
     <Compile Include="Tests\Constructor\ConstructorSelectionTests.cs" />
     <Compile Include="Tests\Core\DefaultLifestyleTest.cs" />
