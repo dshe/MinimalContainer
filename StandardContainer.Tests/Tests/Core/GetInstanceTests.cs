@@ -52,7 +52,7 @@ namespace StandardContainer.Tests.Tests.Core
             var instance = new SomeClass();
             container.RegisterInstance(instance);
             var reg = container.GetRegistrations().Last();
-            Assert.Equal(1, reg.Count);
+            Assert.Equal(0, reg.Count);
             var instance1 = container.GetInstance<SomeClass>();
             Assert.Equal(1, reg.Count);
             Assert.Equal(instance, instance1);
@@ -71,5 +71,12 @@ namespace StandardContainer.Tests.Tests.Core
             Assert.Equal(2, reg.Count);
             Assert.NotEqual(instance2, instance1);
         }
+
+        [Fact]
+        public void T01_GetInstance_Null()
+        {
+            Assert.Throws<ArgumentNullException>(() => container.GetInstance(null));
+        }
+
     }
 }

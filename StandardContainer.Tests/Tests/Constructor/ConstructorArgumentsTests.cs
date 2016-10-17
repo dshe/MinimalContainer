@@ -16,6 +16,13 @@ namespace StandardContainer.Tests.Tests.Constructor
             container = new Container(DefaultLifestyle.Singleton, log: write);
         }
 
+        [Fact]
+        public void T00_No_Constructor()
+        {
+            // extension method
+            Assert.Throws<TypeAccessException>(() => typeof(int).GetTypeInfo().GetConstructor());
+        }
+
         public class ClassWithValueTypeArgument
         {
             public ClassWithValueTypeArgument(int i) { }

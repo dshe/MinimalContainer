@@ -59,7 +59,6 @@
     </Compile>
     <Compile Include="Tests\Core\AssemblyTest.cs" />
     <Compile Include="Tests\Core\DisposeTest.cs" />
-    <Compile Include="Tests\Extensions\Class1.cs" />
     <Compile Include="Tests\Constructor\ConstructorSelectionTests.cs" />
     <Compile Include="Tests\Core\DefaultLifestyleTest.cs" />
     <Compile Include="Tests\Core\GetInstanceTests.cs" />
@@ -67,7 +66,7 @@
     <Compile Include="Examples\Example2.cs" />
     <Compile Include="Tests\Generic\GenericTests.cs" />
     <Compile Include="Tests\Generic\AutoGenericTests.cs" />
-    <Compile Include="Performance\Performance.cs" />
+    <Compile Include="Performance.cs" />
     <Compile Include="Tests\Enumerable\RegisterEnumerableTest.cs" />
     <Compile Include="Tests\Core\RegisterErrorTest.cs" />
     <Compile Include="Tests\Core\RegisterTest.cs" />

@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace StandardContainer.Tests.Performance
+namespace StandardContainer.Tests
 {
     [Trait("Category", "Performance")]
     public class Performance
@@ -20,13 +18,13 @@ namespace StandardContainer.Tests.Performance
         }
 
         [Fact]
-        public void Test_Performance1()
+        public void Test_Performance()
         {
             const long iterations = (long)1e6;
 
             var container = new Container();
             container.RegisterInstance(new ClassA());
-            sw.Start();
+            sw.Restart();
             for (var i = 0; i < iterations; i++)
                 container.GetInstance<ClassA>();
             sw.Stop();
@@ -35,26 +33,27 @@ namespace StandardContainer.Tests.Performance
 
             container = new Container();
             container.RegisterSingleton<ClassA>();
-            sw.Start();
+            container.GetInstance<ClassA>();
+            sw.Restart();
             for (var i = 0; i < iterations; i++)
                 container.GetInstance<ClassA>();
             sw.Stop();
             rate = iterations / sw.Elapsed.TotalSeconds;
-            write($"{rate,10:####,###} singleton instances/second.");
+            write($"{rate,10:####,###} singletons/second.");
 
             container = new Container();
             container.RegisterTransient<ClassA>();
-            sw.Start();
+            sw.Restart();
             for (var i = 0; i < iterations; i++)
                 container.GetInstance<ClassA>();
             sw.Stop();
             rate = iterations / sw.Elapsed.TotalSeconds;
-            write($"{rate,10:####,###} transient instances/second.");
+            write($"{rate,10:####,###} transients/second.");
 
             container = new Container();
             var instance = new ClassA();
             container.RegisterFactory(() => instance);
-            sw.Start();
+            sw.Restart();
             for (var i = 0; i < iterations; i++)
                 container.GetInstance<ClassA>();
             sw.Stop();

@@ -25,6 +25,8 @@ namespace StandardContainer.Tests.Tests.Core
         public void T00_Various_types()
         {
             Assert.Throws<ArgumentNullException>(() => container.RegisterSingleton(null));
+            Assert.Throws<ArgumentNullException>(() => container.RegisterFactory(typeof(object), null));
+            Assert.Throws<ArgumentNullException>(() => container.RegisterInstance(typeof(object), null));
             Assert.Throws<TypeAccessException>(() => container.RegisterSingleton(typeof(int)));
             Assert.Throws<TypeAccessException>(() => container.RegisterSingleton(typeof(string)));
             Assert.Throws<TypeAccessException>(() => container.RegisterInstance(42));

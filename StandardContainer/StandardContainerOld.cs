@@ -119,17 +119,35 @@ namespace StandardContainer
                 Type = type, TypeConcrete = typeConcrete,
                 Factory = factory
             };
-            Log(() => $"{caller}: {reg}");
-            try
+            Registration regFound;
+            if (!registrations.TryGetValue(type.AsType(), out regFound))
             {
                 registrations.Add(type.AsType(), reg);
+                Log(() => $"{caller}: {reg}");
+                return reg;
             }
-            catch (ArgumentException ex)
-            {
-                throw new TypeAccessException($"Type {type.Name} is already registered.", ex);
-            }
+
+            //if (reg.Lifestyle != regFound.Lifestyle)
+                throw new TypeAccessException("Cannot register type does to different lifestyle.");
+
+            var list = CreateList(type);
+            list.Add(regFound.TypeConcrete);
+            list.Add(reg.TypeConcrete);
+
+
+            //regFound.TypeConcrete = CreateList(type)
+
+            // IClass: ClassA
+            // IClass: ClassB
+            //
+            // no reg -> add reg
+            // reg -> creat list
+            // search for list => add
+
             return reg;
         }
+
+        List<T> CreateList<T>(T type) => new List<T>();
 
         //////////////////////////////////////////////////////////////////////////////
 
@@ -142,7 +160,34 @@ namespace StandardContainer
             {
                 try
                 {
-                    return GetRegistration(type, null).Factory();
+                    var reg = GetRegistration(type, null);
+                    return reg.Factory();
+                }
+                catch (TypeAccessException ex)
+                {
+                    if (!typeStack.Any())
+                        throw new TypeAccessException($"Could not get instance of type {type}. {ex.Message}", ex);
+                    var typePath = typeStack.Select(t => t.AsString()).JoinStrings("->");
+                    throw new TypeAccessException($"Could not get instance of type {typePath}. {ex.Message}", ex);
+                }
+            }
+        }
+
+        public T GetInstances<T>() => (T)GetInstances(typeof(T));
+        public object GetInstances(Type type)
+        {
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+            lock (registrations)
+            {
+                try
+                {
+                    //var list = registrations.Values.Where(r => Equals(r.TypeConcrete.IsAssignableFrom(type.GetTypeInfo())));
+                    //var xx = list.egistrations.Values.Where(r => Equals(r.TypeConcrete.IsAssignableFrom(type.GetTypeInfo()))).Select(r => )
+                    //r.Lifestyle == Lifestyle.Singleton &&
+                    //r.Expression != null)
+                    var reg = GetRegistration(type, null);
+                    return reg.Factory();
                 }
                 catch (TypeAccessException ex)
                 {
@@ -185,23 +230,23 @@ namespace StandardContainer
                 throw new TypeAccessException($"Captive dependency: the singleton {dependent.Type.AsString()} depends on transient {reg.Type.AsString()}.");
 
             if (reg.Lifestyle == Lifestyle.Instance)
+            {
                 reg.Expression = Expression.Constant(reg.Factory());
-            else if (reg.Lifestyle == Lifestyle.Factory)
+                return;
+            }
+            if (reg.Lifestyle == Lifestyle.Factory)
             {
                 Expression<Func<object>> expression = () => reg.Factory();
                 reg.Expression = expression;
+                return;
             }
-            else
-            {
-                reg.Expression = GetExpression(reg);
-                reg.Factory = Expression.Lambda<Func<object>>(reg.Expression).Compile();
-                if (reg.Lifestyle == Lifestyle.Singleton)
-                {
-                    var instance = reg.Factory();
-                    reg.Expression = Expression.Constant(instance);
-                    reg.Factory = () => instance;
-                }
-            }
+            reg.Expression = GetExpression(reg);
+            reg.Factory = Expression.Lambda<Func<object>>(reg.Expression).Compile();
+            if (reg.Lifestyle == Lifestyle.Transient)
+                return;
+            var instance = reg.Factory();
+            reg.Expression = Expression.Constant(instance);
+            reg.Factory = () => instance;
             typeStack.Pop();
         }
 
