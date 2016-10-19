@@ -4,8 +4,8 @@
 ***A simple and portable IoC (Inversion of Control) container.***
 - single C# 6.0 source file with no dependencies
 - supports .NET Platform Standard 1.0
-- supports public and internal constructor injection
 - supports automatic and/or explicit type registration
+- supports public and internal constructor injection
 - supports transient and singleton lifestyles
 - detects captive and recursive dependencies
 - fluent interface
@@ -138,7 +138,7 @@ public class Foo
     public Foo() {}
 
     [ContainerConstructor]    
-    public Foo(Foo2 foo2) {}
+    public Foo(IFoo2 foo2) {}
 }
 ```
 #### logging
@@ -146,10 +146,6 @@ public class Foo
 var container = new Container(log:Console.WriteLine);
 ```
 #### diagnostic
-```csharp
-foreach (var registration in container.Registrations())
-  Debug.WriteLine(registration.ToString());
-```
 ```csharp
 Debug.WriteLine(container.ToString());
 ```
