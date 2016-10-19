@@ -7,7 +7,6 @@
 - supports public and internal constructor injection
 - supports automatic and/or explicit type registration
 - supports transient and singleton lifestyles
-- supports enumerables and generics
 - detects captive and recursive dependencies
 - fluent interface
 - fast
