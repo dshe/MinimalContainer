@@ -26,11 +26,7 @@ namespace StandardContainer.Tests.Examples
             Assert.IsType<Foo>(instance);
             Assert.Equal(instance, container.GetInstance<IFoo>());
 
-            write("");
-            container.GetRegistrations().Select(x => x.ToString()).ToList().ForEach(write);
-            write("");
-
-            container.Dispose();
+            write(container.ToString());
         }
     }
 }

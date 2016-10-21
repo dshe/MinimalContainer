@@ -34,7 +34,7 @@ namespace StandardContainer
         private readonly DefaultLifestyle defaultLifestyle;
         private readonly List<TypeInfo> allTypesConcrete;
         private readonly Dictionary<Type, Registration> registrations = new Dictionary<Type, Registration>();
-        public IList<Registration> GetRegistrations() => registrations.Values.OrderBy(r => r.Type.Name).ToList();
+        public int Types => registrations.Count - 1;
         private readonly Stack<TypeInfo> typeStack = new Stack<TypeInfo>();
         private readonly Action<string> log;
 
@@ -116,38 +116,21 @@ namespace StandardContainer
             var reg = new Registration
             {
                 Lifestyle = lifestyle,
-                Type = type, TypeConcrete = typeConcrete,
+                Type = type,
+                TypeConcrete = typeConcrete,
                 Factory = factory
             };
-            Registration regFound;
-            if (!registrations.TryGetValue(type.AsType(), out regFound))
+            Log(() => $"{caller}: {reg}");
+            try
             {
                 registrations.Add(type.AsType(), reg);
-                Log(() => $"{caller}: {reg}");
-                return reg;
             }
-
-            //if (reg.Lifestyle != regFound.Lifestyle)
-                throw new TypeAccessException("Cannot register type does to different lifestyle.");
-
-            var list = CreateList(type);
-            list.Add(regFound.TypeConcrete);
-            list.Add(reg.TypeConcrete);
-
-
-            //regFound.TypeConcrete = CreateList(type)
-
-            // IClass: ClassA
-            // IClass: ClassB
-            //
-            // no reg -> add reg
-            // reg -> creat list
-            // search for list => add
-
+            catch (ArgumentException ex)
+            {
+                throw new TypeAccessException($"Type {type.Name} is already registered.", ex);
+            }
             return reg;
         }
-
-        List<T> CreateList<T>(T type) => new List<T>();
 
         //////////////////////////////////////////////////////////////////////////////
 
@@ -160,34 +143,7 @@ namespace StandardContainer
             {
                 try
                 {
-                    var reg = GetRegistration(type, null);
-                    return reg.Factory();
-                }
-                catch (TypeAccessException ex)
-                {
-                    if (!typeStack.Any())
-                        throw new TypeAccessException($"Could not get instance of type {type}. {ex.Message}", ex);
-                    var typePath = typeStack.Select(t => t.AsString()).JoinStrings("->");
-                    throw new TypeAccessException($"Could not get instance of type {typePath}. {ex.Message}", ex);
-                }
-            }
-        }
-
-        public T GetInstances<T>() => (T)GetInstances(typeof(T));
-        public object GetInstances(Type type)
-        {
-            if (type == null)
-                throw new ArgumentNullException(nameof(type));
-            lock (registrations)
-            {
-                try
-                {
-                    //var list = registrations.Values.Where(r => Equals(r.TypeConcrete.IsAssignableFrom(type.GetTypeInfo())));
-                    //var xx = list.egistrations.Values.Where(r => Equals(r.TypeConcrete.IsAssignableFrom(type.GetTypeInfo()))).Select(r => )
-                    //r.Lifestyle == Lifestyle.Singleton &&
-                    //r.Expression != null)
-                    var reg = GetRegistration(type, null);
-                    return reg.Factory();
+                    return GetRegistration(type, null).Factory();
                 }
                 catch (TypeAccessException ex)
                 {
@@ -212,7 +168,7 @@ namespace StandardContainer
             }
             if (reg.Expression == null)
                 Initialize(reg, dependent);
-            reg.Count = reg.Lifestyle == Lifestyle.Transient || reg.Lifestyle == Lifestyle.Factory ?  reg.Count + 1 : 1;
+            reg.Count = reg.Lifestyle == Lifestyle.Transient || reg.Lifestyle == Lifestyle.Factory ? reg.Count + 1 : 1;
             return reg;
         }
 
@@ -230,23 +186,23 @@ namespace StandardContainer
                 throw new TypeAccessException($"Captive dependency: the singleton {dependent.Type.AsString()} depends on transient {reg.Type.AsString()}.");
 
             if (reg.Lifestyle == Lifestyle.Instance)
-            {
                 reg.Expression = Expression.Constant(reg.Factory());
-                return;
-            }
-            if (reg.Lifestyle == Lifestyle.Factory)
+            else if (reg.Lifestyle == Lifestyle.Factory)
             {
                 Expression<Func<object>> expression = () => reg.Factory();
                 reg.Expression = expression;
-                return;
             }
-            reg.Expression = GetExpression(reg);
-            reg.Factory = Expression.Lambda<Func<object>>(reg.Expression).Compile();
-            if (reg.Lifestyle == Lifestyle.Transient)
-                return;
-            var instance = reg.Factory();
-            reg.Expression = Expression.Constant(instance);
-            reg.Factory = () => instance;
+            else
+            {
+                reg.Expression = GetExpression(reg);
+                reg.Factory = Expression.Lambda<Func<object>>(reg.Expression).Compile();
+                if (reg.Lifestyle == Lifestyle.Singleton)
+                {
+                    var instance = reg.Factory();
+                    reg.Expression = Expression.Constant(instance);
+                    reg.Factory = () => instance;
+                }
+            }
             typeStack.Pop();
         }
 
@@ -297,7 +253,7 @@ namespace StandardContainer
 
         public override string ToString()
         {
-            var reg = GetRegistrations();
+            var reg = registrations.ToList();
             return new StringBuilder()
                 .AppendLine($"Container: {defaultLifestyle}, {reg.Count} registered types:")
                 .AppendLine(reg.Select(x => x.ToString()).JoinStrings(Environment.NewLine))
@@ -322,7 +278,7 @@ namespace StandardContainer
         {
             lock (registrations)
             {
-                foreach (var instance in GetRegistrations()
+                foreach (var instance in registrations.Values
                     .Where(r => r.Lifestyle == Lifestyle.Singleton || r.Lifestyle == Lifestyle.Instance)
                     .Select(r => r.Factory())
                     .Where(i => i != null && i != this)

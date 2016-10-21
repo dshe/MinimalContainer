@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace StandardContainer.Tests.Utilities
+namespace StandardContainer.Tests
 {
     public static class TestExtensions
     {

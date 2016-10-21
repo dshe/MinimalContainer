@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using StandardContainer.Tests.Utilities;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -30,6 +29,7 @@ namespace StandardContainer.Tests.Tests.Core
             Assert.Throws<TypeAccessException>(() => container.RegisterSingleton(typeof(int)));
             Assert.Throws<TypeAccessException>(() => container.RegisterSingleton(typeof(string)));
             Assert.Throws<TypeAccessException>(() => container.RegisterInstance(42));
+            Assert.Throws<ArgumentNullException>(() => container.GetInstance(null));
             container.RegisterFactory(() => "string");
         }
 

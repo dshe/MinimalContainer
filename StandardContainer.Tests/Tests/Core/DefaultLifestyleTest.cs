@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using StandardContainer.Tests.Utilities;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -34,20 +33,14 @@ namespace StandardContainer.Tests.Tests.Core
         public void T02_Singleton()
         {
             var c = new Container(DefaultLifestyle.Singleton, log:write);
-            var instance = c.GetInstance<SomeClass>();
-            var reg = c.GetRegistrations().Last();
-            Assert.Equal(Lifestyle.Singleton, reg.Lifestyle);
-            Assert.Equal(instance, c.GetInstance<SomeClass>());
+            Assert.Equal(c.GetInstance<SomeClass>(), c.GetInstance<SomeClass>());
         }
 
         [Fact]
         public void T03_Transient()
         {
             var c = new Container(DefaultLifestyle.Transient, log:write);
-            var instance = c.GetInstance<SomeClass>();
-            var reg = c.GetRegistrations().Last();
-            Assert.Equal(Lifestyle.Transient, reg.Lifestyle);
-            Assert.NotEqual(instance, c.GetInstance<SomeClass>());
+            Assert.NotEqual(c.GetInstance<SomeClass>(), c.GetInstance<SomeClass>());
         }
     }
 }

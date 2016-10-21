@@ -16,10 +16,9 @@ namespace StandardContainer.Tests.Examples
     public class Foo5 : IClass {}
     public class Foo6 : IClass {}
 
-    public class Foo1 : IDisposable
+    public class Foo1
     {
         public Foo1(IFoo2 b, Foo3<Foo4> cd, IEnumerable<IClass> list) {}
-        public void Dispose() {}
     }
 
     public class Root
@@ -42,10 +41,8 @@ namespace StandardContainer.Tests.Examples
         public void Start()
         {
             var container = new Container(DefaultLifestyle.Singleton, log: write);
-            {
-                container.GetInstance<Root>();
-                container.Log();
-            }
+            container.GetInstance<Root>();
+            container.Log();
         }
     }
 }

@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace StandardContainer.Tests.Tests.Enumerable
+namespace StandardContainer.Tests.Tests.Enumerables
 {
     public class RegisterEnumerableTest
     {
@@ -28,7 +27,6 @@ namespace StandardContainer.Tests.Tests.Enumerable
 
             var instance = container.GetInstance<IEnumerable<ISomeClass>>();
             Assert.Equal(instance, container.GetInstance(typeof (IEnumerable<ISomeClass>)));
-            Assert.Equal(4, container.GetRegistrations().Count);
             container.Log();
         }
 
@@ -41,7 +39,6 @@ namespace StandardContainer.Tests.Tests.Enumerable
 
             var instance = container.GetInstance<IEnumerable<ISomeClass>>();
             Assert.NotEqual(instance, container.GetInstance(typeof (IEnumerable<ISomeClass>)));
-            Assert.Equal(4, container.GetRegistrations().Count);
         }
 
         [Fact]

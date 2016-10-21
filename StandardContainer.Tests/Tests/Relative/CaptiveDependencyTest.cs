@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
@@ -27,7 +28,6 @@ namespace StandardContainer.Tests.Tests.Relative
             container.RegisterSingleton<ClassA>();
             container.RegisterTransient<ClassB>();
             Assert.Throws<TypeAccessException>(() => container.GetInstance<ClassA>());
-            Assert.Equal(3, container.GetRegistrations().Count);
         }
 
         [Fact]
@@ -36,7 +36,6 @@ namespace StandardContainer.Tests.Tests.Relative
             container.RegisterTransient<ClassA>();
             container.RegisterSingleton<ClassB>();
             container.GetInstance<ClassA>();
-            Assert.Equal(3, container.GetRegistrations().Count);
         }
 
         [Fact]
@@ -45,7 +44,6 @@ namespace StandardContainer.Tests.Tests.Relative
             container.RegisterSingleton<ClassA>();
             container.RegisterSingleton<ClassB>();
             container.GetInstance<ClassA>();
-            Assert.Equal(3, container.GetRegistrations().Count);
         }
 
         [Fact]
@@ -54,7 +52,6 @@ namespace StandardContainer.Tests.Tests.Relative
             container.RegisterTransient<ClassA>();
             container.RegisterTransient<ClassB>();
             container.GetInstance<ClassA>();
-            Assert.Equal(3, container.GetRegistrations().Count);
         }
     }
 

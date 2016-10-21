@@ -61,24 +61,26 @@
     <Compile Include="Tests\Core\DisposeTest.cs" />
     <Compile Include="Tests\Constructor\ConstructorSelectionTests.cs" />
     <Compile Include="Tests\Core\DefaultLifestyleTest.cs" />
-    <Compile Include="Tests\Core\GetInstanceTests.cs" />
-    <Compile Include="Tests\Enumerable\AutoEnumerableTests.cs" />
+    <Compile Include="Tests\Core\InstanceTest.cs" />
+    <Compile Include="Tests\Core\SingletonTest.cs" />
+    <Compile Include="Tests\Core\TransientTest.cs" />
+    <Compile Include="Tests\Enumerables\AutoEnumerableTests.cs" />
     <Compile Include="Examples\Example2.cs" />
-    <Compile Include="Tests\Generic\GenericTests.cs" />
-    <Compile Include="Tests\Generic\AutoGenericTests.cs" />
+    <Compile Include="Tests\Generics\GenericTests.cs" />
+    <Compile Include="Tests\Generics\AutoGenericTests.cs" />
     <Compile Include="Performance.cs" />
-    <Compile Include="Tests\Enumerable\RegisterEnumerableTest.cs" />
+    <Compile Include="Tests\Enumerables\RegisterEnumerableTest.cs" />
     <Compile Include="Tests\Core\RegisterErrorTest.cs" />
-    <Compile Include="Tests\Core\RegisterTest.cs" />
+    <Compile Include="Tests\Core\FactoryTest.cs" />
     <Compile Include="Tests\Constructor\ConstructorArgumentsTests.cs" />
-    <Compile Include="Tests\Core\SingletonInterface.cs" />
     <Compile Include="Tests\Relative\CaptiveDependencyTest.cs" />
     <Compile Include="Tests\Relative\CreateInstanceTest.cs" />
     <Compile Include="Examples\Example1.cs" />
     <Compile Include="Tests\Relative\MultipleInterfaces.cs" />
     <Compile Include="Tests\Relative\RecursionTest.cs" />
     <Compile Include="Tests\Relative\UniqueConcreteTest.cs" />
-    <Compile Include="Utilities\ExtensionMethods.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="Tests\Test1.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

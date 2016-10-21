@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Reflection;
+using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace StandardContainer.Tests.Tests.Generic
+namespace StandardContainer.Tests.Tests.Generics
 {
     public class AutoGenericTests
     {
@@ -38,7 +38,6 @@ namespace StandardContainer.Tests.Tests.Generic
         public void Test_01()
         {
             container.GetInstance<ClassC>();
-            Assert.Equal(4, container.GetRegistrations().Count);
             write(Environment.NewLine + container);
         }
 
@@ -46,7 +45,6 @@ namespace StandardContainer.Tests.Tests.Generic
         public void Test_02()
         {
             container.GetInstance<ClassD>();
-            Assert.Equal(4, container.GetRegistrations().Count);
             write(Environment.NewLine + container);
         }
 

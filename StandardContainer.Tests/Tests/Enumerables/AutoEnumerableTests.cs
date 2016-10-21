@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace StandardContainer.Tests.Tests.Enumerable
+namespace StandardContainer.Tests.Tests.Enumerables
 {
     public class EnumerableTest
     {
@@ -26,7 +25,6 @@ namespace StandardContainer.Tests.Tests.Enumerable
         {
             var list = container.GetInstance<IList<ClassA>>();
             Assert.Equal(1, list.Count);
-            Assert.Equal(3, container.GetRegistrations().Count);
             write(Environment.NewLine + container);
         }
 
@@ -49,7 +47,7 @@ namespace StandardContainer.Tests.Tests.Enumerable
         [Fact]
         public void Test_RegisterAll_Enumerable()
         {
-            Assert.Throws<TypeAccessException>(() => container.GetInstance<IEnumerable<INotUsed>>());
+            Assert.Throws<TypeAccessException>(() => container.GetInstance<IEnumerable<INotUsed>>()).Output(write);
         }
 
     }

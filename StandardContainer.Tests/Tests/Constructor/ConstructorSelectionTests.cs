@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Reflection;
 using System.Runtime.Remoting.Messaging;
-using StandardContainer.Tests.Utilities;
 using Xunit;
 using Xunit.Abstractions;
 
