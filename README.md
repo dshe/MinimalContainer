@@ -69,6 +69,14 @@ container.RegisterSingleton<Foo2>();
 IList<IFoo> list = container.GetInstance<IList<Ifoo>>();
 ```
 A list of instances of registered types which are assignable to `IFoo` is returned.
+#### fluency
+```csharp
+var root = new Container(Lifestyle.Transient)
+    .RegisterSingleton<T1>()
+    .RegisterInstance(new T2())
+    .RegisterFactory(() => new T3())
+    .GetInstance<TRoot>();
+```
 #### automatic registration
 ```csharp
 public class Foo {}
@@ -76,6 +84,9 @@ public class Foo {}
 var container = new Container(Lifestyle.Singleton, assemblies:someAssembly);
 
 Foo instance = container.GetInstance<Foo>();
+```
+```csharp
+new Container(Lifestyle.Transient).GetInstance<TRoot>().StartApplication();
 ```
 To enable automatic registration, set the default lifestyle to singleton or transient when constructing the container. Note that the container will always register the dependencies of singleton instances as singletons. If automatic type resolution requires scanning assemblies other than the assembly where the container is created, include references to those assemblies in the container's constructor.
 
@@ -100,17 +111,7 @@ using (var container = new Container(Lifestyle.Singleton))
     container.GetInstance<Root>().StartApplication();
 ```
 The complete object graph is created by simply resolving the compositional root. 
-#### fluent examples
-```csharp
-var root = new Container(Lifestyle.Transient)
-    .RegisterSingleton<T1>()
-    .RegisterInstance(new T2())
-    .RegisterFactory(() => new T3())
-    .GetInstance<TRoot>();
-```
-```csharp
-new Container(Lifestyle.Transient).GetInstance<TRoot>().StartApplication();
-```
+
 #### resolution strategy
 The following graphic illustrates the automatic type resolution strategy:
 
