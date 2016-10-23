@@ -117,7 +117,11 @@ The following graphic illustrates the automatic type resolution strategy:
 ![Image of Resolution Strategy](https://github.com/dshe/InternalContainer/blob/master/TypeResolutionFlowChart.png)
 
 
-
+#### disposal
+```csharp
+container.Dispose();
+```
+Disposing the container disposes any registered disposable singletons.
 #### logging
 ```csharp
 var container = new Container(log:Console.WriteLine);
