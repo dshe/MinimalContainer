@@ -16,38 +16,14 @@ namespace StandardContainer.Tests.Tests.Constructor
             container = new Container(DefaultLifestyle.Singleton, log: write);
         }
 
-        [Fact]
-        public void T00_No_Constructor()
-        {
-            // extension method
-            Assert.Throws<TypeAccessException>(() => typeof(int).GetTypeInfo().GetConstructor());
-        }
-
         public class ClassWithValueTypeArgument
         {
             public ClassWithValueTypeArgument(int i) { }
         }
-
         [Fact]
-        public void Test_ClassWithValueTypeArgument()
+        public void T01_Class_With_Value_Type_Argument()
         {
-            container.RegisterSingleton<ClassWithValueTypeArgument>();
-            var ex = Assert.Throws<TypeAccessException>(() => container.GetInstance<ClassWithValueTypeArgument>());
-            write(ex.Message);
-            new ClassWithValueTypeArgument(0);
-        }
-
-        public class ClassWithDefaultValueTypeArgument
-        {
-            public int I;
-            public ClassWithDefaultValueTypeArgument(int i = 42) { I = i; }
-        }
-        [Fact]
-        public void Test_ClassWithDefaultValueTypeArgument()
-        {
-            container.RegisterSingleton<ClassWithDefaultValueTypeArgument>();
-            var x = container.GetInstance<ClassWithDefaultValueTypeArgument>();
-            Assert.Equal(42, x.I);
+            Assert.Throws<TypeAccessException>(() => container.GetInstance<ClassWithValueTypeArgument>()).Output(write);
         }
 
         public class ClassWithStringArgument
@@ -55,35 +31,38 @@ namespace StandardContainer.Tests.Tests.Constructor
             public ClassWithStringArgument(string s) { }
         }
         [Fact]
-        public void Test_ClassWithStringArgument()
+        public void T02_Class_With_String_Argument()
         {
-            container.RegisterSingleton<ClassWithStringArgument>();
-            var ex = Assert.Throws<TypeAccessException>(() => container.GetInstance<ClassWithStringArgument>());
-            write(ex.Message);
-            new ClassWithStringArgument(null);
+            Assert.Throws<TypeAccessException>(() => container.GetInstance<ClassWithStringArgument>()).Output(write);
+        }
+
+        public class ClassWithDefaultValueTypeArgument
+        {
+            public ClassWithDefaultValueTypeArgument(int i = 42) {}
+        }
+        [Fact]
+        public void T03_Class_With_Default_Value_Type_Argument()
+        {
+            container.GetInstance<ClassWithDefaultValueTypeArgument>();
         }
 
         public class ClassWithDefaultStringArgument
         {
-            public string S;
-            public ClassWithDefaultStringArgument(string s = "test") { S = s; }
+            public ClassWithDefaultStringArgument(string s = "test") {}
         }
         [Fact]
-        public void Test_ClassWithDefaultStringArgument()
+        public void T04_Class_With_Default_String_Argument()
         {
-            container.RegisterSingleton<ClassWithDefaultStringArgument>();
-            var x = container.GetInstance<ClassWithDefaultStringArgument>();
-            Assert.Equal("test", x.S);
+            container.GetInstance<ClassWithDefaultStringArgument>();
         }
 
         public class ClassWithNullArgument
         {
-            public ClassWithNullArgument(string s = null) { }
+            public ClassWithNullArgument(string s = null) {}
         }
         [Fact]
-        public void Test_ClassWithNullArgument()
+        public void T05_Class_With_Null_Argument()
         {
-            container.RegisterSingleton<ClassWithNullArgument>();
             container.GetInstance<ClassWithNullArgument>();
         }
 

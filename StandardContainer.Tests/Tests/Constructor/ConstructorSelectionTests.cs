@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Reflection;
-using System.Runtime.Remoting.Messaging;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -19,27 +17,29 @@ namespace StandardContainer.Tests.Tests.Constructor
 
         public class ClassA
         {
+            public bool Ok;
             public ClassA(int i) { }
-            public ClassA() { }
+            public ClassA() { Ok = true; }
         }
         [Fact]
-        public void Test_ClassWithMultipleConstructors()
+        public void T01_Class_With_Multiple_Constructors()
         {
-            container.GetInstance<ClassA>();
-            new ClassA(1);
+            var instance = container.GetInstance<ClassA>();
+            Assert.True(instance.Ok);
         }
 
         public class ClassB
         {
-            public ClassB(int i) {}
-            [ContainerConstructor]
+            public bool Ok;
             public ClassB() {}
+            [ContainerConstructor]
+            public ClassB(ClassA a) { Ok = true; }
         }
         [Fact]
-        public void Test_ClassWithAttributeConstructor()
+        public void T02_Class_With_Attribute_Constructor()
         {
-            container.GetInstance<ClassB>();
-            new ClassB(1);
+            var instance = container.GetInstance<ClassB>();
+            Assert.True(instance.Ok);
         }
 
         public class ClassC
@@ -50,14 +50,10 @@ namespace StandardContainer.Tests.Tests.Constructor
             public ClassC() { }
         }
         [Fact]
-        public void Test_ClassWithMultipleAttributes()
+        public void T03_Class_With_Multiple_Attributes()
         {
             Assert.Throws<TypeAccessException>(() => container.GetInstance<ClassC>()).Output(write);
-            new ClassC();
-            new ClassC(1);
         }
-
-
 
     }
 

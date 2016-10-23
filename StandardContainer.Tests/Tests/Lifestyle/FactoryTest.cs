@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Linq;
-using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace StandardContainer.Tests.Tests.Core
+namespace StandardContainer.Tests.Tests.Lifestyle
 {
     public class FactoryTest
     {
@@ -78,26 +76,6 @@ namespace StandardContainer.Tests.Tests.Core
             Assert.Equal(container.GetInstance<ISomeClass>(), container.GetInstance<ISomeClass>());
             Assert.Equal(1, counter1);
         }
-
-
-        [Fact]
-        public void T07_Register_Auto()
-        {
-            var container = new Container(log: write, defaultLifestyle: DefaultLifestyle.Singleton);
-            container.RegisterSingleton<SomeClass>();
-
-            //var x = container.GetInstance<Func<SomeClass>>();
-            //var x = container.GetFactory<SomeClass>();
-            //var sc = x();
-            //var xx = (SomeClass) sc;
-
-            ;
-
-            //container.GetInstance<SomeClass>();
-            //Assert.Equal(container.GetInstance<IMarker>(), container.GetInstance<IMarker>());
-            //Assert.Equal(1, counter1);
-        }
-
 
     }
 }

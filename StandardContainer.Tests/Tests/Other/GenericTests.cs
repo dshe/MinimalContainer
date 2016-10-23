@@ -15,11 +15,11 @@ namespace StandardContainer.Tests.Tests.Core
         public class Foo2 {}
         public class Foo1<T>
         {
-            public Foo1(T t) { }
+            public Foo1(T t) {}
         }
         public class Foo
         {
-            public Foo(Foo1<Foo2> generic) { }
+            public Foo(Foo1<Foo2> generic) {}
         }
 
         [Fact]

@@ -11,7 +11,7 @@ namespace StandardContainer.Tests.Tests.Core
     {
         public class ClassA : IDisposable
         {
-            public bool IsDisposed = false;
+            public bool IsDisposed;
             public void Dispose()
             {
                 IsDisposed = true;
@@ -19,14 +19,13 @@ namespace StandardContainer.Tests.Tests.Core
         }
 
         private readonly Container container;
-
         public DisposeTest(ITestOutputHelper output)
         {
             container = new Container(defaultLifestyle: DefaultLifestyle.Singleton, log: output.WriteLine);
         }
 
         [Fact]
-        public void Dispose_Singleton()
+        public void T01_Dispose_Singleton()
         {
             container.RegisterSingleton<ClassA>();
             var instance = container.GetInstance<ClassA>();
@@ -35,7 +34,7 @@ namespace StandardContainer.Tests.Tests.Core
         }
 
         [Fact]
-        public void Dispose_Instance()
+        public void T02_Dispose_Instance()
         {
             var instance = new ClassA();
             container.RegisterInstance(instance);
@@ -44,7 +43,7 @@ namespace StandardContainer.Tests.Tests.Core
         }
 
         [Fact]
-        public void Dispose_Other()
+        public void T03_Dispose_Other()
         {
             container.RegisterTransient<ClassA>();
             var instance = container.GetInstance<ClassA>();

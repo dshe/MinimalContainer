@@ -6,6 +6,12 @@ namespace StandardContainer.Tests.Tests.TypeFactory
 {
     public class TypeFactoryInjectionTest
     {
+        private readonly Action<string> write;
+        public TypeFactoryInjectionTest(ITestOutputHelper output)
+        {
+            write = output.WriteLine;
+        }
+
         public class SomeClass {}
         public class SomeClass2
         {
@@ -14,12 +20,6 @@ namespace StandardContainer.Tests.Tests.TypeFactory
             {
                 Factory = factory;
             }
-        }
-
-        private readonly Action<string> write;
-        public TypeFactoryInjectionTest(ITestOutputHelper output)
-        {
-            write = output.WriteLine;
         }
 
         [Fact]

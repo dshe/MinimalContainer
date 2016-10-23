@@ -6,28 +6,32 @@ using Xunit.Abstractions;
 
 namespace StandardContainer.Tests.Tests.Relative
 {
-    public class ClassA
-    {
-        public ClassA(ClassB b) { }
-    }
-
-    public class ClassB {}
-
     public class CaptiveDependencyTests
     {
         private readonly Container container;
+        private readonly Action<string> write;
 
         public CaptiveDependencyTests(ITestOutputHelper output)
         {
-            container = new Container(log: output.WriteLine, assemblies:Assembly.GetExecutingAssembly());
+            write = output.WriteLine;
+            container = new Container(log: output.WriteLine);
         }
+
+
+        public class ClassA
+        {
+            public ClassA(ClassB b) {}
+        }
+
+        public class ClassB {}
+
 
         [Fact]
         public void Test_CaptiveDependency_Singleton_Transient()
         {
             container.RegisterSingleton<ClassA>();
             container.RegisterTransient<ClassB>();
-            Assert.Throws<TypeAccessException>(() => container.GetInstance<ClassA>());
+            Assert.Throws<TypeAccessException>(() => container.GetInstance<ClassA>()).Output(write);
         }
 
         [Fact]
@@ -54,5 +58,4 @@ namespace StandardContainer.Tests.Tests.Relative
             container.GetInstance<ClassA>();
         }
     }
-
 }

@@ -2,18 +2,18 @@
 using Xunit;
 using Xunit.Abstractions;
 
-namespace StandardContainer.Tests.Tests.Core
+namespace StandardContainer.Tests.Tests.Lifestyle
 {
     public class SingletonTest
     {
-        public interface ISomeClass { }
-        public class SomeClass : ISomeClass { }
-
         private readonly Action<string> write;
         public SingletonTest(ITestOutputHelper output)
         {
             write = output.WriteLine;
         }
+
+        public interface ISomeClass { }
+        public class SomeClass : ISomeClass { }
 
         [Fact]
         public void T01_Concrete()
@@ -30,7 +30,7 @@ namespace StandardContainer.Tests.Tests.Core
         {
             var container = new Container(log: write);
             container.RegisterSingleton<ISomeClass>();
-            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<ISomeClass>());
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<ISomeClass>()).Output(write); ;
             Assert.Equal(container.GetInstance<ISomeClass>(), container.GetInstance<ISomeClass>());
             Assert.Throws<TypeAccessException>(() => container.GetInstance<SomeClass>()).Output(write);
         }

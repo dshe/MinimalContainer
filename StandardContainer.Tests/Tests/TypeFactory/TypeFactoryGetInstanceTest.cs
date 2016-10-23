@@ -6,21 +6,21 @@ namespace StandardContainer.Tests.Tests.TypeFactory
 {
     public class TypeFactoryGetInstanceTest
     {
-        public class SomeClass {}
-
         private readonly Action<string> write;
         public TypeFactoryGetInstanceTest(ITestOutputHelper output)
         {
             write = output.WriteLine;
         }
 
+        public class SomeClass {}
+
         [Fact]
         public void T00_not_registered()
         {
             var container = new Container();
-            //Assert.Throws<TypeAccessException>(() => container.GetInstance<Func<SomeClass>>()).Output(write);
             Assert.Throws<ArgumentException>(() => container.RegisterTransient<Func<SomeClass>>()).Output(write);
         }
+
         [Fact]
         public void T01_transient_factory()
         {
@@ -30,6 +30,7 @@ namespace StandardContainer.Tests.Tests.TypeFactory
             Assert.IsType(typeof(SomeClass), factory());
             Assert.NotEqual(factory(), factory());
         }
+
         [Fact]
         public void T02_singleton_factory()
         {
@@ -37,6 +38,7 @@ namespace StandardContainer.Tests.Tests.TypeFactory
             container.RegisterTransient<SomeClass>();
             container.GetInstance<Func<SomeClass>>();
         }
+
         [Fact]
         public void T03_factory_of_singletons()
         {
@@ -44,12 +46,14 @@ namespace StandardContainer.Tests.Tests.TypeFactory
             container.RegisterSingleton<SomeClass>();
             Assert.Throws<TypeAccessException>(() => container.GetInstance<Func<SomeClass>>()).Output(write);
         }
+
         [Fact]
         public void T04_auto_singleton()
         {
             var container = new Container(DefaultLifestyle.Singleton);
             container.GetInstance<Func<SomeClass>>();
         }
+
         [Fact]
         public void T05_auto_transient()
         {

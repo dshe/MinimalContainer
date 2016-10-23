@@ -6,18 +6,18 @@ namespace StandardContainer.Tests.Tests.TypeFactory
 {
     public class TypeFactoryWithInterfaceTest
     {
+        private readonly Action<string> write;
+        public TypeFactoryWithInterfaceTest(ITestOutputHelper output)
+        {
+            write = output.WriteLine;
+        }
+
         public interface ISomeClass { }
         public interface ISomeClass2 { }
         public class SomeClass : ISomeClass { }
         public class SomeClass2 : ISomeClass2
         {
             public SomeClass2(Func<ISomeClass> factory) { }
-        }
-
-        private readonly Action<string> write;
-        public TypeFactoryWithInterfaceTest(ITestOutputHelper output)
-        {
-            write = output.WriteLine;
         }
 
         [Fact]
@@ -29,6 +29,7 @@ namespace StandardContainer.Tests.Tests.TypeFactory
             Assert.IsType(typeof(SomeClass), factory());
             Assert.NotEqual(factory(), factory());
         }
+
         [Fact]
         public void T02_singleton_factory()
         {
@@ -36,12 +37,14 @@ namespace StandardContainer.Tests.Tests.TypeFactory
             container.RegisterTransient<ISomeClass>();
             container.GetInstance<Func<ISomeClass>>();
         }
+
         [Fact]
         public void T03_auto_singleton()
         {
             var container = new Container(DefaultLifestyle.Singleton);
             container.GetInstance<Func<ISomeClass>>();
         }
+
         [Fact]
         public void T04_auto_singleton_injection()
         {

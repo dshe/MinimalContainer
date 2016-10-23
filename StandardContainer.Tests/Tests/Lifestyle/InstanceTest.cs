@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Linq;
-using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace StandardContainer.Tests.Tests.Core
+namespace StandardContainer.Tests.Tests.Lifestyle
 {
     public class InstanceTest
     {
-        public interface ISomeClass { }
-        public class SomeClass : ISomeClass { }
-
         private readonly Container container;
         private readonly Action<string> write;
 
@@ -19,6 +14,9 @@ namespace StandardContainer.Tests.Tests.Core
             write = output.WriteLine;
             container = new Container(log: write);
         }
+
+        public interface ISomeClass { }
+        public class SomeClass : ISomeClass { }
 
         [Fact]
         public void T01_Concrete()

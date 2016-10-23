@@ -6,23 +6,25 @@ using Xunit.Abstractions;
 
 namespace StandardContainer.Tests.Tests.Relative
 {
-    public interface IFoo1 {}
-    public interface IFoo2 {}
-
-    public class Foo : IFoo1, IFoo2 {}
-
-    public class MultipleInterfaces
+    public class MultipleSingletonInterfaces
     {
-        private readonly Container container;
+        private readonly Action<string> write;
 
-        public MultipleInterfaces(ITestOutputHelper output)
+        public MultipleSingletonInterfaces(ITestOutputHelper output)
         {
-            container = new Container(DefaultLifestyle.None, log: output.WriteLine);
+            write = output.WriteLine;
         }
+
+
+        public interface IFoo1 { }
+        public interface IFoo2 { }
+        public class Foo : IFoo1, IFoo2 { }
+
 
         [Fact]
         public void Test_Multiple()
         {
+            var container = new Container(log: write);
             container.RegisterSingleton<IFoo1>();
             container.RegisterSingleton<IFoo2>();
             Assert.Equal((Foo)container.GetInstance<IFoo1>(), (Foo)container.GetInstance<IFoo2>());
@@ -31,6 +33,7 @@ namespace StandardContainer.Tests.Tests.Relative
         [Fact]
         public void Test_Multiple2()
         {
+            var container = new Container(log: write);
             container.RegisterSingleton<Foo>();
             container.RegisterSingleton<IFoo1>();
             Assert.Equal(container.GetInstance<Foo>(), container.GetInstance<IFoo1>());

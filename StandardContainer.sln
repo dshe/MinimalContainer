@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{45A245
 		README.md = README.md
 		TypeResolutionFlowChart.png = TypeResolutionFlowChart.png
 		TypeResolutionFlowChart.sdr = TypeResolutionFlowChart.sdr
+		TypeResolutionFlowChart2.png = TypeResolutionFlowChart2.png
 		StandardContainer\worm64.png = StandardContainer\worm64.png
 	EndProjectSection
 EndProject

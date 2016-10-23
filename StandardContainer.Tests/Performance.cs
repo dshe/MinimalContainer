@@ -8,14 +8,14 @@ namespace StandardContainer.Tests
     [Trait("Category", "Performance")]
     public class Performance
     {
-        public class ClassA { }
-
         private readonly Stopwatch sw = new Stopwatch();
         private readonly Action<string> write;
         public Performance(ITestOutputHelper output)
         {
             write = output.WriteLine;
         }
+
+        public class ClassA { }
 
         [Fact]
         public void Test_Performance()

@@ -44,5 +44,9 @@ namespace StandardContainer.Tests.Examples
             container.GetInstance<Root>();
             container.Log();
         }
+
+
     }
+
+
 }

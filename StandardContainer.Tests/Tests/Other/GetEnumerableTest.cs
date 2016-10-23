@@ -4,7 +4,7 @@ using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace StandardContainer.Tests.Tests.Core
+namespace StandardContainer.Tests.Tests.Other
 {
     public class GetEnumerableTest
     {

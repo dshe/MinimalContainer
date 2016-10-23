@@ -5,47 +5,47 @@ using Xunit.Abstractions;
 
 namespace StandardContainer.Tests.Tests.Relative
 {
-    public interface IMarker1 {}
-    public interface IMarker2 {}
-
-    public class ClassA1 : IMarker1, IMarker2 {}
-    public class ClassA2 : IMarker1, IMarker2 {}
-    public class ClassA3 : IMarker1, IMarker2 {}
-
     public class UniqueConcreteTest
     {
-        private readonly Container container;
+        private readonly Action<string> write;
 
         public UniqueConcreteTest(ITestOutputHelper output)
         {
-            container = new Container(DefaultLifestyle.Singleton, log: output.WriteLine);
+            write = output.WriteLine;
         }
 
+
+        public interface IMarker1 {}
+        public interface IMarker2 {}
+
+        public class ClassA1 : IMarker1, IMarker2 {}
+        public class ClassA2 : IMarker1, IMarker2 {}
+        public class ClassA3 : IMarker1, IMarker2 {}
+
+
         [Fact]
-        public void Test_DuplicateRegistration()
+        public void T01_Duplicate_Registration()
         {
+            var container = new Container(DefaultLifestyle.Singleton, log: write);
+
             container.RegisterSingleton<ClassA1>();
-            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<ClassA1>());
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<ClassA1>()).Output(write);
 
             container.RegisterSingleton<IMarker1, ClassA2>();
-            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<IMarker1, ClassA2>());
-        }
-        [Fact]
-        public void Test_RegistrationConcrete()
-        {
-            container.RegisterSingleton<ClassA1>();
-            //Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<IMarker1, ClassA1>());
-            //container.RegisterSingleton<IMarker1, ClassA1>();
-
-            //container.RegisterSingleton<IMarker1, ClassA2>();
-            //Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<ClassA2>());
-            /////Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<IMarker1, ClassA3>());
-            //Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<IMarker2, ClassA2>());
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<IMarker1, ClassA2>()).Output(write);
         }
 
         [Fact]
-        public void Test_RegistrationConcreteMultiple()
+        public void T02_Registration_Duplicate_Marker()
         {
+            var container = new Container(DefaultLifestyle.Singleton, log: write);
+            Assert.Throws<TypeAccessException>(() => container.GetInstance<IMarker1>()).Output(write);
+        }
+
+        [Fact]
+        public void T03_Registration_Concrete_Multiple()
+        {
+            var container = new Container(DefaultLifestyle.Singleton, log: write);
             container.RegisterSingleton<IMarker1,ClassA1>();
             container.GetInstance<ClassA1>();
             container.GetInstance<IMarker1>();
