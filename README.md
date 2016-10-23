@@ -17,12 +17,13 @@
 public interface IFoo {}
 public class Foo : IFoo {}
 
-var container = new Container();
+public void Main()
+{
+    var container = new Container();
 
-container.RegisterSingleton<IFoo, Foo>();
-
-IFoo instance = container.GetInstance<IFoo>();
-
+    container.RegisterSingleton<IFoo, Foo>();
+    IFoo instance = container.GetInstance<IFoo>();
+...
 ```
 #### registration
 ```csharp
@@ -34,8 +35,8 @@ container.RegisterTransient<Foo>();
 container.RegisterTransient<IFoo>();
 container.RegisterTransient<IFoo, Foo>();
 
-container.RegisterInstance(instance);
-container.RegisterInstance<IFoo>(instance);
+container.RegisterInstance(foo);
+container.RegisterInstance<IFoo>(foo);
 
 container.RegisterFactory(() => new Foo());
 container.RegisterFactory<IFoo>(() => new Foo());
@@ -43,6 +44,7 @@ container.RegisterFactory<IFoo>(() => new Foo());
 #### resolution
 ```csharp
 IFoo instance = container.GetInstance<IFoo>();
+Func<IFoo> factory = container.GetInstance<Func<IFoo>>();
 ```
 #### enumerables
 ```csharp
@@ -54,7 +56,6 @@ var container = new Container();
 
 container.RegisterSingleton<Foo1>();
 container.RegisterSingleton<Foo2>();
-container.RegisterSingleton<IList<IFoo>>();
 
 IList<IFoo> list = container.GetInstance<IList<Ifoo>>();
 ```
