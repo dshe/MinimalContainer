@@ -64,12 +64,10 @@
     <Compile Include="Tests\Core\InstanceTest.cs" />
     <Compile Include="Tests\Core\SingletonTest.cs" />
     <Compile Include="Tests\Core\TransientTest.cs" />
-    <Compile Include="Tests\Enumerables\AutoEnumerableTests.cs" />
     <Compile Include="Examples\Example2.cs" />
-    <Compile Include="Tests\Generics\GenericTests.cs" />
-    <Compile Include="Tests\Generics\AutoGenericTests.cs" />
+    <Compile Include="Tests\Core\GenericTests.cs" />
     <Compile Include="Performance.cs" />
-    <Compile Include="Tests\Enumerables\RegisterEnumerableTest.cs" />
+    <Compile Include="Tests\Core\GetEnumerableTest.cs" />
     <Compile Include="Tests\Core\RegisterErrorTest.cs" />
     <Compile Include="Tests\Core\FactoryTest.cs" />
     <Compile Include="Tests\Constructor\ConstructorArgumentsTests.cs" />
@@ -80,7 +78,9 @@
     <Compile Include="Tests\Relative\RecursionTest.cs" />
     <Compile Include="Tests\Relative\UniqueConcreteTest.cs" />
     <Compile Include="Extensions.cs" />
-    <Compile Include="Tests\Test1.cs" />
+    <Compile Include="Tests\TypeFactory\TypeFactoryInjectionTest.cs" />
+    <Compile Include="Tests\TypeFactory\TypeFactoryGetInstanceTest.cs" />
+    <Compile Include="Tests\TypeFactory\TypeFactoryWithInterfaceTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

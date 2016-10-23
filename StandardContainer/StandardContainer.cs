@@ -93,6 +93,8 @@ namespace StandardContainer
         {
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
+            if (type.IsFunc())
+                throw new ArgumentException("Register Func<T> with RegisterFactory().");
             if (typeConcrete == null && lifestyle != Lifestyle.Instance && lifestyle != Lifestyle.Factory)
                 typeConcrete = allTypesConcrete.FindTypeConcrete(type);
             if (typeConcrete != null)
@@ -145,11 +147,51 @@ namespace StandardContainer
             Registration reg;
             if (!registrations.TryGetValue(type, out reg))
             {
+                if (type.GetTypeInfo().IsFunc())
+                {
+                    var generic = type.GenericTypeArguments.Single();
+                    var regDependent = new Registration { Lifestyle = Lifestyle.Factory };
+                    var genericReg = GetRegistration(generic, regDependent);
+                    reg = new Registration { Lifestyle = genericReg.Lifestyle };
+                    if (genericReg.Lifestyle == Lifestyle.Transient)
+                        reg.Expression = Expression.Lambda(genericReg.Expression);
+                    else if (genericReg.Lifestyle == Lifestyle.Factory)
+                        reg.Expression = Expression.Constant(genericReg.Factory);
+                    else
+                        throw new TypeAccessException($"Type from factory '{type.AsString()}' is an instance or singleton.");
+                    reg.Factory = Expression.Lambda<Func<object>>(reg.Expression).Compile();
+                    return reg;
+                }
+                if (typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()) && type != typeof(string))
+                {
+                    var genericType = type.GenericTypeArguments.Single().GetTypeInfo();
+                    if (defaultLifestyle != DefaultLifestyle.None)
+                    {
+                        foreach (var t in allTypesConcrete.Where(t => genericType.IsAssignableFrom(t)))
+                            GetRegistration(t.AsType(), dependent);
+                    }
+                    var expressions = registrations.Values
+                        .Select(x => x.Type)
+                        .Where(t => genericType.IsAssignableFrom(t))
+                        .Select(t => GetRegistration(t.AsType(), dependent))
+                        .Select(r => r.Expression)
+                        .ToList();
+                    if (!expressions.Any())
+                        throw new TypeAccessException($"No types found assignable to generic type '{genericType.AsString()}'.");
+                    Log($"Creating list of {expressions.Count} types assignable to '{genericType.AsString()}'.");
+                    reg = new Registration
+                    {
+                        Lifestyle = Lifestyle.Transient,
+                        Expression = Expression.NewArrayInit(genericType.AsType(), expressions)
+                    };
+                    reg.Factory = Expression.Lambda<Func<object>>(reg.Expression).Compile();
+                    return reg;
+                }
                 if (defaultLifestyle == DefaultLifestyle.None)
                     throw new TypeAccessException($"Cannot resolve unregistered type '{type.AsString()}'.");
-                var style = (dependent?.Lifestyle == Lifestyle.Singleton || dependent?.Lifestyle == Lifestyle.Instance || defaultLifestyle == DefaultLifestyle.Singleton)
-                    ? Lifestyle.Singleton : Lifestyle.Transient;
-                style = dependent?.Lifestyle == Lifestyle.Factory ? Lifestyle.Transient : style;
+                var style = dependent?.Lifestyle != Lifestyle.Factory &&
+                            (dependent?.Lifestyle == Lifestyle.Singleton || dependent?.Lifestyle == Lifestyle.Instance ||
+                             defaultLifestyle == DefaultLifestyle.Singleton) ? Lifestyle.Singleton : Lifestyle.Transient;
                 reg = AddRegistration(style, type.GetTypeInfo(), null, null, "Auto-registration");
             }
             if (reg.Expression == null)
@@ -193,12 +235,6 @@ namespace StandardContainer
 
         private Expression GetExpression(Registration reg)
         {
-            var funcExpression = GetFuncExpression(reg);
-            if (funcExpression != null)
-                return funcExpression;
-            var arrayExpression = GetArrayExpression(reg);
-            if (arrayExpression != null)
-                return arrayExpression;
             // For singleton registrations, use a previously registered singleton instance, if any.
             if (reg.Lifestyle == Lifestyle.Singleton)
             {
@@ -211,44 +247,6 @@ namespace StandardContainer
                 if (expression != null)
                     return expression;
             }
-            return GetNewExpression(reg);
-        }
-
-        private Expression GetFuncExpression(Registration reg)
-        {
-            if (!reg.Type.IsFunc())
-                return null;
-            var generic = reg.Type.GenericTypeArguments.Single();
-            var regDependent = new Registration
-            {
-                Type = reg.Type, Lifestyle = Lifestyle.Factory
-            };
-            var genericReg = GetRegistration(generic, regDependent);
-            if (genericReg.Lifestyle == Lifestyle.Transient)
-                return Expression.Lambda(genericReg.Expression);
-            if (genericReg.Lifestyle == Lifestyle.Factory)
-                return Expression.Constant(genericReg.Factory);
-            throw new TypeAccessException($"Type from factory '{reg.Type.AsString()}' is an instance or singleton.");
-        }
-
-        private Expression GetArrayExpression(Registration reg)
-        {
-            if (!typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(reg.Type))
-                return null;
-            var genericType = reg.TypeConcrete.GenericTypeArguments.Single().GetTypeInfo();
-            var expressions = allTypesConcrete
-                .Where(t => genericType.IsAssignableFrom(t))
-                .Select(t => GetRegistration(t.AsType(), reg))
-                .Select(r => r.Expression)
-                .ToList();
-            if (!expressions.Any())
-                throw new TypeAccessException($"No types found assignable to generic type '{genericType.AsString()}'.");
-            Log($"Creating list of {expressions.Count} types assignable to '{genericType.AsString()}'.");
-            return Expression.NewArrayInit(genericType.AsType(), expressions);
-        }
-
-        private Expression GetNewExpression(Registration reg)
-        {
             var type = reg.TypeConcrete;
             var ctor = type.GetConstructor();
             var parameters = ctor.GetParameters()

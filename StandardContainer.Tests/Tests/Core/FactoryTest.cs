@@ -94,7 +94,7 @@ namespace StandardContainer.Tests.Tests.Core
             ;
 
             //container.GetInstance<SomeClass>();
-            //Assert.Equal(container.GetInstance<ISomeClass>(), container.GetInstance<ISomeClass>());
+            //Assert.Equal(container.GetInstance<IMarker>(), container.GetInstance<IMarker>());
             //Assert.Equal(1, counter1);
         }
 
