@@ -22,7 +22,7 @@ public void Main()
     var container = new Container();
     container.RegisterSingleton<IFoo, Foo>();
     IFoo instance = container.GetInstance<IFoo>();
-...
+    ...
 ```
 #### registration
 ```csharp
@@ -89,21 +89,26 @@ To enable automatic registration, set the default lifestyle to singleton or tran
 
 #### example
 ```csharp
-public interface IClassB {}
-public class ClassB : IClassB {}
+public interface IFoo2 {}
+public class Foo2 : IFoo2 {}
 
-public class ClassA
+public class Foo1
 {
-    public ClassA(IClassB b) {}
+    public Foo1(IFoo2 foo2) {}
 }
 
 public class Root
 {
-    public Root(ClassA a) {}
-    public void StartApplication() {}
+    public Root(Foo1 foo1) {}
+    public void StartApplication() 
+    {
+        ...
+    }
 }
 
-new Container(Lifestyle.Transient).GetInstance<TRoot>().StartApplication();
+new Container(Lifestyle.Transient)
+    .GetInstance<TRoot>()
+    .StartApplication();
 ```
 The complete object graph is created by simply resolving the compositional root. 
 
