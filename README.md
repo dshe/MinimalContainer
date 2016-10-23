@@ -85,9 +85,6 @@ var container = new Container(Lifestyle.Singleton, assemblies:someAssembly);
 
 Foo instance = container.GetInstance<Foo>();
 ```
-```csharp
-new Container(Lifestyle.Transient).GetInstance<TRoot>().StartApplication();
-```
 To enable automatic registration, set the default lifestyle to singleton or transient when constructing the container. Note that the container will always register the dependencies of singleton instances as singletons. If automatic type resolution requires scanning assemblies other than the assembly where the container is created, include references to those assemblies in the container's constructor.
 
 #### example
@@ -95,10 +92,9 @@ To enable automatic registration, set the default lifestyle to singleton or tran
 public interface IClassB {}
 public class ClassB : IClassB {}
 
-public class ClassA : IDisposable
+public class ClassA
 {
     public ClassA(IClassB b) {}
-    public void Dispose() {}
 }
 
 public class Root
@@ -107,8 +103,7 @@ public class Root
     public void StartApplication() {}
 }
 
-using (var container = new Container(Lifestyle.Singleton))
-    container.GetInstance<Root>().StartApplication();
+new Container(Lifestyle.Transient).GetInstance<TRoot>().StartApplication();
 ```
 The complete object graph is created by simply resolving the compositional root. 
 
