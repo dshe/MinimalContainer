@@ -71,11 +71,11 @@ IEnumerable<IFoo> list = container.GetInstance<IEnumerable<IFoo>>();
 A list of instances of registered types which are assignable to `IFoo` is returned. `IEnumerable<T>`, `IList<T>` and `ICollection<T>` are supported.
 #### fluency
 ```csharp
-var root = new Container()
-    .RegisterSingleton<T1>()
-    .RegisterInstance(new T2())
-    .RegisterFactory(() => new T3())
-    .GetInstance<Root>();
+var foo1 = new Container()
+    .RegisterSingleton<Foo1>()
+    .RegisterInstance(new Foo2())
+    .RegisterFactory(() => new Foo3())
+    .GetInstance<Foo1>();
 ```
 #### automatic registration
 ```csharp
