@@ -17,7 +17,7 @@
 public interface IFoo {}
 public class Foo : IFoo {}
 
-public void Main()
+public static void Main()
 {
     var container = new Container();
     container.RegisterSingleton<IFoo, Foo>();
