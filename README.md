@@ -109,7 +109,7 @@ public class Root
 public static void Main()
 {
     new Container(Lifestyle.Transient)
-        .GetInstance<TRoot>()
+        .GetInstance<Root>()
         .StartApplication();
 }
 ```
