@@ -73,8 +73,9 @@ A list of instances of registered types which are assignable to `IFoo` is return
 ```csharp
 var foo1 = new Container()
     .RegisterSingleton<Foo1>()
-    .RegisterInstance(new Foo2())
-    .RegisterFactory(() => new Foo3())
+    .RegisterTransient<Foo2>()
+    .RegisterInstance(new Foo3())
+    .RegisterFactory(() => new Foo4())
     .GetInstance<Foo1>();
 ```
 #### automatic registration
