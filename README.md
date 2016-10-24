@@ -119,7 +119,7 @@ The complete object graph is created by simply resolving the compositional root.
 #### resolution strategy
 The following graphic illustrates the automatic type resolution strategy:
 
-![Image of Resolution Strategy](https://github.com/dshe/InternalContainer/blob/master/TypeResolutionFlowChart2.png)
+![Image of Resolution Strategy](https://github.com/dshe/InternalContainer/blob/master/TypeResolutionFlowChart3.png)
 
 
 #### disposal
