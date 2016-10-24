@@ -66,6 +66,10 @@ namespace StandardContainer.Tests.Tests.Other
             Assert.Equal(2, list.Count());
             list = container.GetInstance<ICollection<IMarker>>();
             Assert.Equal(2, list.Count());
+            list = container.GetInstance<IReadOnlyCollection<IMarker>>();
+            Assert.Equal(2, list.Count());
+            list = container.GetInstance<IReadOnlyList<IMarker>>();
+            Assert.Equal(2, list.Count());
         }
 
         [Fact]
