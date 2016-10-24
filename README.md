@@ -66,12 +66,12 @@ var container = new Container();
 container.RegisterSingleton<Foo1>();
 container.RegisterSingleton<Foo2>();
 
-IList<IFoo> list = container.GetInstance<IList<Ifoo>>();
+IEnumerable<IFoo> list = container.GetInstance<IEnumerable<Ifoo>>();
 ```
-A list of instances of registered types which are assignable to `IFoo` is returned.
+A list of instances of registered types which are assignable to `IFoo` is returned. `IEnumerable<T>`, `IList<T>` and `ICollection<T>` are supported.
 #### fluency
 ```csharp
-var root = new Container(Lifestyle.Transient)
+var root = new Container()
     .RegisterSingleton<T1>()
     .RegisterInstance(new T2())
     .RegisterFactory(() => new T3())
@@ -81,7 +81,7 @@ var root = new Container(Lifestyle.Transient)
 ```csharp
 public class Foo {}
 
-var container = new Container(Lifestyle.Singleton, assemblies:someAssembly);
+var container = new Container(DefaultLifestyle.Singleton);
 
 Foo instance = container.GetInstance<Foo>();
 ```
