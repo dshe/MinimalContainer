@@ -106,9 +106,12 @@ public class Root
     }
 }
 
-new Container(Lifestyle.Transient)
-    .GetInstance<TRoot>()
-    .StartApplication();
+public static void Main()
+{
+    new Container(Lifestyle.Transient)
+        .GetInstance<TRoot>()
+        .StartApplication();
+}
 ```
 The complete object graph is created by simply resolving the compositional root. 
 
