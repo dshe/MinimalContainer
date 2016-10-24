@@ -66,7 +66,7 @@ var container = new Container();
 container.RegisterSingleton<Foo1>();
 container.RegisterSingleton<Foo2>();
 
-IEnumerable<IFoo> list = container.GetInstance<IEnumerable<Ifoo>>();
+IEnumerable<IFoo> list = container.GetInstance<IEnumerable<IFoo>>();
 ```
 A list of instances of registered types which are assignable to `IFoo` is returned. `IEnumerable<T>`, `IList<T>` and `ICollection<T>` are supported.
 #### fluency
@@ -75,7 +75,7 @@ var root = new Container()
     .RegisterSingleton<T1>()
     .RegisterInstance(new T2())
     .RegisterFactory(() => new T3())
-    .GetInstance<TRoot>();
+    .GetInstance<Root>();
 ```
 #### automatic registration
 ```csharp
