@@ -21,7 +21,7 @@ public static void Main()
 {
     var container = new Container();
     container.RegisterSingleton<IFoo, Foo>();
-    IFoo instance = container.GetInstance<IFoo>();
+    IFoo foo = container.GetInstance<IFoo>();
     ...
 ```
 #### registration
@@ -42,8 +42,8 @@ container.RegisterFactory<IFoo>(() => new Foo());
 ```
 #### resolution
 ```csharp
-IFoo instance = container.GetInstance<IFoo>();
-Func<IFoo> factory = container.GetInstance<Func<IFoo>>();
+IFoo foo = container.GetInstance<IFoo>();
+Func<IFoo> foo_factory = container.GetInstance<Func<IFoo>>();
 ```
 #### constructors
 The container can create instances of types using public and internal constructors. In case a type has more than one constructor, indicate the constructor to be used with the 'ContainerConstructor' attribute. Otherwise, the constructor with the smallest number of arguments is selected.
@@ -66,7 +66,7 @@ var container = new Container();
 container.RegisterSingleton<Foo1>();
 container.RegisterSingleton<Foo2>();
 
-IEnumerable<IFoo> list = container.GetInstance<IEnumerable<IFoo>>();
+IEnumerable<IFoo> foos = container.GetInstance<IEnumerable<IFoo>>();
 ```
 A list of instances of registered types which are assignable to `IFoo` is returned. `IList<T>`, `IReadOnlyList<T>`, `ICollection<T>` and `<IReadOnlyCollection<T>` are also supported.
 #### fluency
@@ -84,7 +84,7 @@ public class Foo {}
 
 var container = new Container(DefaultLifestyle.Singleton);
 
-Foo instance = container.GetInstance<Foo>();
+Foo foo = container.GetInstance<Foo>();
 ```
 To enable automatic registration, set the default lifestyle to singleton or transient when constructing the container. Note that the container will always register the dependencies of singleton instances as singletons. If automatic type resolution requires scanning assemblies other than the assembly where the container is created, include references to those assemblies in the container's constructor.
 
