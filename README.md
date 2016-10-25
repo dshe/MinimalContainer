@@ -3,7 +3,7 @@
 
 ***A simple and portable IoC (Inversion of Control) container.***
 - one C# 6.0 source file with no dependencies
-- supports *.NET Platform Standard 1.0*
+- supports **.NET Platform Standard 1.0**
 - supports automatic and/or explicit type registration
 - supports public and internal constructor injection
 - supports injection of instances and factories
