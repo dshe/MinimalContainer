@@ -1,32 +1,37 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
+using System.Reflection;
+using StandardContainer;
+using StandardContainer.Tests.Examples;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace StandardContainer.Tests.Examples
 {
-    public class Examples
+    public class Example2
     {
-        public interface IFoo { }
-        public class Foo : IFoo { }
-        private readonly Action<string> write;
-        public Examples(ITestOutputHelper output)
+        internal interface IFoo2 {}
+        internal class Foo2 : IFoo2 {}
+
+        internal class Foo1
         {
-            write = output.WriteLine;
+            internal Foo1(IFoo2 foo2) {}
         }
 
-        [Fact]
-        public void Test_Usage()
+        internal class Root
         {
-            var container = new Container(DefaultLifestyle.Singleton, log:write);
+            internal Root(Foo1 foo1) {}
+            private void StartApplication()
+            {
+                //...
+            }
 
-            container.RegisterSingleton<IFoo, Foo>();
-
-            var instance = container.GetInstance<IFoo>();
-            Assert.IsType<Foo>(instance);
-            Assert.Equal(instance, container.GetInstance<IFoo>());
-
-            write(container.ToString());
+            public static void Main()
+            {
+                new Container(DefaultLifestyle.Transient)
+                    .GetInstance<Root>()
+                    .StartApplication();
+            }
         }
     }
 }

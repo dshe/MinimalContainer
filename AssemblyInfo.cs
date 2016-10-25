@@ -1,4 +1,5 @@
-﻿using System.Resources;
+﻿using System;
+using System.Resources;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -29,4 +30,4 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyFileVersion("0.1.1.1")]
 [assembly: AssemblyInformationalVersion("0.1.*")]
 [assembly: InternalsVisibleTo("StandardContainer.Tests")]
-[assembly: System.CLSCompliant(true)]
+[assembly: CLSCompliant(true)]

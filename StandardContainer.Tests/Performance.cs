@@ -16,51 +16,52 @@ namespace StandardContainer.Tests
         }
 
         public class ClassA { }
+        private const long Iterations = (long)1e6;
 
         [Fact]
         public void Test_Performance()
         {
-            const long iterations = (long)1e6;
-
             var container = new Container();
             container.RegisterInstance(new ClassA());
             sw.Restart();
-            for (var i = 0; i < iterations; i++)
+            for (var i = 0; i < Iterations; i++)
                 container.GetInstance<ClassA>();
             sw.Stop();
-            var rate = iterations / sw.Elapsed.TotalSeconds;
-            write($"{rate,10:####,###} instances/second.");
+            WriteResult("instances/second");
 
             container = new Container();
             container.RegisterSingleton<ClassA>();
             container.GetInstance<ClassA>();
             sw.Restart();
-            for (var i = 0; i < iterations; i++)
+            for (var i = 0; i < Iterations; i++)
                 container.GetInstance<ClassA>();
             sw.Stop();
-            rate = iterations / sw.Elapsed.TotalSeconds;
-            write($"{rate,10:####,###} singletons/second.");
+            WriteResult("singletons/second");
 
             container = new Container();
             container.RegisterTransient<ClassA>();
             sw.Restart();
-            for (var i = 0; i < iterations; i++)
+            for (var i = 0; i < Iterations; i++)
                 container.GetInstance<ClassA>();
             sw.Stop();
-            rate = iterations / sw.Elapsed.TotalSeconds;
-            write($"{rate,10:####,###} transients/second.");
+            WriteResult("transients/second");
 
             container = new Container();
             var instance = new ClassA();
             container.RegisterFactory(() => instance);
             sw.Restart();
-            for (var i = 0; i < iterations; i++)
+            for (var i = 0; i < Iterations; i++)
                 container.GetInstance<ClassA>();
             sw.Stop();
-            rate = iterations / sw.Elapsed.TotalSeconds;
-            write($"{rate,10:####,###} factory instances/second.");
+            WriteResult("factory instances/second");
 
             Assert.True(true);
+        }
+
+        private void WriteResult(string label)
+        {
+            var rate = Iterations / sw.Elapsed.TotalSeconds;
+            write($"{rate,10:####,###} {label}.");
         }
 
     }
