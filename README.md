@@ -3,7 +3,7 @@
 
 ***A simple and portable IoC (Inversion of Control) container.***
 - one C# 6.0 source file with no dependencies
-- supports .NET Platform Standard 1.0
+- supports **.NET Platform Standard 1.0**
 - supports automatic and/or explicit type registration
 - supports public and internal constructor injection
 - supports injection of instances and factories
@@ -21,7 +21,7 @@ public static void Main()
 {
     var container = new Container();
     container.RegisterSingleton<IFoo, Foo>();
-    IFoo instance = container.GetInstance<IFoo>();
+    IFoo foo = container.GetInstance<IFoo>();
     ...
 ```
 #### registration
@@ -42,8 +42,8 @@ container.RegisterFactory<IFoo>(() => new Foo());
 ```
 #### resolution
 ```csharp
-IFoo instance = container.GetInstance<IFoo>();
-Func<IFoo> factory = container.GetInstance<Func<IFoo>>();
+IFoo foo = container.GetInstance<IFoo>();
+Func<IFoo> foo_factory = container.GetInstance<Func<IFoo>>();
 ```
 #### constructors
 The container can create instances of types using public and internal constructors. In case a type has more than one constructor, indicate the constructor to be used with the 'ContainerConstructor' attribute. Otherwise, the constructor with the smallest number of arguments is selected.
@@ -66,9 +66,9 @@ var container = new Container();
 container.RegisterSingleton<Foo1>();
 container.RegisterSingleton<Foo2>();
 
-IEnumerable<IFoo> list = container.GetInstance<IEnumerable<IFoo>>();
+IEnumerable<IFoo> foos = container.GetInstance<IEnumerable<IFoo>>();
 ```
-A list of instances of registered types which are assignable to `IFoo` is returned. `IList<T>`, `IReadOnlyList<T>`, `ICollection<T>` and `<IReadOnlyCollection<T>` are also supported.
+A list of instances of registered types which are assignable to `IFoo` is returned. `IEnumerable<T>`, `IList<T>`, `IReadOnlyList<T>`, `ICollection<T>` and `IReadOnlyCollection<T>` are supported.
 #### fluency
 ```csharp
 var foo1 = new Container()
@@ -84,34 +84,35 @@ public class Foo {}
 
 var container = new Container(DefaultLifestyle.Singleton);
 
-Foo instance = container.GetInstance<Foo>();
+Foo foo = container.GetInstance<Foo>();
 ```
 To enable automatic registration, set the default lifestyle to singleton or transient when constructing the container. Note that the container will always register the dependencies of singleton instances as singletons. If automatic type resolution requires scanning assemblies other than the assembly where the container is created, include references to those assemblies in the container's constructor.
 
 #### example
 ```csharp
-public interface IFoo2 {}
-public class Foo2 : IFoo2 {}
+internal interface IFoo2 { }
+internal class Foo2 : IFoo2 { }
 
-public class Foo1
+internal class Foo1
 {
-    public Foo1(IFoo2 foo2) {}
+    internal Foo1(IFoo2 foo2) { }
 }
 
-public class Root
+internal class Root
 {
-    public Root(Foo1 foo1) {}
-    public void StartApplication() 
+    internal Root(Foo1 foo1) { }
+
+    private void StartApplication()
     {
-        ...
+        //...
     }
-}
 
-public static void Main()
-{
-    new Container(Lifestyle.Transient)
-        .GetInstance<Root>()
-        .StartApplication();
+    public static void Main()
+    {
+        new Container(DefaultLifestyle.Transient)
+            .GetInstance<Root>()
+            .StartApplication();
+    }
 }
 ```
 The complete object graph is created by simply resolving the compositional root. 
