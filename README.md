@@ -90,28 +90,29 @@ To enable automatic registration, set the default lifestyle to singleton or tran
 
 #### example
 ```csharp
-public interface IFoo2 {}
-public class Foo2 : IFoo2 {}
+internal interface IFoo2 { }
+internal class Foo2 : IFoo2 { }
 
-public class Foo1
+internal class Foo1
 {
-    public Foo1(IFoo2 foo2) {}
+    internal Foo1(IFoo2 foo2) { }
 }
 
-public class Root
+internal class Root
 {
-    public Root(Foo1 foo1) {}
-    public void StartApplication() 
+    internal Root(Foo1 foo1) { }
+
+    private void StartApplication()
     {
-        ...
+        //...
     }
-}
 
-public static void Main()
-{
-    new Container(Lifestyle.Transient)
-        .GetInstance<Root>()
-        .StartApplication();
+    public static void Main()
+    {
+        new Container(DefaultLifestyle.Transient)
+            .GetInstance<Root>()
+            .StartApplication();
+    }
 }
 ```
 The complete object graph is created by simply resolving the compositional root. 
