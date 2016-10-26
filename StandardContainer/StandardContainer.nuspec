@@ -15,6 +15,6 @@
     <tags>IoC container dependency injection netstandard1.0 portable</tags>
   </metadata>
   <files>
-    <file src="StandardContainer.cs" target="content\StandardContainer.cs" />
+    <file src="StandardContainer.cs" target="content\StandardContainer\StandardContainer.cs" />
   </files>
 </package>

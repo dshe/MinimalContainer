@@ -27,3 +27,32 @@ distribution options:
 ===================================
  IFoo
  IBar
+
+ Ioc, Dependency-Injection, WinRT, Windows-Runtime, Inversion-of-Control
+
+ GitHub
+ AppVeyor
+ Nuget
+
+
+ identify artifacts (results of the build) 
+
+ project Nuget feed:
+ Project feed contains all NuGet packages pushed to artifacts during the build process. Project feed is read-only. Publish your custom packages to the account feed. 
+ https://ci.appveyor.com/nuget/standardcontainer-0jkhcpau93q3
+ 
+ account Nuget feed:
+ Account feed aggregates NuGet packages from all projects. You can publish your custom NuGet packages to the account feed and then use it as an additional NuGet source during the build process.
+ https://ci.appveyor.com/nuget/dshe-ofhaerbtr093
+ 
+ With cloud apps like AppVeyor for build/test/deploy, services like like RayGun.io for error management, Trello for products backlogs, FreshDesk for support tickets, 
+
+
+ StandardContainer.Source
+ n ultra lightweight single file Inversion of Control container for the .Net framework.
+ ******************************************************************************
+    LightInject version 4.1.2 (NET46)
+    http://www.lightinject.net/
+    http://twitter.com/bernhardrichter
+
+ yaml
