@@ -62,7 +62,7 @@ public class IFoo {}
 public class Foo1 : IFoo {}
 public class Foo2 : IFoo {}
 
-var container = new Container();
+Container container = new Container();
 container.RegisterSingleton<Foo1>();
 container.RegisterSingleton<Foo2>();
 
@@ -71,7 +71,7 @@ IEnumerable<IFoo> foos = container.GetInstance<IEnumerable<IFoo>>();
 A list of instances of registered types which are assignable to `IFoo` is returned. `IEnumerable<T>`, `IList<T>`, `IReadOnlyList<T>`, `ICollection<T>` and `IReadOnlyCollection<T>` are supported.
 #### fluency
 ```csharp
-var foo1 = new Container()
+Foo1 foo1 = new Container()
     .RegisterSingleton<Foo1>()
     .RegisterTransient<Foo2>()
     .RegisterInstance(new Foo3())
