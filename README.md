@@ -20,7 +20,7 @@ public class Foo : IFoo {}
 public static void Main()
 {
     var container = new Container();
-    container.RegisterSingleton<IFoo, Foo>();
+    container.RegisterTransient<IFoo, Foo>();
     IFoo foo = container.GetInstance<IFoo>();
     ...
 ```
@@ -109,7 +109,7 @@ internal class Root
     }
     public static void Main()
     {
-        new Container(DefaultLifestyle.Transient)
+        new Container(DefaultLifestyle.Singleton)
             .GetInstance<Root>()
             .StartApplication();
     }
