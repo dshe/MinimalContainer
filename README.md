@@ -43,7 +43,7 @@ container.RegisterFactory<IFoo>(() => new Foo());
 #### resolution
 ```csharp
 IFoo foo = container.GetInstance<IFoo>();
-Func<IFoo> foo_factory = container.GetInstance<Func<IFoo>>();
+Func<IFoo> fooFactory = container.GetInstance<Func<IFoo>>();
 ```
 #### constructors
 The container can create instances of types using public and internal constructors. In case a type has more than one constructor, indicate the constructor to be used with the 'ContainerConstructor' attribute. Otherwise, the constructor with the smallest number of arguments is selected.
@@ -90,23 +90,23 @@ To enable automatic registration, set the default lifestyle to singleton or tran
 
 #### example
 ```csharp
-internal interface IFoo2 { }
-internal class Foo2 : IFoo2 { }
-
-internal class Foo1
-{
-    internal Foo1(IFoo2 foo2) { }
-}
-
+internal interface IFoo1 {}
+internal class Foo1 : IFoo1 {}
+internal interface IFoo2 {}
+internal class Foo2 : IFoo2 {}
 internal class Root
 {
-    internal Root(Foo1 foo1) { }
-
+    private readonly IFoo1 foo1;
+    private readonly Func<IFoo2> foo2Factory;
+    internal Root(IFoo1 foo1, Func<IFoo2> foo2Factory)
+    {
+        this.foo1 = foo1;
+        this.foo2Factory = foo2Factory;
+    }
     private void StartApplication()
     {
         //...
     }
-
     public static void Main()
     {
         new Container(DefaultLifestyle.Transient)
