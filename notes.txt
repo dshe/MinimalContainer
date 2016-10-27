@@ -34,6 +34,11 @@ distribution options:
  AppVeyor
  Nuget
 
+ AppVeyor
+
+ Cake:
+ Invoke-WebRequest http://cakebuild.net/download/bootstrapper/windows -OutFile build.ps1
+
 
  identify artifacts (results of the build) 
 
@@ -55,4 +60,11 @@ distribution options:
     http://www.lightinject.net/
     http://twitter.com/bernhardrichter
 
- yaml
+ 
+appveyor.yaml
+
+version: 1.0.{build}
+image: Visual Studio 2015
+build_script:
+- cmd: PowerShell -Version 2.0 .\build.ps1
+test: off
