@@ -2,7 +2,7 @@
 using Xunit;
 using Xunit.Abstractions;
 
-namespace StandardContainer.Tests.Tests.Core
+namespace StandardContainer.Tests.Tests.Other
 {
     public class GenericTests
     {
@@ -95,6 +95,8 @@ namespace StandardContainer.Tests.Tests.Core
         {
             var container = new Container(DefaultLifestyle.Singleton, log: write);
             var b = container.GetInstance<ObsConcrete>();
+            Assert.Throws<NotImplementedException>(() => b.Subscribe(null));
+
             var x = container.GetInstance<Test>();
             write(Environment.NewLine + container);
         }

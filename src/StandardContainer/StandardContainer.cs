@@ -1,10 +1,8 @@
 /*
-StandardContainer.cs
+StandardContainer.cs 0.1.*
 Copyright 2016 dshe
-Licensed under the Apache License 2.0:
-http://www.apache.org/licenses/LICENSE-2.0
+Licensed under the Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0
 */
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -261,7 +259,7 @@ namespace StandardContainer
 
         public override string ToString()
         {
-            var reg = registrations.ToList();
+            var reg = registrations.Values.ToList();
             return new StringBuilder()
                 .AppendLine($"Container: {defaultLifestyle}, {reg.Count} registered types:")
                 .AppendLine(reg.Select(x => x.ToString()).JoinStrings(Environment.NewLine))

@@ -58,6 +58,7 @@
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Examples\Example1.cs" />
+    <Compile Include="Tests\Other\LogTest.cs" />
     <Compile Include="Tests\Other\AssemblyTest.cs" />
     <Compile Include="Tests\Other\DisposeTest.cs" />
     <Compile Include="Tests\Constructor\ConstructorSelectionTests.cs" />

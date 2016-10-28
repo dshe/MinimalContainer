@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Linq;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace StandardContainer.Tests.Examples
 {
