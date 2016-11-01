@@ -5,7 +5,6 @@ var target = Argument("target", "Default");
 var solution = File("src/StandardContainer.sln");
 var sourceFile = File("src/StandardContainer/StandardContainer.cs");
 var assemblyInfoFile = File("src/AssemblyInfo.cs");
-var assemblyInfo = ParseAssemblyInfo(assemblyInfoFile);
 var gitVersion = GitVersion(new GitVersionSettings{ OutputType = GitVersionOutput.Json });
 
 // determine Git version, patch AssemblyInfo.cs, update source file header
@@ -20,6 +19,7 @@ Task("Version").Does(() =>
 	//var versionInfo = GitVersion(new GitVersionSettings{ OutputType = GitVersionOutput.Json });
 	Information("GitVersion: " + gitVersion.FullSemVer);
 
+	var assemblyInfo = ParseAssemblyInfo(assemblyInfoFile);
 	Information("Writing AssemblyInfo.cs version: " + assemblyInfo.AssemblyVersion);
 
 	var header = 
@@ -61,10 +61,12 @@ Task("Nuget").IsDependentOn("Test").Does(() =>
 	txt = txt.Replace("namespace StandardContainer", "namespace $rootnamespace$.StandardContainer");
 	System.IO.File.WriteAllText("StandardContainer.cs.pp", txt.NormalizeLineEndings());
 
+	var assemblyInfo = ParseAssemblyInfo(assemblyInfoFile);
+
 	var settings = new NuGetPackSettings {
             Id                      = assemblyInfo.Product,
             Version                 = assemblyInfo.AssemblyVersion,
-            Title                   = assemblyInfo.Title,
+            Title                   = assemblyInfo.Title + " Source",
             Authors                 = new[] {assemblyInfo.Company},
             Owners                  = new[] {assemblyInfo.Company},
             Summary                 = assemblyInfo.Description,
