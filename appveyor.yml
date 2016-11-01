@@ -1,13 +1,2 @@
 build_script:
 - cmd: PowerShell -Version 2.0 .\build.ps1
-
-nuget:
-  project_feed: true
-
-artifacts:
-- path: src/StandardContainer/bin/Release/StandardContainer.dll
-  name: StandardContainer
-- path: src/StandardContainer/StandardContainer.cs
-  name: StandardContainerSource
-- path: StandardContainer*nupkg
-  name: NugetPackage
