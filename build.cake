@@ -59,7 +59,7 @@ Task("Nuget").IsDependentOn("Test").Does(() =>
 {
 	string txt = System.IO.File.ReadAllText(sourceFile);
 	txt = txt.Replace("namespace StandardContainer", "namespace $rootnamespace$.StandardContainer");
-	System.IO.File.WriteAllText("StandardContainer.cs.pp", txt);
+	System.IO.File.WriteAllText("StandardContainer.cs.pp", txt.NormalizeLineEndings());
 
 	var settings = new NuGetPackSettings {
             Id                      = assemblyInfo.Product,
