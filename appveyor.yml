@@ -1,0 +1,24 @@
+build_script:
+- cmd: PowerShell -Version 2.0 .\build.ps1
+
+nuget:
+  project_feed: true
+
+after_build:
+- ps: nuget pack src/StandardContainer/StandardContainer.nuspec -Properties Configuration=Release
+
+artifacts:
+- path: src/StandardContainer/bin/Release/StandardContainer.dll
+  name: StandardContainer
+- path: src/StandardContainer/StandardContainer.cs
+  name: StandardContainerSource
+- path: StandardContainer*nupkg
+  name: NugetPackage
+
+deploy:
+- provider: GitHub
+  description: StandardContainer release
+  auth_token:
+    secure: r9cpCxwvf2N4cBCfDwfEuc1eqJlf6yqFI3Wv2Xs+9vpZ5/F6JaSWtEGVXEKnyVMR
+  artifact: StandardContainerSource StandardContainer NugetPackage
+  draft: true

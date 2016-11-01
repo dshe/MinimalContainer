@@ -25,6 +25,8 @@ distribution options:
 	no NuGet
 
 ===================================
+try ndepend
+
  IFoo
  IBar
 

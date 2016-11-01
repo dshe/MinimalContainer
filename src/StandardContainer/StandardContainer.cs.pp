@@ -1,6 +1,6 @@
 // StandardContainer.cs 1.26.3.0
 // Copyright 2016 dshe
-// License: http://www.apache.org/licenses/LICENSE-2.0
+// Licensed under http://www.apache.org/licenses/LICENSE-2.0
 
 using System;
 using System.Collections;
@@ -11,7 +11,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace StandardContainer
+namespace $rootnamespace$.StandardContainer
 {
     public enum Lifestyle { Transient, Singleton, Instance, Factory };
     public enum DefaultLifestyle { Transient, Singleton, None };
