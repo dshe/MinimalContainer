@@ -4,9 +4,6 @@ build_script:
 nuget:
   project_feed: true
 
-after_build:
-- ps: nuget pack src/StandardContainer/StandardContainer.nuspec -Properties Configuration=Release
-
 artifacts:
 - path: src/StandardContainer/bin/Release/StandardContainer.dll
   name: StandardContainer
