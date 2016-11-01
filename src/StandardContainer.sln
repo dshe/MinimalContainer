@@ -7,7 +7,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{45A245
 	ProjectSection(SolutionItems) = preProject
 		..\.gitattributes = ..\.gitattributes
 		..\.gitignore = ..\.gitignore
-		..\appveyor.yml = ..\appveyor.yml
 		AssemblyInfo.cs = AssemblyInfo.cs
 		..\build.cake = ..\build.cake
 		..\build.ps1 = ..\build.ps1
@@ -19,6 +18,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{45A245
 		..\TypeResolutionFlowChart.png = ..\TypeResolutionFlowChart.png
 		..\TypeResolutionFlowChart.sdr = ..\TypeResolutionFlowChart.sdr
 		StandardContainer\worm64.png = StandardContainer\worm64.png
+		..\xappveyor.yml = ..\xappveyor.yml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StandardContainer", "StandardContainer\StandardContainer.csproj", "{95EB285C-2916-425C-B50F-AF42B94D650C}"

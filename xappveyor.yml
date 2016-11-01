@@ -8,3 +8,12 @@ artifacts:
   name: StandardContainerSource
 - path: StandardContainer*nupkg
   name: NugetPackage
+
+  deploy:
+- provider: GitHub
+  description: StandardContainer release
+  auth_token:
+    secure: r9cpCxwvf2N4cBCfDwfEuc1eqJlf6yqFI3Wv2Xs+9vpZ5/F6JaSWtEGVXEKnyVMR
+  artifact: StandardContainerSource StandardContainer
+  draft: true
+
