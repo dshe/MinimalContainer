@@ -23,7 +23,7 @@ Task("Version").Does(() =>
 	Information("Writing AssemblyInfo.cs version: " + assemblyInfo.AssemblyVersion);
 
 	var header = 
-		"// StandardContainer.cs " + assemblyInfo.AssemblyVersion + System.Environment.NewLine +
+		"// StandardContainer.cs " + gitVersion.NuGetVersion + System.Environment.NewLine +
 		"// " + assemblyInfo.Copyright + " " + assemblyInfo.Company + System.Environment.NewLine +
 		"// License: http://www.apache.org/licenses/LICENSE-2.0" + System.Environment.NewLine +
 		System.Environment.NewLine;
@@ -69,14 +69,14 @@ Task("CreateNuGetPackage").IsDependentOn("Test").Does(() =>
             Version                 = gitVersion.NuGetVersion,
             Authors                 = new[] {assemblyInfo.Company},
             Owners                  = new[] {assemblyInfo.Company},
-            Summary                 = assemblyInfo.Description,
-            Description             = assemblyInfo.Description,
+            Summary                 = "A very simple IoC container in a extremely portable single C# source file.",
+            Description             = "A very simple IoC container in a extremely portable single C# source file.",
             ProjectUrl              = new Uri("https://github.com/dshe/StandardContainer"),
             IconUrl                 = new Uri("https://raw.githubusercontent.com/dshe/StandardContainer/master/worm64.png"),
             LicenseUrl              = new Uri("http://www.apache.org/licenses/LICENSE-2.0"),
             Copyright               = assemblyInfo.Copyright,
             //ReleaseNotes            = new [] {"ReleaseNotes"},
-            Tags                    = new [] {"IoC", "container", "dependency injection", "inversion of control", "netstandard1.0", "portable"},
+            Tags                    = new [] {"IoC", "container", "dependency injection", "inversion of control", "netstandard1.0", "portable", "source only", "source"},
             RequireLicenseAcceptance= false,
             Symbols                 = false,
             NoPackageAnalysis       = true,
