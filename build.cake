@@ -10,14 +10,14 @@ var gitVersion = GitVersion(new GitVersionSettings{ OutputType = GitVersionOutpu
 // determine Git version, patch AssemblyInfo.cs, update source file header
 Task("Version").Does(() =>
 {
+	Information("GitVersion: " + gitVersion.FullSemVer);
+
     GitVersion(new GitVersionSettings 
 	{
         UpdateAssemblyInfo = true,
         OutputType = GitVersionOutput.BuildServer,
 		UpdateAssemblyInfoFilePath = assemblyInfoFile
     });
-	//var versionInfo = GitVersion(new GitVersionSettings{ OutputType = GitVersionOutput.Json });
-	Information("GitVersion: " + gitVersion.FullSemVer);
 
 	var assemblyInfo = ParseAssemblyInfo(assemblyInfoFile);
 	Information("Writing AssemblyInfo.cs version: " + assemblyInfo.AssemblyVersion);
@@ -55,7 +55,7 @@ Task("Test").IsDependentOn("Build").Does(() =>
 	XUnit2("src/StandardContainer.Tests/bin/Release/StandardContainer.Tests.dll", settings);
 });
 
-Task("Nuget").IsDependentOn("Test").Does(() =>
+Task("CreateNuGetPackage").IsDependentOn("Test").Does(() =>
 {
 	string txt = System.IO.File.ReadAllText(sourceFile);
 	txt = txt.Replace("namespace StandardContainer", "namespace $rootnamespace$.StandardContainer");
@@ -64,9 +64,9 @@ Task("Nuget").IsDependentOn("Test").Does(() =>
 	var assemblyInfo = ParseAssemblyInfo(assemblyInfoFile);
 
 	var settings = new NuGetPackSettings {
-            Id                      = assemblyInfo.Product,
-            Version                 = assemblyInfo.AssemblyVersion,
+            Id                      = assemblyInfo.Product + " Source",
             Title                   = assemblyInfo.Title + " Source",
+            Version                 = gitVersion.NuGetVersion,
             Authors                 = new[] {assemblyInfo.Company},
             Owners                  = new[] {assemblyInfo.Company},
             Summary                 = assemblyInfo.Description,
@@ -88,6 +88,18 @@ Task("Nuget").IsDependentOn("Test").Does(() =>
 });
 
 
-Task("Default").IsDependentOn("Nuget");
+Task("PushNuGetPackage").IsDependentOn("CreateNuGetPackage").Does(() =>
+{
+    var package = "../CakeTutorial.1.0.1.nupkg";
+
+    NuGetPush(package, new NuGetPushSettings {
+        Source = "https://nuget.org/",
+        //ApiKey = "NugetApiKey"
+		ApiKey = EnvironmentVariable("NuGet_API_KEY")
+    });
+});
+
+
+Task("Default").IsDependentOn("CreateNuGetPackage");
 
 RunTarget(target);

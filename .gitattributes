@@ -64,3 +64,7 @@
 ###############################################################################
 TypeResolutionFlowChart.png export-ignore
 TypeResolutionFlowChart.sdr export-ignore
+README.md export-ignore
+CONTRIBUTING.md export-ignore
+worm64.png export-ignore
+build.cake export-ignore

@@ -10,14 +10,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{45A245
 		AssemblyInfo.cs = AssemblyInfo.cs
 		..\build.cake = ..\build.cake
 		..\CONTRIBUTING.md = ..\CONTRIBUTING.md
-		..\go.ps1 = ..\go.ps1
 		..\LICENSE.txt = ..\LICENSE.txt
-		..\notes.txt = ..\notes.txt
+		..\~ignore\notes.txt = ..\~ignore\notes.txt
 		..\README.md = ..\README.md
 		..\TypeResolutionFlowChart.png = ..\TypeResolutionFlowChart.png
 		..\TypeResolutionFlowChart.sdr = ..\TypeResolutionFlowChart.sdr
 		StandardContainer\worm64.png = StandardContainer\worm64.png
-		..\xappveyor.yml = ..\xappveyor.yml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StandardContainer", "StandardContainer\StandardContainer.csproj", "{95EB285C-2916-425C-B50F-AF42B94D650C}"
