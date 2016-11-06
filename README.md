@@ -34,8 +34,8 @@ container.RegisterTransient<Foo>();
 container.RegisterTransient<IFoo>();
 container.RegisterTransient<IFoo, Foo>();
 
-container.RegisterInstance(foo);
-container.RegisterInstance<IFoo>(foo);
+container.RegisterInstance(new Foo());
+container.RegisterInstance<IFoo>(new Foo());
 
 container.RegisterFactory(() => new Foo());
 container.RegisterFactory<IFoo>(() => new Foo());
