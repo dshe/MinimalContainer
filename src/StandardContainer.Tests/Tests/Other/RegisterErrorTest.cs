@@ -29,7 +29,7 @@ namespace StandardContainer.Tests.Tests.Other
             Assert.Throws<TypeAccessException>(() => container.RegisterSingleton(typeof(int))).Output(write);
             Assert.Throws<TypeAccessException>(() => container.RegisterSingleton(typeof(string))).Output(write);
             Assert.Throws<TypeAccessException>(() => container.RegisterInstance(42)).Output(write);
-            Assert.Throws<ArgumentNullException>(() => container.GetInstance(null)).Output(write);
+            Assert.Throws<ArgumentNullException>(() => container.Resolve(null)).Output(write);
             container.RegisterFactory(() => "string");
         }
 
@@ -79,9 +79,9 @@ namespace StandardContainer.Tests.Tests.Other
         public void T06_Unregistered()
         {
             var c = new Container(log: write);
-            Assert.Throws<TypeAccessException>(() => c.GetInstance<SomeClass>()).Output(write); ;
-            Assert.Throws<TypeAccessException>(() => c.GetInstance<ISomeClass>()).Output(write); ;
-            Assert.Throws<TypeAccessException>(() => c.GetInstance<IEnumerable<ISomeClass>>()).Output(write);
+            Assert.Throws<TypeAccessException>(() => c.Resolve<SomeClass>()).Output(write); ;
+            Assert.Throws<TypeAccessException>(() => c.Resolve<ISomeClass>()).Output(write); ;
+            Assert.Throws<TypeAccessException>(() => c.Resolve<IEnumerable<ISomeClass>>()).Output(write);
         }
 
     }

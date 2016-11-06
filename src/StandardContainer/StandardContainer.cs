@@ -122,8 +122,8 @@ namespace StandardContainer
 
         //////////////////////////////////////////////////////////////////////////////
 
-        public T GetInstance<T>() => (T)GetInstance(typeof(T));
-        public object GetInstance(Type type)
+        public T Resolve<T>() => (T)Resolve(typeof(T));
+        public object Resolve(Type type)
         {
             if (type == null)
                 throw new ArgumentNullException(nameof(type));

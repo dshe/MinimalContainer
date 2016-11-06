@@ -23,10 +23,10 @@ namespace StandardContainer.Tests.Tests.Lifestyle
         {
             container.RegisterTransient<SomeClass>();
             Assert.Throws<TypeAccessException>(() => container.RegisterTransient<SomeClass>()).Output(write);
-            var instance1 = container.GetInstance<SomeClass>();
-            var instance2 = container.GetInstance<SomeClass>();
+            var instance1 = container.Resolve<SomeClass>();
+            var instance2 = container.Resolve<SomeClass>();
             Assert.NotEqual(instance1, instance2);
-            Assert.Throws<TypeAccessException>(() => container.GetInstance<ISomeClass>()).Output(write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ISomeClass>()).Output(write);
         }
 
         [Fact]
@@ -34,10 +34,10 @@ namespace StandardContainer.Tests.Tests.Lifestyle
         {
             container.RegisterTransient<ISomeClass>();
             Assert.Throws<TypeAccessException>(() => container.RegisterTransient<ISomeClass>()).Output(write);
-            var instance3 = container.GetInstance<ISomeClass>();
-            var instance4 = container.GetInstance<ISomeClass>();
+            var instance3 = container.Resolve<ISomeClass>();
+            var instance4 = container.Resolve<ISomeClass>();
             Assert.NotEqual(instance3, instance4);
-            Assert.Throws<TypeAccessException>(() => container.GetInstance<SomeClass>()).Output(write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<SomeClass>()).Output(write);
         }
 
         [Fact]
@@ -45,8 +45,8 @@ namespace StandardContainer.Tests.Tests.Lifestyle
         {
             container.RegisterTransient<ISomeClass>();
             container.RegisterTransient<SomeClass>();
-            var instance5 = container.GetInstance<SomeClass>();
-            var instance6 = container.GetInstance<ISomeClass>();
+            var instance5 = container.Resolve<SomeClass>();
+            var instance6 = container.Resolve<ISomeClass>();
             Assert.NotEqual(instance6, instance5);
         }
 

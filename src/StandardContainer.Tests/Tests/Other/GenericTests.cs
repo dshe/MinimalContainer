@@ -29,7 +29,7 @@ namespace StandardContainer.Tests.Tests.Other
             container.RegisterSingleton<Foo2>();
             container.RegisterSingleton<Foo1<Foo2>>();
             container.RegisterSingleton<Foo>();
-            container.GetInstance<Foo>();
+            container.Resolve<Foo>();
             write(Environment.NewLine + container);
         }
 
@@ -37,7 +37,7 @@ namespace StandardContainer.Tests.Tests.Other
         public void T02_Generic_Auto()
         {
             var container = new Container(log: write, defaultLifestyle:DefaultLifestyle.Singleton);
-            container.GetInstance<Foo>();
+            container.Resolve<Foo>();
             write(Environment.NewLine + container);
         }
 
@@ -63,7 +63,7 @@ namespace StandardContainer.Tests.Tests.Other
         public void T03_class()
         {
             var container = new Container(DefaultLifestyle.Singleton, log: write);
-            container.GetInstance<ClassC>();
+            container.Resolve<ClassC>();
             write(Environment.NewLine + container);
         }
 
@@ -71,7 +71,7 @@ namespace StandardContainer.Tests.Tests.Other
         public void T04_interface()
         {
             var container = new Container(DefaultLifestyle.Singleton, log: write);
-            container.GetInstance<ClassD>();
+            container.Resolve<ClassD>();
             write(Environment.NewLine + container);
         }
 
@@ -94,10 +94,10 @@ namespace StandardContainer.Tests.Tests.Other
         public void T05_parm()
         {
             var container = new Container(DefaultLifestyle.Singleton, log: write);
-            var b = container.GetInstance<ObsConcrete>();
+            var b = container.Resolve<ObsConcrete>();
             Assert.Throws<NotImplementedException>(() => b.Subscribe(null));
 
-            var x = container.GetInstance<Test>();
+            var x = container.Resolve<Test>();
             write(Environment.NewLine + container);
         }
 
@@ -118,7 +118,7 @@ namespace StandardContainer.Tests.Tests.Other
         public void T08_OpenGeneric()
         {
             var container = new Container(log: write, defaultLifestyle: DefaultLifestyle.Singleton);
-            var xx = container.GetInstance(typeof(Foo1<>));
+            var xx = container.Resolve(typeof(Foo1<>));
             write(Environment.NewLine + container);
         }
         if (type.GetTypeInfo().IsGenericTypeDefinition) // open type

@@ -23,7 +23,7 @@ namespace StandardContainer.Tests.Tests.Constructor
         [Fact]
         public void T01_Class_With_Value_Type_Argument()
         {
-            Assert.Throws<TypeAccessException>(() => container.GetInstance<ClassWithValueTypeArgument>()).Output(write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassWithValueTypeArgument>()).Output(write);
         }
 
         public class ClassWithStringArgument
@@ -33,7 +33,7 @@ namespace StandardContainer.Tests.Tests.Constructor
         [Fact]
         public void T02_Class_With_String_Argument()
         {
-            Assert.Throws<TypeAccessException>(() => container.GetInstance<ClassWithStringArgument>()).Output(write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassWithStringArgument>()).Output(write);
         }
 
         public class ClassWithDefaultValueTypeArgument
@@ -43,7 +43,7 @@ namespace StandardContainer.Tests.Tests.Constructor
         [Fact]
         public void T03_Class_With_Default_Value_Type_Argument()
         {
-            container.GetInstance<ClassWithDefaultValueTypeArgument>();
+            container.Resolve<ClassWithDefaultValueTypeArgument>();
         }
 
         public class ClassWithDefaultStringArgument
@@ -53,7 +53,7 @@ namespace StandardContainer.Tests.Tests.Constructor
         [Fact]
         public void T04_Class_With_Default_String_Argument()
         {
-            container.GetInstance<ClassWithDefaultStringArgument>();
+            container.Resolve<ClassWithDefaultStringArgument>();
         }
 
         public class ClassWithNullArgument
@@ -63,7 +63,7 @@ namespace StandardContainer.Tests.Tests.Constructor
         [Fact]
         public void T05_Class_With_Null_Argument()
         {
-            container.GetInstance<ClassWithNullArgument>();
+            container.Resolve<ClassWithNullArgument>();
         }
 
     }

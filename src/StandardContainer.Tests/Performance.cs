@@ -25,16 +25,16 @@ namespace StandardContainer.Tests
             container.RegisterInstance(new ClassA());
             sw.Restart();
             for (var i = 0; i < Iterations; i++)
-                container.GetInstance<ClassA>();
+                container.Resolve<ClassA>();
             sw.Stop();
             WriteResult("instances/second");
 
             container = new Container();
             container.RegisterSingleton<ClassA>();
-            container.GetInstance<ClassA>();
+            container.Resolve<ClassA>();
             sw.Restart();
             for (var i = 0; i < Iterations; i++)
-                container.GetInstance<ClassA>();
+                container.Resolve<ClassA>();
             sw.Stop();
             WriteResult("singletons/second");
 
@@ -42,7 +42,7 @@ namespace StandardContainer.Tests
             container.RegisterTransient<ClassA>();
             sw.Restart();
             for (var i = 0; i < Iterations; i++)
-                container.GetInstance<ClassA>();
+                container.Resolve<ClassA>();
             sw.Stop();
             WriteResult("transients/second");
 
@@ -51,7 +51,7 @@ namespace StandardContainer.Tests
             container.RegisterFactory(() => instance);
             sw.Restart();
             for (var i = 0; i < Iterations; i++)
-                container.GetInstance<ClassA>();
+                container.Resolve<ClassA>();
             sw.Stop();
             WriteResult("factory instances/second");
 

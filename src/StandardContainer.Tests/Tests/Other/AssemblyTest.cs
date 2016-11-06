@@ -29,15 +29,15 @@ namespace StandardContainer.Tests.Tests.Other
         [Fact]
         public void T02_No_Assembly_GetInstance()
         {
-            container.GetInstance<ClassA>();
-            Assert.Throws<TypeAccessException>(() => container.GetInstance<IClassA>()).Output(write);
+            container.Resolve<ClassA>();
+            Assert.Throws<TypeAccessException>(() => container.Resolve<IClassA>()).Output(write);
         }
 
         [Fact]
         public void T03_No_Assembly_GetInstance_List()
         {
-            Assert.Throws<TypeAccessException>(() => container.GetInstance<IList<ClassA>>()).Output(write);
-            Assert.Throws<TypeAccessException>(() => container.GetInstance<IList<IClassA>>()).Output(write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<IList<ClassA>>()).Output(write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<IList<IClassA>>()).Output(write);
         }
 
     }

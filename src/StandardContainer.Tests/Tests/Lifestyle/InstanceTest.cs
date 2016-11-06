@@ -23,11 +23,11 @@ namespace StandardContainer.Tests.Tests.Lifestyle
         {
             var instance = new SomeClass();
             container.RegisterInstance(instance);
-            var instance1 = container.GetInstance<SomeClass>();
+            var instance1 = container.Resolve<SomeClass>();
             Assert.Equal(instance, instance1);
-            var instance2 = container.GetInstance<SomeClass>();
+            var instance2 = container.Resolve<SomeClass>();
             Assert.Equal(instance1, instance2);
-            Assert.Throws<TypeAccessException>(() => container.GetInstance<ISomeClass>()).Output(write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ISomeClass>()).Output(write);
             Assert.Throws<TypeAccessException>(() => container.RegisterInstance(instance)).Output(write);
         }
 
@@ -36,11 +36,11 @@ namespace StandardContainer.Tests.Tests.Lifestyle
         {
             var instance = new SomeClass();
             container.RegisterInstance<ISomeClass>(instance);
-            var instance1 = container.GetInstance<ISomeClass>();
+            var instance1 = container.Resolve<ISomeClass>();
             Assert.Equal(instance, instance1);
-            var instance2 = container.GetInstance<ISomeClass>();
+            var instance2 = container.Resolve<ISomeClass>();
             Assert.Equal(instance1, instance2);
-            Assert.Throws<TypeAccessException>(() => container.GetInstance<SomeClass>());
+            Assert.Throws<TypeAccessException>(() => container.Resolve<SomeClass>());
             Assert.Throws<TypeAccessException>(() => container.RegisterInstance<ISomeClass>(instance)).Output(write);
         }
 

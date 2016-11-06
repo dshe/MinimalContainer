@@ -25,7 +25,7 @@ namespace StandardContainer.Tests.Tests.Other
         public void T01_Dispose_Singleton()
         {
             container.RegisterSingleton<ClassA>();
-            var instance = container.GetInstance<ClassA>();
+            var instance = container.Resolve<ClassA>();
             container.Dispose();
             Assert.True(instance.IsDisposed);
         }
@@ -43,7 +43,7 @@ namespace StandardContainer.Tests.Tests.Other
         public void T03_Dispose_Other()
         {
             container.RegisterTransient<ClassA>();
-            var instance = container.GetInstance<ClassA>();
+            var instance = container.Resolve<ClassA>();
             container.Dispose();
             Assert.False(instance.IsDisposed);
 

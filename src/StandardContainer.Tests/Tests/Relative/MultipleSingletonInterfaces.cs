@@ -27,7 +27,7 @@ namespace StandardContainer.Tests.Tests.Relative
             var container = new Container(log: write);
             container.RegisterSingleton<IFoo1>();
             container.RegisterSingleton<IFoo2>();
-            Assert.Equal((Foo)container.GetInstance<IFoo1>(), (Foo)container.GetInstance<IFoo2>());
+            Assert.Equal((Foo)container.Resolve<IFoo1>(), (Foo)container.Resolve<IFoo2>());
         }
 
         [Fact]
@@ -36,7 +36,7 @@ namespace StandardContainer.Tests.Tests.Relative
             var container = new Container(log: write);
             container.RegisterSingleton<Foo>();
             container.RegisterSingleton<IFoo1>();
-            Assert.Equal(container.GetInstance<Foo>(), container.GetInstance<IFoo1>());
+            Assert.Equal(container.Resolve<Foo>(), container.Resolve<IFoo1>());
         }
 
     }

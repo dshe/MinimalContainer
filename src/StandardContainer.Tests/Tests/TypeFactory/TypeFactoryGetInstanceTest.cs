@@ -26,7 +26,7 @@ namespace StandardContainer.Tests.Tests.TypeFactory
         {
             var container = new Container();
             container.RegisterTransient<SomeClass>();
-            var factory = container.GetInstance<Func<SomeClass>>();
+            var factory = container.Resolve<Func<SomeClass>>();
             Assert.IsType(typeof(SomeClass), factory());
             Assert.NotEqual(factory(), factory());
         }
@@ -36,7 +36,7 @@ namespace StandardContainer.Tests.Tests.TypeFactory
         {
             var container = new Container();
             container.RegisterTransient<SomeClass>();
-            container.GetInstance<Func<SomeClass>>();
+            container.Resolve<Func<SomeClass>>();
         }
 
         [Fact]
@@ -44,21 +44,21 @@ namespace StandardContainer.Tests.Tests.TypeFactory
         {
             var container = new Container();
             container.RegisterSingleton<SomeClass>();
-            Assert.Throws<TypeAccessException>(() => container.GetInstance<Func<SomeClass>>()).Output(write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<Func<SomeClass>>()).Output(write);
         }
 
         [Fact]
         public void T04_auto_singleton()
         {
             var container = new Container(DefaultLifestyle.Singleton);
-            container.GetInstance<Func<SomeClass>>();
+            container.Resolve<Func<SomeClass>>();
         }
 
         [Fact]
         public void T05_auto_transient()
         {
             var container = new Container(DefaultLifestyle.Transient);
-            container.GetInstance<Func<SomeClass>>();
+            container.Resolve<Func<SomeClass>>();
         }
 
         [Fact]
@@ -66,7 +66,7 @@ namespace StandardContainer.Tests.Tests.TypeFactory
         {
             var container = new Container();
             container.RegisterFactory(() => new SomeClass());
-            var factory = container.GetInstance<Func<SomeClass>>();
+            var factory = container.Resolve<Func<SomeClass>>();
             Assert.NotEqual(factory(), factory());
         }
 

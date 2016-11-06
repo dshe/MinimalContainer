@@ -21,8 +21,8 @@ namespace StandardContainer.Tests.Tests.Lifestyle
             var container = new Container(log: write);
             container.RegisterSingleton<SomeClass>();
             Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<SomeClass>()).Output(write);
-            Assert.Equal(container.GetInstance<SomeClass>(), container.GetInstance<SomeClass>());
-            Assert.Throws<TypeAccessException>(() => container.GetInstance<ISomeClass>()).Output(write);
+            Assert.Equal(container.Resolve<SomeClass>(), container.Resolve<SomeClass>());
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ISomeClass>()).Output(write);
         }
 
         [Fact]
@@ -31,8 +31,8 @@ namespace StandardContainer.Tests.Tests.Lifestyle
             var container = new Container(log: write);
             container.RegisterSingleton<ISomeClass>();
             Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<ISomeClass>()).Output(write); ;
-            Assert.Equal(container.GetInstance<ISomeClass>(), container.GetInstance<ISomeClass>());
-            Assert.Throws<TypeAccessException>(() => container.GetInstance<SomeClass>()).Output(write);
+            Assert.Equal(container.Resolve<ISomeClass>(), container.Resolve<ISomeClass>());
+            Assert.Throws<TypeAccessException>(() => container.Resolve<SomeClass>()).Output(write);
         }
 
         [Fact]
@@ -41,7 +41,7 @@ namespace StandardContainer.Tests.Tests.Lifestyle
             var container = new Container(log: write);
             container.RegisterSingleton<ISomeClass>();
             container.RegisterSingleton<SomeClass>();
-            Assert.Equal(container.GetInstance<SomeClass>(), container.GetInstance<ISomeClass>());
+            Assert.Equal(container.Resolve<SomeClass>(), container.Resolve<ISomeClass>());
         }
 
         [Fact]
@@ -49,16 +49,16 @@ namespace StandardContainer.Tests.Tests.Lifestyle
         {
             var container = new Container(log: write);
             container.RegisterSingleton<ISomeClass, SomeClass>();
-            Assert.Throws<TypeAccessException>(() => container.GetInstance<SomeClass>()).Output(write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<SomeClass>()).Output(write);
             container.RegisterSingleton<SomeClass>();
-            Assert.Equal(container.GetInstance<ISomeClass>(), container.GetInstance<SomeClass>());
+            Assert.Equal(container.Resolve<ISomeClass>(), container.Resolve<SomeClass>());
         }
 
         [Fact]
         public void T05_Register_Singleton_Auto()
         {
             var container = new Container(DefaultLifestyle.Singleton, log: write);
-            Assert.Equal(container.GetInstance<ISomeClass>(), container.GetInstance<SomeClass>());
+            Assert.Equal(container.Resolve<ISomeClass>(), container.Resolve<SomeClass>());
         }
 
     }

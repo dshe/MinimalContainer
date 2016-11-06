@@ -24,7 +24,7 @@ namespace StandardContainer.Tests.Tests.Constructor
         [Fact]
         public void T01_Class_With_Multiple_Constructors()
         {
-            var instance = container.GetInstance<ClassA>();
+            var instance = container.Resolve<ClassA>();
             Assert.True(instance.Ok);
         }
 
@@ -38,7 +38,7 @@ namespace StandardContainer.Tests.Tests.Constructor
         [Fact]
         public void T02_Class_With_Attribute_Constructor()
         {
-            var instance = container.GetInstance<ClassB>();
+            var instance = container.Resolve<ClassB>();
             Assert.True(instance.Ok);
         }
 
@@ -52,7 +52,7 @@ namespace StandardContainer.Tests.Tests.Constructor
         [Fact]
         public void T03_Class_With_Multiple_Attributes()
         {
-            Assert.Throws<TypeAccessException>(() => container.GetInstance<ClassC>()).Output(write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassC>()).Output(write);
         }
 
     }

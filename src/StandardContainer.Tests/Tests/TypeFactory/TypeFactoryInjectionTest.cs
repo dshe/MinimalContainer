@@ -28,7 +28,7 @@ namespace StandardContainer.Tests.Tests.TypeFactory
             var container = new Container();
             container.RegisterSingleton<SomeClass2>();
             container.RegisterTransient<SomeClass>();
-            var instance = container.GetInstance<SomeClass2>();
+            var instance = container.Resolve<SomeClass2>();
             Assert.NotEqual(instance.Factory(), instance.Factory());
         }
 
@@ -36,14 +36,14 @@ namespace StandardContainer.Tests.Tests.TypeFactory
         public void T01_auto_singleton_injection()
         {
             var container = new Container(DefaultLifestyle.Singleton);
-            var instance = container.GetInstance<SomeClass2>();
+            var instance = container.Resolve<SomeClass2>();
             Assert.NotEqual(instance.Factory(), instance.Factory());
         }
         [Fact]
         public void T02_auto_transient_injection()
         {
             var container = new Container(DefaultLifestyle.Transient);
-            var instance = container.GetInstance<SomeClass2>();
+            var instance = container.Resolve<SomeClass2>();
             Assert.NotEqual(instance.Factory(), instance.Factory());
         }
 

@@ -25,7 +25,7 @@ namespace StandardContainer.Tests.Tests.TypeFactory
         {
             var container = new Container();
             container.RegisterTransient<ISomeClass, SomeClass>();
-            var factory = container.GetInstance<Func<ISomeClass>>();
+            var factory = container.Resolve<Func<ISomeClass>>();
             Assert.IsType(typeof(SomeClass), factory());
             Assert.NotEqual(factory(), factory());
         }
@@ -35,21 +35,21 @@ namespace StandardContainer.Tests.Tests.TypeFactory
         {
             var container = new Container();
             container.RegisterTransient<ISomeClass>();
-            container.GetInstance<Func<ISomeClass>>();
+            container.Resolve<Func<ISomeClass>>();
         }
 
         [Fact]
         public void T03_auto_singleton()
         {
             var container = new Container(DefaultLifestyle.Singleton);
-            container.GetInstance<Func<ISomeClass>>();
+            container.Resolve<Func<ISomeClass>>();
         }
 
         [Fact]
         public void T04_auto_singleton_injection()
         {
             var container = new Container(DefaultLifestyle.Singleton);
-            container.GetInstance<ISomeClass2>();
+            container.Resolve<ISomeClass2>();
         }
 
     }

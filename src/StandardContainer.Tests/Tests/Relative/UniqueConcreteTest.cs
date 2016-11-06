@@ -39,7 +39,7 @@ namespace StandardContainer.Tests.Tests.Relative
         public void T02_Registration_Duplicate_Marker()
         {
             var container = new Container(DefaultLifestyle.Singleton, log: write);
-            Assert.Throws<TypeAccessException>(() => container.GetInstance<IMarker1>()).Output(write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<IMarker1>()).Output(write);
         }
 
         [Fact]
@@ -47,8 +47,8 @@ namespace StandardContainer.Tests.Tests.Relative
         {
             var container = new Container(DefaultLifestyle.Singleton, log: write);
             container.RegisterSingleton<IMarker1,ClassA1>();
-            container.GetInstance<ClassA1>();
-            container.GetInstance<IMarker1>();
+            container.Resolve<ClassA1>();
+            container.Resolve<IMarker1>();
         }
 
     }

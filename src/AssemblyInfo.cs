@@ -1,13 +1,12 @@
 using System;
 using System.Resources;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("StandardContainer")]
-[assembly: AssemblyDescription("A simple and portable IoC container.")]
+[assembly: AssemblyDescription("A very simple and portable IoC container.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("dshe")]
 [assembly: AssemblyProduct("StandardContainer")]
@@ -26,5 +25,4 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 [assembly: AssemblyInformationalVersion("1.0.0.0")]
-[assembly: InternalsVisibleTo("StandardContainer.Tests")]
 [assembly: CLSCompliant(true)]

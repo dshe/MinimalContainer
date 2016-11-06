@@ -14,7 +14,7 @@ namespace StandardContainer.Tests.Examples
         {
             var container = new Container();
             container.RegisterSingleton<IFoo, Foo>();
-            IFoo foo = container.GetInstance<IFoo>();
+            IFoo foo = container.Resolve<IFoo>();
             // ...
         }
     }

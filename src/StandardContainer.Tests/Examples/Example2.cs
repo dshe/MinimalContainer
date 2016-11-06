@@ -30,7 +30,7 @@ namespace StandardContainer.Tests.Examples
             public static void Main()
             {
                 new Container(DefaultLifestyle.Transient)
-                    .GetInstance<Root>()
+                    .Resolve<Root>()
                     .StartApplication();
             }
         }

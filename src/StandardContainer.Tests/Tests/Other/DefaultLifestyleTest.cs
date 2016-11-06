@@ -21,24 +21,24 @@ namespace StandardContainer.Tests.Tests.Other
         public void T01_Unregistered()
         {
             var container = new Container(log: write);
-            Assert.Throws<TypeAccessException>(() => container.GetInstance<SomeClassA>());
-            Assert.Throws<TypeAccessException>(() => container.GetInstance<SomeClass>());
-            Assert.Throws<TypeAccessException>(() => container.GetInstance<ISomeClass>());
-            Assert.Throws<TypeAccessException>(() => container.GetInstance<IEnumerable<ISomeClass>>()).Output(write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<SomeClassA>());
+            Assert.Throws<TypeAccessException>(() => container.Resolve<SomeClass>());
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ISomeClass>());
+            Assert.Throws<TypeAccessException>(() => container.Resolve<IEnumerable<ISomeClass>>()).Output(write);
         }
 
         [Fact]
         public void T02_Singleton()
         {
             var container = new Container(DefaultLifestyle.Singleton, log:write);
-            Assert.Equal(container.GetInstance<SomeClass>(), container.GetInstance<SomeClass>());
+            Assert.Equal(container.Resolve<SomeClass>(), container.Resolve<SomeClass>());
         }
 
         [Fact]
         public void T03_Transient()
         {
             var container = new Container(DefaultLifestyle.Transient, log:write);
-            Assert.NotEqual(container.GetInstance<SomeClass>(), container.GetInstance<SomeClass>());
+            Assert.NotEqual(container.Resolve<SomeClass>(), container.Resolve<SomeClass>());
         }
     }
 }

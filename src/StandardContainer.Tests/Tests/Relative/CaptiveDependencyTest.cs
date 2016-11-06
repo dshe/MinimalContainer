@@ -31,7 +31,7 @@ namespace StandardContainer.Tests.Tests.Relative
         {
             container.RegisterSingleton<ClassA>();
             container.RegisterTransient<ClassB>();
-            Assert.Throws<TypeAccessException>(() => container.GetInstance<ClassA>()).Output(write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassA>()).Output(write);
         }
 
         [Fact]
@@ -39,7 +39,7 @@ namespace StandardContainer.Tests.Tests.Relative
         {
             container.RegisterTransient<ClassA>();
             container.RegisterSingleton<ClassB>();
-            container.GetInstance<ClassA>();
+            container.Resolve<ClassA>();
         }
 
         [Fact]
@@ -47,7 +47,7 @@ namespace StandardContainer.Tests.Tests.Relative
         {
             container.RegisterSingleton<ClassA>();
             container.RegisterSingleton<ClassB>();
-            container.GetInstance<ClassA>();
+            container.Resolve<ClassA>();
         }
 
         [Fact]
@@ -55,7 +55,7 @@ namespace StandardContainer.Tests.Tests.Relative
         {
             container.RegisterTransient<ClassA>();
             container.RegisterTransient<ClassB>();
-            container.GetInstance<ClassA>();
+            container.Resolve<ClassA>();
         }
     }
 }
