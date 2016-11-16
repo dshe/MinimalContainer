@@ -303,7 +303,7 @@ namespace StandardContainer
     [AttributeUsage(AttributeTargets.Constructor)]
     public sealed class ContainerConstructorAttribute : Attribute { }
 
-    internal static class StandardContainerExtension
+    internal static class StandardContainerEx
     {
         /// When a non-concrete type is indicated (register or get instance), the concrete type is determined automatically.
         /// In this case, the non-concrete type must be assignable to exactly one concrete type.
