@@ -21,7 +21,7 @@ public static void Main()
 {
     var container = new Container();
     container.RegisterTransient<IFoo, Foo>();
-    IFoo foo = container.GetInstance<IFoo>();
+    IFoo foo = container.Resolve<IFoo>();
     ...
 ```
 #### registration
@@ -34,16 +34,16 @@ container.RegisterTransient<Foo>();
 container.RegisterTransient<IFoo>();
 container.RegisterTransient<IFoo, Foo>();
 
-container.RegisterInstance(foo);
-container.RegisterInstance<IFoo>(foo);
+container.RegisterInstance(new Foo());
+container.RegisterInstance<IFoo>(new Foo());
 
 container.RegisterFactory(() => new Foo());
 container.RegisterFactory<IFoo>(() => new Foo());
 ```
 #### resolution
 ```csharp
-IFoo foo = container.GetInstance<IFoo>();
-Func<IFoo> fooFactory = container.GetInstance<Func<IFoo>>();
+IFoo foo = container.Resolve<IFoo>();
+Func<IFoo> fooFactory = container.Resolve<Func<IFoo>>();
 ```
 #### constructors
 The container can create instances of types using public and internal constructors. In case a type has more than one constructor, indicate the constructor to be used with the 'ContainerConstructor' attribute. Otherwise, the constructor with the smallest number of arguments is selected.
@@ -66,7 +66,7 @@ Container container = new Container();
 container.RegisterSingleton<Foo1>();
 container.RegisterSingleton<Foo2>();
 
-IEnumerable<IFoo> foos = container.GetInstance<IEnumerable<IFoo>>();
+IEnumerable<IFoo> foos = container.Resolve<IEnumerable<IFoo>>();
 ```
 A list of instances of registered types which are assignable to `IFoo` is returned. `IEnumerable<T>`, `IList<T>`, `IReadOnlyList<T>`, `ICollection<T>` and `IReadOnlyCollection<T>` are supported.
 #### fluency
@@ -76,7 +76,7 @@ Foo1 foo1 = new Container()
     .RegisterTransient<Foo2>()
     .RegisterInstance(new Foo3())
     .RegisterFactory(() => new Foo4())
-    .GetInstance<Foo1>();
+    .Resolve<Foo1>();
 ```
 #### automatic registration
 ```csharp
@@ -84,7 +84,7 @@ public class Foo {}
 
 var container = new Container(DefaultLifestyle.Singleton);
 
-Foo foo = container.GetInstance<Foo>();
+Foo foo = container.Resolve<Foo>();
 ```
 To enable automatic registration, set the default lifestyle to singleton or transient when constructing the container. Note that the container will always register the dependencies of singleton instances as singletons. If automatic type resolution requires scanning assemblies other than the assembly where the container is created, include references to those assemblies in the container's constructor.
 
@@ -110,7 +110,7 @@ internal class Root
     public static void Main()
     {
         new Container(DefaultLifestyle.Singleton)
-            .GetInstance<Root>()
+            .Resolve<Root>()
             .StartApplication();
     }
 }
