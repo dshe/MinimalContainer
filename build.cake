@@ -35,15 +35,22 @@ Task("Version").Does(() =>
 
 Task("Build").IsDependentOn("Version").Does(() =>
 {
+	Information("NuGet version: " + NuGetVersion());
 	NuGetRestore(solution);
 
 	CleanDirectories("src/**/**/Release");
 	CleanDirectories("src/**/**/Debug");
 
+	string source = System.IO.File.ReadAllText(sourceFile);
+	System.IO.File.WriteAllText(sourceFile, source.Replace("  internal ", "  public "));
+
 	DotNetBuild(solution, settings => settings.WithTarget("Clean,Rebuild")
 		.SetConfiguration("Release")
-		.WithProperty("TreatWarningsAsErrors","true")
+		.WithProperty("TreatWarningsAsErrors", "true")
 		.SetVerbosity(Cake.Core.Diagnostics.Verbosity.Minimal));
+
+	System.IO.File.WriteAllText(sourceFile, source);
+		
 	//tag = AppVeyor.Environment.Repository.Tag.Name;
 	//AppVeyor.UpdateBuildVersion(tag);
 });
@@ -55,11 +62,44 @@ Task("Test").IsDependentOn("Build").Does(() =>
 	XUnit2("src/StandardContainer.Tests/bin/Release/StandardContainer.Tests.dll", settings);
 });
 
-Task("CreateNuGetPackage").IsDependentOn("Test").Does(() =>
+Task("CreateNuGetDllPackage").IsDependentOn("Test").Does(() =>
+{
+	string source = System.IO.File.ReadAllText(sourceFile);
+	System.IO.File.WriteAllText(sourceFile, source.Replace("  internal ", "  public "));
+
+	var assemblyInfo = ParseAssemblyInfo(assemblyInfoFile);
+
+	var settings = new NuGetPackSettings {
+            Id                      = assemblyInfo.Product,
+            Title                   = assemblyInfo.Title,
+            Version                 = gitVersion.NuGetVersion,
+            Authors                 = new[] {assemblyInfo.Company},
+            Owners                  = new[] {assemblyInfo.Company},
+            Summary                 = "A simple and portable IoC (Inversion of Control) container.",
+            Description             = "A simple and portable IoC (Inversion of Control) container.",
+            ProjectUrl              = new Uri("https://github.com/dshe/StandardContainer"),
+            IconUrl                 = new Uri("https://raw.githubusercontent.com/dshe/StandardContainer/master/worm64.png"),
+            LicenseUrl              = new Uri("http://www.apache.org/licenses/LICENSE-2.0"),
+            Copyright               = assemblyInfo.Copyright,
+            //ReleaseNotes            = new [] {"ReleaseNotes"},
+            Tags                    = new [] {"IoC", "container", "dependency injection", "inversion of control", "netstandard1.0", "portable", "source only", "source"},
+            RequireLicenseAcceptance= false,
+            Symbols                 = false,
+            NoPackageAnalysis       = true,
+            Files                   = new [] { new NuSpecContent { Source = "\bin\Release\StandardContainer.dll", Target = "lib\StandardContainer.dll"},},
+            //BasePath                = "../StandardContainer",
+            OutputDirectory         = "."
+    };
+    NuGetPack(settings); 
+
+	System.IO.File.WriteAllText(sourceFile, source);
+});
+
+
+Task("CreateNuGetSourcePackage").IsDependentOn("CreateNuGetDllPackage").Does(() =>
 {
 	string txt = System.IO.File.ReadAllText(sourceFile);
 	txt = txt.Replace("namespace StandardContainer", "namespace $rootnamespace$.StandardContainer");
-	//txt = txt.Replace("  internal ", "  public "); // for dll
 	System.IO.File.WriteAllText("StandardContainer.cs.pp", txt.NormalizeLineEndings());
 
 	var assemblyInfo = ParseAssemblyInfo(assemblyInfoFile);
@@ -101,6 +141,6 @@ Task("PushNuGetPackage").IsDependentOn("CreateNuGetPackage").Does(() =>
 });
 */
 
-Task("Default").IsDependentOn("CreateNuGetPackage");
+Task("Default").IsDependentOn("CreateNuGetSourcePackage");
 
 RunTarget(target);
