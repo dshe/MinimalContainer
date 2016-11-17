@@ -59,6 +59,7 @@ Task("CreateNuGetPackage").IsDependentOn("Test").Does(() =>
 {
 	string txt = System.IO.File.ReadAllText(sourceFile);
 	txt = txt.Replace("namespace StandardContainer", "namespace $rootnamespace$.StandardContainer");
+	txt = txt.Replace("  public ", "  internal ");
 	System.IO.File.WriteAllText("StandardContainer.cs.pp", txt.NormalizeLineEndings());
 
 	var assemblyInfo = ParseAssemblyInfo(assemblyInfoFile);
@@ -69,8 +70,8 @@ Task("CreateNuGetPackage").IsDependentOn("Test").Does(() =>
             Version                 = gitVersion.NuGetVersion,
             Authors                 = new[] {assemblyInfo.Company},
             Owners                  = new[] {assemblyInfo.Company},
-            Summary                 = "A very simple IoC container in a extremely portable single C# source file.",
-            Description             = "A very simple IoC container in a extremely portable single C# source file.",
+            Summary                 = "A simple and portable IoC (Inversion of Control) container.",
+            Description             = "A simple and portable IoC (Inversion of Control) container.",
             ProjectUrl              = new Uri("https://github.com/dshe/StandardContainer"),
             IconUrl                 = new Uri("https://raw.githubusercontent.com/dshe/StandardContainer/master/worm64.png"),
             LicenseUrl              = new Uri("http://www.apache.org/licenses/LICENSE-2.0"),
@@ -80,14 +81,14 @@ Task("CreateNuGetPackage").IsDependentOn("Test").Does(() =>
             RequireLicenseAcceptance= false,
             Symbols                 = false,
             NoPackageAnalysis       = true,
-            Files                   = new [] { new NuSpecContent { Source = "StandardContainer.cs.pp", Target = "content/StandardContainer/"},},
+            Files                   = new [] { new NuSpecContent { Source = "StandardContainer.cs.pp", Target = "content/App_Packages/StandardContainer"},},
             //BasePath                = "../StandardContainer",
             OutputDirectory         = "."
     };
     NuGetPack(settings); 
 });
 
-
+/*
 Task("PushNuGetPackage").IsDependentOn("CreateNuGetPackage").Does(() =>
 {
     var package = "../CakeTutorial.1.0.1.nupkg";
@@ -98,7 +99,7 @@ Task("PushNuGetPackage").IsDependentOn("CreateNuGetPackage").Does(() =>
 		ApiKey = EnvironmentVariable("NuGet_API_KEY")
     });
 });
-
+*/
 
 Task("Default").IsDependentOn("CreateNuGetPackage");
 
