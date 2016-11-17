@@ -23,8 +23,8 @@ using System.Runtime.CompilerServices;
 //      Revision
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
-[assembly: AssemblyInformationalVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.26.3.0")]
+[assembly: AssemblyFileVersion("1.26.3.0")]
+[assembly: AssemblyInformationalVersion("1.26.3+133.Branch.master.Sha.145cd81b7d5d1849618474c69189e0745dad2c0c")]
 [assembly: CLSCompliant(true)]
-[assembly: InternalsVisibleTo("StandardContainer.Tests")]
+//[assembly: InternalsVisibleTo("StandardContainer.Tests")]

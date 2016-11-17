@@ -4,6 +4,7 @@
 var target = Argument("target", "Default");
 var solution = File("src/StandardContainer.sln");
 var sourceFile = File("src/StandardContainer/StandardContainer.cs");
+var dllFile = File("src/StandardContainer/bin/Release/StandardContainer.dll");
 var assemblyInfoFile = File("src/AssemblyInfo.cs");
 var gitVersion = GitVersion(new GitVersionSettings{ OutputType = GitVersionOutput.Json });
 
@@ -35,22 +36,19 @@ Task("Version").Does(() =>
 
 Task("Build").IsDependentOn("Version").Does(() =>
 {
-	Information("NuGet version: " + NuGetVersion());
+	//var ww = EnvironmentVariable("NUGET_SOURCE")​;
+	//Information("NuGet version: " + xx);
+
 	NuGetRestore(solution);
 
 	CleanDirectories("src/**/**/Release");
 	CleanDirectories("src/**/**/Debug");
 
-	string source = System.IO.File.ReadAllText(sourceFile);
-	System.IO.File.WriteAllText(sourceFile, source.Replace("  internal ", "  public "));
-
 	DotNetBuild(solution, settings => settings.WithTarget("Clean,Rebuild")
 		.SetConfiguration("Release")
 		.WithProperty("TreatWarningsAsErrors", "true")
 		.SetVerbosity(Cake.Core.Diagnostics.Verbosity.Minimal));
-
-	System.IO.File.WriteAllText(sourceFile, source);
-		
+	
 	//tag = AppVeyor.Environment.Repository.Tag.Name;
 	//AppVeyor.UpdateBuildVersion(tag);
 });
@@ -62,11 +60,8 @@ Task("Test").IsDependentOn("Build").Does(() =>
 	XUnit2("src/StandardContainer.Tests/bin/Release/StandardContainer.Tests.dll", settings);
 });
 
-Task("CreateNuGetDllPackage").IsDependentOn("Test").Does(() =>
+Task("CreateNuGetPackages").IsDependentOn("Test").Does(() =>
 {
-	string source = System.IO.File.ReadAllText(sourceFile);
-	System.IO.File.WriteAllText(sourceFile, source.Replace("  internal ", "  public "));
-
 	var assemblyInfo = ParseAssemblyInfo(assemblyInfoFile);
 
 	var settings = new NuGetPackSettings {
@@ -82,49 +77,28 @@ Task("CreateNuGetDllPackage").IsDependentOn("Test").Does(() =>
             LicenseUrl              = new Uri("http://www.apache.org/licenses/LICENSE-2.0"),
             Copyright               = assemblyInfo.Copyright,
             //ReleaseNotes            = new [] {"ReleaseNotes"},
-            Tags                    = new [] {"IoC", "container", "dependency injection", "inversion of control", "netstandard1.0", "portable", "source only", "source"},
+            Tags                    = new [] {"IoC", "container", "dependency injection", "inversion of control", "netstandard1.0", "portable"},
             RequireLicenseAcceptance= false,
             Symbols                 = false,
             NoPackageAnalysis       = true,
-            Files                   = new [] { new NuSpecContent { Source = "\bin\Release\StandardContainer.dll", Target = "lib\StandardContainer.dll"},},
+            Files                   = new [] { new NuSpecContent { Source = dllFile, Target = "lib/StandardContainer.dll"}},
             //BasePath                = "../StandardContainer",
             OutputDirectory         = "."
     };
     NuGetPack(settings); 
 
-	System.IO.File.WriteAllText(sourceFile, source);
-});
+	string src = System.IO.File.ReadAllText(sourceFile);
+	src = src.Replace("namespace StandardContainer", "namespace $rootnamespace$.StandardContainer");
+	src = src.Replace("  public ", "  internal ");
+	src = src.Replace("  internal override ", "  public override ");
+	src = src.Replace("  internal void Dispose()", "  public void Dispose()");
+	System.IO.File.WriteAllText("StandardContainer.cs.pp", src.NormalizeLineEndings());
 
+	settings.Id = assemblyInfo.Product + ".Source";
+	settings.Title = assemblyInfo.Title + " Source";
+	settings.Tags  = new [] {"IoC", "container", "dependency injection", "inversion of control", "netstandard1.0", "portable", "source only", "source"};
+    settings.Files = new [] { new NuSpecContent { Source = "StandardContainer.cs.pp", Target = "content/StandardContainer"}};
 
-Task("CreateNuGetSourcePackage").IsDependentOn("CreateNuGetDllPackage").Does(() =>
-{
-	string txt = System.IO.File.ReadAllText(sourceFile);
-	txt = txt.Replace("namespace StandardContainer", "namespace $rootnamespace$.StandardContainer");
-	System.IO.File.WriteAllText("StandardContainer.cs.pp", txt.NormalizeLineEndings());
-
-	var assemblyInfo = ParseAssemblyInfo(assemblyInfoFile);
-
-	var settings = new NuGetPackSettings {
-            Id                      = assemblyInfo.Product + ".Source",
-            Title                   = assemblyInfo.Title + " Source",
-            Version                 = gitVersion.NuGetVersion,
-            Authors                 = new[] {assemblyInfo.Company},
-            Owners                  = new[] {assemblyInfo.Company},
-            Summary                 = "A simple and portable IoC (Inversion of Control) container.",
-            Description             = "A simple and portable IoC (Inversion of Control) container.",
-            ProjectUrl              = new Uri("https://github.com/dshe/StandardContainer"),
-            IconUrl                 = new Uri("https://raw.githubusercontent.com/dshe/StandardContainer/master/worm64.png"),
-            LicenseUrl              = new Uri("http://www.apache.org/licenses/LICENSE-2.0"),
-            Copyright               = assemblyInfo.Copyright,
-            //ReleaseNotes            = new [] {"ReleaseNotes"},
-            Tags                    = new [] {"IoC", "container", "dependency injection", "inversion of control", "netstandard1.0", "portable", "source only", "source"},
-            RequireLicenseAcceptance= false,
-            Symbols                 = false,
-            NoPackageAnalysis       = true,
-            Files                   = new [] { new NuSpecContent { Source = "StandardContainer.cs.pp", Target = "content/StandardContainer"},},
-            //BasePath                = "../StandardContainer",
-            OutputDirectory         = "."
-    };
     NuGetPack(settings); 
 });
 
@@ -141,6 +115,6 @@ Task("PushNuGetPackage").IsDependentOn("CreateNuGetPackage").Does(() =>
 });
 */
 
-Task("Default").IsDependentOn("CreateNuGetSourcePackage");
+Task("Default").IsDependentOn("CreateNuGetPackages");
 
 RunTarget(target);
