@@ -81,7 +81,7 @@ Task("CreateNuGetPackages").IsDependentOn("Test").Does(() =>
             RequireLicenseAcceptance= false,
             Symbols                 = false,
             NoPackageAnalysis       = true,
-            Files                   = new [] { new NuSpecContent { Source = dllFile, Target = "lib/StandardContainer.dll"}},
+            Files                   = new [] { new NuSpecContent { Source = dllFile, Target = "lib/netstandard1.0/StandardContainer.dll"}},
             //BasePath                = "../StandardContainer",
             OutputDirectory         = "."
     };
