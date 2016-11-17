@@ -59,7 +59,7 @@ Task("CreateNuGetPackage").IsDependentOn("Test").Does(() =>
 {
 	string txt = System.IO.File.ReadAllText(sourceFile);
 	txt = txt.Replace("namespace StandardContainer", "namespace $rootnamespace$.StandardContainer");
-	txt = txt.Replace("  public ", "  internal ");
+	//txt = txt.Replace("  internal ", "  public "); // for dll
 	System.IO.File.WriteAllText("StandardContainer.cs.pp", txt.NormalizeLineEndings());
 
 	var assemblyInfo = ParseAssemblyInfo(assemblyInfoFile);
@@ -81,7 +81,7 @@ Task("CreateNuGetPackage").IsDependentOn("Test").Does(() =>
             RequireLicenseAcceptance= false,
             Symbols                 = false,
             NoPackageAnalysis       = true,
-            Files                   = new [] { new NuSpecContent { Source = "StandardContainer.cs.pp", Target = "content/App_Packages/StandardContainer"},},
+            Files                   = new [] { new NuSpecContent { Source = "StandardContainer.cs.pp", Target = "content/StandardContainer"},},
             //BasePath                = "../StandardContainer",
             OutputDirectory         = "."
     };

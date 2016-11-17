@@ -13,20 +13,20 @@ using System.Text;
 
 namespace StandardContainer
 {
-    public enum Lifestyle { Transient, Singleton, Instance, Factory };
-    public enum DefaultLifestyle { Transient, Singleton, None };
+    internal enum Lifestyle { Transient, Singleton, Instance, Factory };
+    internal enum DefaultLifestyle { Transient, Singleton, None };
 
-    public sealed class Registration
+    internal sealed class Registration
     {
-        public Lifestyle Lifestyle;
-        public TypeInfo Type, TypeConcrete;
-        public Func<object> Factory;
+        internal Lifestyle Lifestyle;
+        internal TypeInfo Type, TypeConcrete;
+        internal Func<object> Factory;
         internal Expression Expression;
         public override string ToString() =>
             $"{(TypeConcrete == null || Equals(TypeConcrete, Type) ? "" : TypeConcrete.AsString() + "->")}{Type.AsString()}, {Lifestyle}.";
     }
 
-    public sealed class Container : IDisposable
+    internal sealed class Container : IDisposable
     {
         private readonly DefaultLifestyle defaultLifestyle;
         private readonly List<TypeInfo> allTypesConcrete;
@@ -34,7 +34,7 @@ namespace StandardContainer
         private readonly Stack<TypeInfo> typeStack = new Stack<TypeInfo>();
         private readonly Action<string> log;
 
-        public Container(DefaultLifestyle defaultLifestyle = DefaultLifestyle.None, Action<string> log = null, params Assembly[] assemblies)
+        internal Container(DefaultLifestyle defaultLifestyle = DefaultLifestyle.None, Action<string> log = null, params Assembly[] assemblies)
         {
             this.defaultLifestyle = defaultLifestyle;
             this.log = log;
@@ -54,24 +54,24 @@ namespace StandardContainer
             RegisterInstance(this); // container self-registration
         }
 
-        public Container RegisterTransient<T>() => RegisterTransient(typeof(T));
-        public Container RegisterTransient<T, TConcrete>() where TConcrete : T => RegisterTransient(typeof(T), typeof(TConcrete));
-        public Container RegisterTransient(Type type, Type typeConcrete = null) => Register(Lifestyle.Transient, type, typeConcrete);
+        internal Container RegisterTransient<T>() => RegisterTransient(typeof(T));
+        internal Container RegisterTransient<T, TConcrete>() where TConcrete : T => RegisterTransient(typeof(T), typeof(TConcrete));
+        internal Container RegisterTransient(Type type, Type typeConcrete = null) => Register(Lifestyle.Transient, type, typeConcrete);
 
-        public Container RegisterSingleton<T>() => RegisterSingleton(typeof(T));
-        public Container RegisterSingleton<T, TConcrete>() where TConcrete : T => RegisterSingleton(typeof(T), typeof(TConcrete));
-        public Container RegisterSingleton(Type type, Type typeConcrete = null) => Register(Lifestyle.Singleton, type, typeConcrete);
+        internal Container RegisterSingleton<T>() => RegisterSingleton(typeof(T));
+        internal Container RegisterSingleton<T, TConcrete>() where TConcrete : T => RegisterSingleton(typeof(T), typeof(TConcrete));
+        internal Container RegisterSingleton(Type type, Type typeConcrete = null) => Register(Lifestyle.Singleton, type, typeConcrete);
 
-        public Container RegisterInstance<T>(T instance) => RegisterInstance(typeof(T), instance);
-        public Container RegisterInstance(Type type, object instance)
+        internal Container RegisterInstance<T>(T instance) => RegisterInstance(typeof(T), instance);
+        internal Container RegisterInstance(Type type, object instance)
         {
             if (instance == null)
                 throw new ArgumentNullException(nameof(instance));
             return Register(Lifestyle.Instance, type, instance.GetType(), () => instance);
         }
 
-        public Container RegisterFactory<T>(Func<T> factory) where T : class => RegisterFactory(typeof(T), factory);
-        public Container RegisterFactory(Type type, Func<object> factory)
+        internal Container RegisterFactory<T>(Func<T> factory) where T : class => RegisterFactory(typeof(T), factory);
+        internal Container RegisterFactory(Type type, Func<object> factory)
         {
             if (factory == null)
                 throw new ArgumentNullException(nameof(factory));
@@ -122,8 +122,8 @@ namespace StandardContainer
 
         //////////////////////////////////////////////////////////////////////////////
 
-        public T Resolve<T>() => (T)Resolve(typeof(T));
-        public object Resolve(Type type)
+        internal T Resolve<T>() => (T)Resolve(typeof(T));
+        internal object Resolve(Type type)
         {
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
@@ -265,7 +265,7 @@ namespace StandardContainer
                 .ToString();
         }
 
-        public void Log() => Log(ToString());
+        internal void Log() => Log(ToString());
         private void Log(string message) => Log(() => message);
         private void Log(Func<string> message)
         {
@@ -301,7 +301,7 @@ namespace StandardContainer
     /// Otherwise, the constructor with the smallest number of arguments is selected.
     /// </summary>
     [AttributeUsage(AttributeTargets.Constructor)]
-    public sealed class ContainerConstructorAttribute : Attribute { }
+    internal sealed class ContainerConstructorAttribute : Attribute { }
 
     internal static class StandardContainerEx
     {
