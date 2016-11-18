@@ -65,8 +65,8 @@ Task("CreateNuGetPackages").IsDependentOn("Test").Does(() =>
 	var assemblyInfo = ParseAssemblyInfo(assemblyInfoFile);
 
 	var settings = new NuGetPackSettings {
-            Id                      = assemblyInfo.Product,
-            Title                   = assemblyInfo.Title,
+            Id                      = assemblyInfo.Product + ".Library",
+            Title                   = assemblyInfo.Title + " Library",
             Version                 = gitVersion.NuGetVersion,
             Authors                 = new[] {assemblyInfo.Company},
             Owners                  = new[] {assemblyInfo.Company},

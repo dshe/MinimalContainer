@@ -1,7 +1,3 @@
-// StandardContainer.cs 1.26.3
-// Copyright 2016 dshe
-// License: http://www.apache.org/licenses/LICENSE-2.0
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
