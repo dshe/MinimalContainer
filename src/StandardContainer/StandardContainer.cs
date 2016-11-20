@@ -6,12 +6,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
-/*
- * Instance
- * Singleton -> instance
- * Tranient -> factory
- * Factory -> factory
-*/
+
 namespace StandardContainer
 {
     internal enum Lifestyle { Transient, Singleton, Instance, Factory }
@@ -155,7 +150,6 @@ namespace StandardContainer
         private Registration CreateRegistration(Type type, Registration dependent)
         {
             var typeInfo = type.GetTypeInfo();
-            Registration reg;
             if (typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(typeInfo) && type != typeof(string))
             {
                 var genericType = type.GenericTypeArguments.Single().GetTypeInfo();
@@ -171,7 +165,7 @@ namespace StandardContainer
                     throw new TypeAccessException($"No types found assignable to generic type '{genericType.AsString()}'.");
                 Log($"Creating list of {expressions.Count} types assignable to '{genericType.AsString()}'.");
                 var expression = Expression.NewArrayInit(genericType.AsType(), expressions);
-                reg = new Registration
+                return new Registration
                 {
                     Type = typeInfo,
                     Lifestyle = Lifestyle.Transient,
@@ -179,7 +173,7 @@ namespace StandardContainer
                     Factory = Expression.Lambda<Func<object>>(expression).Compile()
                 };
             }
-            else if (type.IsFunc())
+            if (type.IsFunc())
             {
                 var generic = type.GenericTypeArguments.Single();
                 var regDependent = new Registration { Lifestyle = Lifestyle.Factory };
@@ -191,7 +185,7 @@ namespace StandardContainer
                     expression = Expression.Constant(genericReg.Factory);
                 else
                     throw new TypeAccessException($"Type from factory '{type.AsString()}' is a {genericReg.Lifestyle}.");
-                reg = new Registration
+                return new Registration
                 {
                     Type = typeInfo,
                     Lifestyle = genericReg.Lifestyle,
@@ -199,17 +193,13 @@ namespace StandardContainer
                     Factory = Expression.Lambda<Func<object>>(expression).Compile()
                 };
             }
-            else
-            {
-                if (defaultLifestyle == DefaultLifestyle.None)
-                    throw new TypeAccessException($"Cannot resolve unregistered type '{type.AsString()}'.");
-                var style = dependent?.Lifestyle != Lifestyle.Factory &&
-                            (dependent?.Lifestyle == Lifestyle.Singleton || dependent?.Lifestyle == Lifestyle.Instance ||
-                             defaultLifestyle == DefaultLifestyle.Singleton)
-                    ? Lifestyle.Singleton : Lifestyle.Transient;
-                reg = AddRegistration(typeInfo, null, style, null, "Auto-registration");
-            }
-            return reg;
+            if (defaultLifestyle == DefaultLifestyle.None)
+                throw new TypeAccessException($"Cannot resolve unregistered type '{type.AsString()}'.");
+            var style = dependent?.Lifestyle != Lifestyle.Factory &&
+                        (dependent?.Lifestyle == Lifestyle.Singleton || dependent?.Lifestyle == Lifestyle.Instance ||
+                            defaultLifestyle == DefaultLifestyle.Singleton)
+                ? Lifestyle.Singleton : Lifestyle.Transient;
+            return AddRegistration(typeInfo, null, style, null, "Auto-registration");
         }
 
         private void Initialize(Registration reg, Registration dependent)
