@@ -7,17 +7,9 @@ using Xunit.Abstractions;
 
 namespace StandardContainer.Tests.Tests.Relative
 {
-    public class CaptiveDependencyTests
+    public class CaptiveDependencyTests : TestBase
     {
-        private readonly Container container;
-        private readonly Action<string> write;
-
-        public CaptiveDependencyTests(ITestOutputHelper output)
-        {
-            write = output.WriteLine;
-            container = new Container(log: output.WriteLine);
-        }
-
+        public CaptiveDependencyTests(ITestOutputHelper output) : base(output) {}
 
         public class ClassA
         {
@@ -30,14 +22,16 @@ namespace StandardContainer.Tests.Tests.Relative
         [Fact]
         public void Test_CaptiveDependency_Singleton_Transient()
         {
+            var container = new Container(log: Write);
             container.RegisterSingleton<ClassA>();
             container.RegisterTransient<ClassB>();
-            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassA>()).Output(write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassA>()).Output(Write);
         }
 
         [Fact]
         public void Test_CaptiveDependency_Transient_Singleton()
         {
+            var container = new Container(log: Write);
             container.RegisterTransient<ClassA>();
             container.RegisterSingleton<ClassB>();
             container.Resolve<ClassA>();
@@ -46,6 +40,7 @@ namespace StandardContainer.Tests.Tests.Relative
         [Fact]
         public void Test_CaptiveDependency_Singleton_Singleton()
         {
+            var container = new Container(log: Write);
             container.RegisterSingleton<ClassA>();
             container.RegisterSingleton<ClassB>();
             container.Resolve<ClassA>();
@@ -54,6 +49,7 @@ namespace StandardContainer.Tests.Tests.Relative
         [Fact]
         public void Test_CaptiveDependency_Transient_Transient()
         {
+            var container = new Container(log: Write);
             container.RegisterTransient<ClassA>();
             container.RegisterTransient<ClassB>();
             container.Resolve<ClassA>();

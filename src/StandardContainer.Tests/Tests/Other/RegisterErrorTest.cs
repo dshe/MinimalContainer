@@ -6,16 +6,9 @@ using Xunit.Abstractions;
 
 namespace StandardContainer.Tests.Tests.Other
 {
-    public class RegisterErrorTest
+    public class RegisterErrorTest : TestBase
     {
-        private readonly Container container;
-        private readonly Action<string> write;
-
-        public RegisterErrorTest(ITestOutputHelper output)
-        {
-            write = output.WriteLine;
-            container = new Container(log: write);
-        }
+        public RegisterErrorTest(ITestOutputHelper output) : base(output) {}
 
         public interface INoClass { }
         public interface ISomeClass { }
@@ -24,65 +17,72 @@ namespace StandardContainer.Tests.Tests.Other
         [Fact]
         public void T00_Various_types()
         {
-            Assert.Throws<ArgumentNullException>(() => container.RegisterSingleton(null)).Output(write);
-            Assert.Throws<ArgumentNullException>(() => container.RegisterFactory(typeof(object), null)).Output(write);
-            Assert.Throws<ArgumentNullException>(() => container.RegisterInstance(typeof(object), null)).Output(write);
-            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton(typeof(int))).Output(write);
-            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton(typeof(string))).Output(write);
-            Assert.Throws<TypeAccessException>(() => container.RegisterInstance(42)).Output(write);
-            Assert.Throws<ArgumentNullException>(() => container.Resolve(null)).Output(write);
+            var container = new Container(log: Write);
+            Assert.Throws<ArgumentNullException>(() => container.RegisterSingleton(null)).Output(Write);
+            Assert.Throws<ArgumentNullException>(() => container.RegisterFactory(typeof(object), null)).Output(Write);
+            Assert.Throws<ArgumentNullException>(() => container.RegisterInstance(typeof(object), null)).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton(typeof(int))).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton(typeof(string))).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.RegisterInstance(42)).Output(Write);
+            Assert.Throws<ArgumentNullException>(() => container.Resolve(null)).Output(Write);
             container.RegisterFactory(() => "string");
         }
 
         [Fact]
         public void T01_Abstract_No_Concrete()
         {
-            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<INoClass>()).Output(write);
+            var container = new Container(log: Write);
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<INoClass>()).Output(Write);
         }
 
         [Fact]
         public void T02_Not_Assignable()
         {
-            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton(typeof(IDisposable), typeof(SomeClass))).Output(write);
-            Assert.Throws<TypeAccessException>(() => container.RegisterInstance(typeof(int), 42)).Output(write);
+            var container = new Container(log: Write);
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton(typeof(IDisposable), typeof(SomeClass))).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.RegisterInstance(typeof(int), 42)).Output(Write);
         }
 
         [Fact]
         public void T03_Duplicate_Concrete()
         {
+            var container = new Container(log: Write);
             container.RegisterSingleton<SomeClass>();
-            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<SomeClass>()).Output(write);
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<SomeClass>()).Output(Write);
         }
 
         [Fact]
         public void T04_Duplicate_Interface()
         {
+            var container = new Container(log: Write);
             container.RegisterSingleton<ISomeClass>();
-            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<ISomeClass>()).Output(write);
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<ISomeClass>()).Output(Write);
         }
 
         [Fact]
         public void T05_Duplicate_Concrete_Interface()
         {
+            var container = new Container(log: Write);
             container.RegisterSingleton<ISomeClass, SomeClass>();
             container.RegisterSingleton<SomeClass>();
-            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<SomeClass>()).Output(write);
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<SomeClass>()).Output(Write);
         }
 
         [Fact]
         public void T05_Duplicate_Type()
         {
+            var container = new Container(log: Write);
             container.RegisterSingleton<SomeClass>();
-            Assert.Throws<TypeAccessException>(() => container.RegisterInstance(new SomeClass())).Output(write); ;
+            Assert.Throws<TypeAccessException>(() => container.RegisterInstance(new SomeClass())).Output(Write); ;
         }
 
         [Fact]
         public void T06_Unregistered()
         {
-            var c = new Container(log: write);
-            Assert.Throws<TypeAccessException>(() => c.Resolve<SomeClass>()).Output(write); ;
-            Assert.Throws<TypeAccessException>(() => c.Resolve<ISomeClass>()).Output(write); ;
-            Assert.Throws<TypeAccessException>(() => c.Resolve<IEnumerable<ISomeClass>>()).Output(write);
+            var container = new Container(log: Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<SomeClass>()).Output(Write); ;
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ISomeClass>()).Output(Write); ;
+            Assert.Throws<TypeAccessException>(() => container.Resolve<IEnumerable<ISomeClass>>()).Output(Write);
         }
 
     }

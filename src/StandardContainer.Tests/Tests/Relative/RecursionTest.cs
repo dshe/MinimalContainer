@@ -6,15 +6,9 @@ using Xunit.Abstractions;
 
 namespace StandardContainer.Tests.Tests.Relative
 {
-    public class RecursionTest
+    public class RecursionTest : TestBase
     {
-        private readonly Action<string> write;
-
-        public RecursionTest(ITestOutputHelper output)
-        {
-            write = output.WriteLine;
-        }
-
+        public RecursionTest(ITestOutputHelper output) : base(output) {}
 
         public class Class1
         {
@@ -34,10 +28,10 @@ namespace StandardContainer.Tests.Tests.Relative
         [Fact]
         public void Test_Recursive_Dependency()
         {
-            var container = new Container(DefaultLifestyle.Singleton, log: write);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<Class1>()).Output(write);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<Class2>()).Output(write);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<Class3>()).Output(write);
+            var container = new Container(DefaultLifestyle.Singleton, log: Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<Class1>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<Class2>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<Class3>()).Output(Write);
         }
 
     }

@@ -5,16 +5,9 @@ using Xunit.Abstractions;
 
 namespace StandardContainer.Tests.Tests.Lifestyle
 {
-    public class TransientTest
+    public class TransientTest : TestBase
     {
-        private readonly Container container;
-        private readonly Action<string> write;
-
-        public TransientTest(ITestOutputHelper output)
-        {
-            write = output.WriteLine;
-            container = new Container(log: output.WriteLine);
-        }
+        public TransientTest(ITestOutputHelper output) : base(output) {}
 
         public interface ISomeClass { }
         public class SomeClass : ISomeClass { }
@@ -22,28 +15,31 @@ namespace StandardContainer.Tests.Tests.Lifestyle
         [Fact]
         public void T01_Concrete()
         {
+            var container = new Container(log: Write);
             container.RegisterTransient<SomeClass>();
-            Assert.Throws<TypeAccessException>(() => container.RegisterTransient<SomeClass>()).Output(write);
+            Assert.Throws<TypeAccessException>(() => container.RegisterTransient<SomeClass>()).Output(Write);
             var instance1 = container.Resolve<SomeClass>();
             var instance2 = container.Resolve<SomeClass>();
             Assert.NotEqual(instance1, instance2);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<ISomeClass>()).Output(write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ISomeClass>()).Output(Write);
         }
 
         [Fact]
         public void T02_Interface()
         {
+            var container = new Container(log: Write);
             container.RegisterTransient<ISomeClass>();
-            Assert.Throws<TypeAccessException>(() => container.RegisterTransient<ISomeClass>()).Output(write);
+            Assert.Throws<TypeAccessException>(() => container.RegisterTransient<ISomeClass>()).Output(Write);
             var instance3 = container.Resolve<ISomeClass>();
             var instance4 = container.Resolve<ISomeClass>();
             Assert.NotEqual(instance3, instance4);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<SomeClass>()).Output(write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<SomeClass>()).Output(Write);
         }
 
         [Fact]
         public void T03_Concrete_Interface()
         {
+            var container = new Container(log: Write);
             container.RegisterTransient<ISomeClass>();
             container.RegisterTransient<SomeClass>();
             var instance5 = container.Resolve<SomeClass>();

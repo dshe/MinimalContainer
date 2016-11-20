@@ -1,16 +1,13 @@
 ﻿using System;
+using StandardContainer.Tests.Utility;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace StandardContainer.Tests.Tests.TypeFactory
 {
-    public class TypeFactoryInjectionTest
+    public class TypeFactoryInjectionTest : TestBase
     {
-        private readonly Action<string> write;
-        public TypeFactoryInjectionTest(ITestOutputHelper output)
-        {
-            write = output.WriteLine;
-        }
+        public TypeFactoryInjectionTest(ITestOutputHelper output) : base(output) {}
 
         public class SomeClass {}
         public class SomeClass2
@@ -39,6 +36,7 @@ namespace StandardContainer.Tests.Tests.TypeFactory
             var instance = container.Resolve<SomeClass2>();
             Assert.NotEqual(instance.Factory(), instance.Factory());
         }
+
         [Fact]
         public void T02_auto_transient_injection()
         {

@@ -6,39 +6,35 @@ using Xunit.Abstractions;
 
 namespace StandardContainer.Tests.Tests.Other
 {
-    public class DefaultLifestyleTest
+    public class DefaultLifestyleTest : TestBase
     {
         public class SomeClassA {}
         public interface ISomeClass { }
         public class SomeClass : ISomeClass { }
 
-        private readonly Action<string> write;
-        public DefaultLifestyleTest(ITestOutputHelper output)
-        {
-            write = output.WriteLine;
-        }
+        public DefaultLifestyleTest(ITestOutputHelper output) : base(output) {}
 
         [Fact]
         public void T01_Unregistered()
         {
-            var container = new Container(log: write);
+            var container = new Container(log: Write);
             Assert.Throws<TypeAccessException>(() => container.Resolve<SomeClassA>());
             Assert.Throws<TypeAccessException>(() => container.Resolve<SomeClass>());
             Assert.Throws<TypeAccessException>(() => container.Resolve<ISomeClass>());
-            Assert.Throws<TypeAccessException>(() => container.Resolve<IEnumerable<ISomeClass>>()).Output(write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<IEnumerable<ISomeClass>>()).Output(Write);
         }
 
         [Fact]
         public void T02_Singleton()
         {
-            var container = new Container(DefaultLifestyle.Singleton, log:write);
+            var container = new Container(DefaultLifestyle.Singleton, log:Write);
             Assert.Equal(container.Resolve<SomeClass>(), container.Resolve<SomeClass>());
         }
 
         [Fact]
         public void T03_Transient()
         {
-            var container = new Container(DefaultLifestyle.Transient, log:write);
+            var container = new Container(DefaultLifestyle.Transient, log:Write);
             Assert.NotEqual(container.Resolve<SomeClass>(), container.Resolve<SomeClass>());
         }
     }

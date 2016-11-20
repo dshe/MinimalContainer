@@ -1,20 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using StandardContainer.Tests.Utility;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace StandardContainer.Tests.Tests.Other
 {
-    public class LogTest
+    public class LogTest : TestBase
     {
-        private readonly Container container;
-        private readonly Action<string> write;
-
-        public LogTest(ITestOutputHelper output)
-        {
-            write = output.WriteLine;
-            container = new Container(defaultLifestyle: DefaultLifestyle.Singleton, log: write, assemblies: typeof(string).Assembly);
-        }
+        public LogTest(ITestOutputHelper output) : base(output) {}
 
         public interface IClassA {}
         public class ClassA : IClassA {}
@@ -22,16 +16,18 @@ namespace StandardContainer.Tests.Tests.Other
         [Fact]
         public void T01()
         {
+            var container = new Container(defaultLifestyle: DefaultLifestyle.Singleton, log: Write, assemblies: typeof(string).Assembly);
             container.RegisterSingleton<IClassA, ClassA>();
-            write("");
-            write(container.ToString());
+            Write("");
+            Write(container.ToString());
         }
 
         [Fact]
         public void T02()
         {
+            var container = new Container(defaultLifestyle: DefaultLifestyle.Singleton, log: Write, assemblies: typeof(string).Assembly);
             container.RegisterSingleton<IClassA, ClassA>();
-            write("");
+            Write("");
             container.Log();
         }
 

@@ -6,16 +6,9 @@ using Xunit.Abstractions;
 
 namespace StandardContainer.Tests.Tests.Other
 {
-    public class AssemblyTest
+    public class AssemblyTest : TestBase
     {
-        private readonly Container container;
-        private readonly Action<string> write;
-
-        public AssemblyTest(ITestOutputHelper output)
-        {
-            write = output.WriteLine;
-            container = new Container(defaultLifestyle: DefaultLifestyle.Singleton, log: write, assemblies: typeof(string).Assembly);
-        }
+        public AssemblyTest(ITestOutputHelper output) : base(output) {}
 
         public interface IClassA { }
         public class ClassA { }
@@ -23,22 +16,25 @@ namespace StandardContainer.Tests.Tests.Other
         [Fact]
         public void T01_No_Assembly_Register()
         {
+            var container = new Container(defaultLifestyle: DefaultLifestyle.Singleton, log: Write, assemblies: typeof(string).Assembly);
             container.RegisterSingleton<ClassA>();
-            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<IClassA>()).Output(write);
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<IClassA>()).Output(Write);
         }
 
         [Fact]
         public void T02_No_Assembly_GetInstance()
         {
+            var container = new Container(defaultLifestyle: DefaultLifestyle.Singleton, log: Write, assemblies: typeof(string).Assembly);
             container.Resolve<ClassA>();
-            Assert.Throws<TypeAccessException>(() => container.Resolve<IClassA>()).Output(write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<IClassA>()).Output(Write);
         }
 
         [Fact]
         public void T03_No_Assembly_GetInstance_List()
         {
-            Assert.Throws<TypeAccessException>(() => container.Resolve<IList<ClassA>>()).Output(write);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<IList<IClassA>>()).Output(write);
+            var container = new Container(defaultLifestyle: DefaultLifestyle.Singleton, log: Write, assemblies: typeof(string).Assembly);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<IList<ClassA>>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<IList<IClassA>>()).Output(Write);
         }
 
     }

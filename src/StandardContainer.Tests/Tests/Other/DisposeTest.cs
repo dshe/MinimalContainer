@@ -1,10 +1,11 @@
 ﻿using System;
+using StandardContainer.Tests.Utility;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace StandardContainer.Tests.Tests.Other
 {
-    public class DisposeTest
+    public class DisposeTest : TestBase
     {
         public class ClassA : IDisposable
         {
@@ -15,15 +16,12 @@ namespace StandardContainer.Tests.Tests.Other
             }
         }
 
-        private readonly Container container;
-        public DisposeTest(ITestOutputHelper output)
-        {
-            container = new Container(defaultLifestyle: DefaultLifestyle.Singleton, log: output.WriteLine);
-        }
+        public DisposeTest(ITestOutputHelper output) : base(output) {}
 
         [Fact]
         public void T01_Dispose_Singleton()
         {
+            var container = new Container(defaultLifestyle: DefaultLifestyle.Singleton, log: Write);
             container.RegisterSingleton<ClassA>();
             var instance = container.Resolve<ClassA>();
             container.Dispose();
@@ -33,6 +31,7 @@ namespace StandardContainer.Tests.Tests.Other
         [Fact]
         public void T02_Dispose_Instance()
         {
+            var container = new Container(defaultLifestyle: DefaultLifestyle.Singleton, log: Write);
             var instance = new ClassA();
             container.RegisterInstance(instance);
             container.Dispose();
@@ -42,6 +41,7 @@ namespace StandardContainer.Tests.Tests.Other
         [Fact]
         public void T03_Dispose_Other()
         {
+            var container = new Container(defaultLifestyle: DefaultLifestyle.Singleton, log: Write);
             container.RegisterTransient<ClassA>();
             var instance = container.Resolve<ClassA>();
             container.Dispose();

@@ -1,16 +1,13 @@
 ﻿using System;
+using StandardContainer.Tests.Utility;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace StandardContainer.Tests.Tests.Other
 {
-    public class GenericTests
+    public class GenericTests : TestBase
     {
-        private readonly Action<string> write;
-        public GenericTests(ITestOutputHelper output)
-        {
-            write = output.WriteLine;
-        }
+        public GenericTests(ITestOutputHelper output) : base(output) {}
 
         public class Foo2 {}
         public class Foo1<T>
@@ -25,20 +22,20 @@ namespace StandardContainer.Tests.Tests.Other
         [Fact]
         public void T01_Generic()
         {
-            var container = new Container(log: write);
+            var container = new Container(log: Write);
             container.RegisterSingleton<Foo2>();
             container.RegisterSingleton<Foo1<Foo2>>();
             container.RegisterSingleton<Foo>();
             container.Resolve<Foo>();
-            write(Environment.NewLine + container);
+            Write(Environment.NewLine + container);
         }
 
         [Fact]
         public void T02_Generic_Auto()
         {
-            var container = new Container(log: write, defaultLifestyle:DefaultLifestyle.Singleton);
+            var container = new Container(log: Write, defaultLifestyle:DefaultLifestyle.Singleton);
             container.Resolve<Foo>();
-            write(Environment.NewLine + container);
+            Write(Environment.NewLine + container);
         }
 
         ////////////////////////////////////////////////////////////////////////////////
@@ -62,17 +59,17 @@ namespace StandardContainer.Tests.Tests.Other
         [Fact]
         public void T03_class()
         {
-            var container = new Container(DefaultLifestyle.Singleton, log: write);
+            var container = new Container(DefaultLifestyle.Singleton, log: Write);
             container.Resolve<ClassC>();
-            write(Environment.NewLine + container);
+            Write(Environment.NewLine + container);
         }
 
         [Fact]
         public void T04_interface()
         {
-            var container = new Container(DefaultLifestyle.Singleton, log: write);
+            var container = new Container(DefaultLifestyle.Singleton, log: Write);
             container.Resolve<ClassD>();
-            write(Environment.NewLine + container);
+            Write(Environment.NewLine + container);
         }
 
         ////////////////////////////////////////////////////////////////////////////////
@@ -93,12 +90,12 @@ namespace StandardContainer.Tests.Tests.Other
         [Fact]
         public void T05_parm()
         {
-            var container = new Container(DefaultLifestyle.Singleton, log: write);
+            var container = new Container(DefaultLifestyle.Singleton, log: Write);
             var b = container.Resolve<ObsConcrete>();
             Assert.Throws<NotImplementedException>(() => b.Subscribe(null));
 
             var x = container.Resolve<Test>();
-            write(Environment.NewLine + container);
+            Write(Environment.NewLine + container);
         }
 
         ////////////////////////////////////////////////////////////////////////////////
@@ -117,9 +114,9 @@ namespace StandardContainer.Tests.Tests.Other
         [Fact]
         public void T08_OpenGeneric()
         {
-            var container = new Container(log: write, defaultLifestyle: DefaultLifestyle.Singleton);
+            var container = new Container(log: Write, defaultLifestyle: DefaultLifestyle.Singleton);
             var xx = container.Resolve(typeof(Foo1<>));
-            write(Environment.NewLine + container);
+            Write(Environment.NewLine + container);
         }
         if (type.GetTypeInfo().IsGenericTypeDefinition) // open type
         {

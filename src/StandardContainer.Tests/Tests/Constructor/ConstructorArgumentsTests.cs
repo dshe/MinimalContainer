@@ -6,16 +6,9 @@ using Xunit.Abstractions;
 
 namespace StandardContainer.Tests.Tests.Constructor
 {
-    public class ConstructorArgumentTests
+    public class ConstructorArgumentTests : TestBase
     {
-        private readonly Container container;
-        private readonly Action<string> write;
-
-        public ConstructorArgumentTests(ITestOutputHelper output)
-        {
-            write = output.WriteLine;
-            container = new Container(DefaultLifestyle.Singleton, log: write);
-        }
+        public ConstructorArgumentTests(ITestOutputHelper output) : base(output) {}
 
         public class ClassWithValueTypeArgument
         {
@@ -24,7 +17,8 @@ namespace StandardContainer.Tests.Tests.Constructor
         [Fact]
         public void T01_Class_With_Value_Type_Argument()
         {
-            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassWithValueTypeArgument>()).Output(write);
+            var container = new Container(DefaultLifestyle.Singleton, log: Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassWithValueTypeArgument>()).Output(Write);
         }
 
         public class ClassWithStringArgument
@@ -34,7 +28,8 @@ namespace StandardContainer.Tests.Tests.Constructor
         [Fact]
         public void T02_Class_With_String_Argument()
         {
-            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassWithStringArgument>()).Output(write);
+            var container = new Container(DefaultLifestyle.Singleton, log: Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassWithStringArgument>()).Output(Write);
         }
 
         public class ClassWithDefaultValueTypeArgument
@@ -44,6 +39,7 @@ namespace StandardContainer.Tests.Tests.Constructor
         [Fact]
         public void T03_Class_With_Default_Value_Type_Argument()
         {
+            var container = new Container(DefaultLifestyle.Singleton, log: Write);
             container.Resolve<ClassWithDefaultValueTypeArgument>();
         }
 
@@ -54,6 +50,7 @@ namespace StandardContainer.Tests.Tests.Constructor
         [Fact]
         public void T04_Class_With_Default_String_Argument()
         {
+            var container = new Container(DefaultLifestyle.Singleton, log: Write);
             container.Resolve<ClassWithDefaultStringArgument>();
         }
 
@@ -64,6 +61,7 @@ namespace StandardContainer.Tests.Tests.Constructor
         [Fact]
         public void T05_Class_With_Null_Argument()
         {
+            var container = new Container(DefaultLifestyle.Singleton, log: Write);
             container.Resolve<ClassWithNullArgument>();
         }
 

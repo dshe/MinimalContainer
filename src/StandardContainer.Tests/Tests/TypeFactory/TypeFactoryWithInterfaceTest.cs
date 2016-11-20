@@ -1,16 +1,13 @@
 ﻿using System;
+using StandardContainer.Tests.Utility;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace StandardContainer.Tests.Tests.TypeFactory
 {
-    public class TypeFactoryWithInterfaceTest
+    public class TypeFactoryWithInterfaceTest : TestBase
     {
-        private readonly Action<string> write;
-        public TypeFactoryWithInterfaceTest(ITestOutputHelper output)
-        {
-            write = output.WriteLine;
-        }
+        public TypeFactoryWithInterfaceTest(ITestOutputHelper output) : base(output) {}
 
         public interface ISomeClass { }
         public interface ISomeClass2 { }

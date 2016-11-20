@@ -5,16 +5,9 @@ using Xunit.Abstractions;
 
 namespace StandardContainer.Tests.Tests.Constructor
 {
-    public class ConstructorSelectionTests
+    public class ConstructorSelectionTests : TestBase
     {
-        private readonly Container container;
-        private readonly Action<string> write;
-
-        public ConstructorSelectionTests(ITestOutputHelper output)
-        {
-            write = output.WriteLine;
-            container = new Container(DefaultLifestyle.Singleton, log: write);
-        }
+        public ConstructorSelectionTests(ITestOutputHelper output) : base(output) {}
 
         public class ClassA
         {
@@ -25,6 +18,7 @@ namespace StandardContainer.Tests.Tests.Constructor
         [Fact]
         public void T01_Class_With_Multiple_Constructors()
         {
+            var container = new Container(DefaultLifestyle.Singleton, log: Write);
             var instance = container.Resolve<ClassA>();
             Assert.True(instance.Ok);
         }
@@ -39,6 +33,7 @@ namespace StandardContainer.Tests.Tests.Constructor
         [Fact]
         public void T02_Class_With_Attribute_Constructor()
         {
+            var container = new Container(DefaultLifestyle.Singleton, log: Write);
             var instance = container.Resolve<ClassB>();
             Assert.True(instance.Ok);
         }
@@ -53,7 +48,8 @@ namespace StandardContainer.Tests.Tests.Constructor
         [Fact]
         public void T03_Class_With_Multiple_Attributes()
         {
-            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassC>()).Output(write);
+            var container = new Container(DefaultLifestyle.Singleton, log: Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassC>()).Output(Write);
         }
 
     }

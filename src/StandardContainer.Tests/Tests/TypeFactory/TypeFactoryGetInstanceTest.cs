@@ -5,13 +5,9 @@ using Xunit.Abstractions;
 
 namespace StandardContainer.Tests.Tests.TypeFactory
 {
-    public class TypeFactoryGetInstanceTest
+    public class TypeFactoryGetInstanceTest : TestBase
     {
-        private readonly Action<string> write;
-        public TypeFactoryGetInstanceTest(ITestOutputHelper output)
-        {
-            write = output.WriteLine;
-        }
+        public TypeFactoryGetInstanceTest(ITestOutputHelper output) : base(output) {}
 
         public class SomeClass {}
 
@@ -19,7 +15,7 @@ namespace StandardContainer.Tests.Tests.TypeFactory
         public void T00_not_registered()
         {
             var container = new Container();
-            Assert.Throws<ArgumentException>(() => container.RegisterTransient<Func<SomeClass>>()).Output(write);
+            Assert.Throws<ArgumentException>(() => container.RegisterTransient<Func<SomeClass>>()).Output(Write);
         }
 
         [Fact]
@@ -45,14 +41,15 @@ namespace StandardContainer.Tests.Tests.TypeFactory
         {
             var container = new Container();
             container.RegisterSingleton<SomeClass>();
-            Assert.Throws<TypeAccessException>(() => container.Resolve<Func<SomeClass>>()).Output(write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<Func<SomeClass>>()).Output(Write);
         }
 
         [Fact]
         public void T04_auto_singleton()
         {
-            var container = new Container(DefaultLifestyle.Singleton);
+            var container = new Container(defaultLifestyle:DefaultLifestyle.Singleton, log:Write);
             container.Resolve<Func<SomeClass>>();
+            container.Log();
         }
 
         [Fact]

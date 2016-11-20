@@ -6,14 +6,9 @@ using Xunit.Abstractions;
 
 namespace StandardContainer.Tests.Tests.Relative
 {
-    public class CreateInstanceTest
+    public class CreateInstanceTest : TestBase
     {
-        private readonly Action<string> write;
-
-        public CreateInstanceTest(ITestOutputHelper output)
-        {
-            write = output.WriteLine;
-        }
+        public CreateInstanceTest(ITestOutputHelper output) : base(output) {}
 
         public class ClassX
         {
@@ -34,10 +29,10 @@ namespace StandardContainer.Tests.Tests.Relative
         [Fact]
         public void Test_Cannot_Create_Dependency()
         {
-            var container = new Container(DefaultLifestyle.Singleton, log: write);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassZ>()).Output(write);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassY>()).Output(write);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassX>()).Output(write);
+            var container = new Container(DefaultLifestyle.Singleton, log: Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassZ>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassY>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassX>()).Output(Write);
         }
     }
 }
