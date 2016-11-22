@@ -69,7 +69,7 @@
     <Compile Include="Examples\Example3.cs" />
     <Compile Include="Tests\Other\GenericTests.cs" />
     <Compile Include="Tests\Performance.cs" />
-    <Compile Include="Tests\Other\GetEnumerableTest.cs" />
+    <Compile Include="Tests\Enumerable\GetEnumerableTest.cs" />
     <Compile Include="Tests\Other\RegisterErrorTest.cs" />
     <Compile Include="Tests\Lifestyle\FactoryTest.cs" />
     <Compile Include="Tests\Constructor\ConstructorArgumentsTests.cs" />

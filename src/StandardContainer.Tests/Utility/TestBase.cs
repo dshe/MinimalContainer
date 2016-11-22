@@ -21,7 +21,7 @@ namespace StandardContainer.Tests.Utility
             {
                 action();
                 counter++;
-            } while (sw.ElapsedMilliseconds < 300);
+            } while (sw.ElapsedMilliseconds < 100);
             sw.Stop();
             return sw.ElapsedTicks / (double)counter;
         }
@@ -29,7 +29,7 @@ namespace StandardContainer.Tests.Utility
         protected void MeasureRate(Action action, string label)
         {
             var frequency = Stopwatch.Frequency / MeasureTicks(action);
-            Write($"{frequency,10:####,###} {label}");
+            Write($"{frequency,11:####,###} {label}");
         }
 
         protected void MeasureDuration(Action action, long iterations, string label)

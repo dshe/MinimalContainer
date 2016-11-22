@@ -100,7 +100,6 @@ namespace StandardContainer.Tests.Tests.Other
 
         ////////////////////////////////////////////////////////////////////////////////
 
-        /*
         [Fact]
         public void T06_OpenGeneric()
         {
@@ -111,23 +110,6 @@ namespace StandardContainer.Tests.Tests.Other
             Assert.Equal(typeof(Foo1<int>).GetGenericTypeDefinition(), typeof(Foo1<>));
         }
 
-        [Fact]
-        public void T08_OpenGeneric()
-        {
-            var container = new Container(log: Write, defaultLifestyle: DefaultLifestyle.Singleton);
-            var xx = container.Resolve(typeof(Foo1<>));
-            Write(Environment.NewLine + container);
-        }
-        if (type.GetTypeInfo().IsGenericTypeDefinition) // open type
-        {
-            if (defaultLifestyle != DefaultLifestyle.None)
-            {
-                foreach (var t in allTypesConcrete.Where(t => t.IsGenericType && !t.IsGenericTypeDefinition && t.GetGenericTypeDefinition() == type))
-                    GetRegistration(t.AsType(), dependent);
-            }
-            ...
-        }
-        */
     }
 }
 

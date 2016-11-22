@@ -39,10 +39,10 @@ namespace StandardContainer.Tests.Tests.Relative
         [Fact]
         public void T03_Registration_Concrete_Multiple()
         {
-            var container = new Container(DefaultLifestyle.Singleton, log: Write);
-            container.RegisterSingleton<IMarker1,ClassA1>();
-            container.Resolve<ClassA1>();
+            var container = new Container(log: Write);
+            container.RegisterSingleton<IMarker1, ClassA1>();
             container.Resolve<IMarker1>();
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassA1>()).Output(Write);
         }
 
     }

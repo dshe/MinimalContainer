@@ -17,14 +17,6 @@ namespace StandardContainer.Tests.Tests.Other
         public void T01_No_Assembly_Register()
         {
             var container = new Container(defaultLifestyle: DefaultLifestyle.Singleton, log: Write, assemblies: typeof(string).Assembly);
-            container.RegisterSingleton<ClassA>();
-            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<IClassA>()).Output(Write);
-        }
-
-        [Fact]
-        public void T02_No_Assembly_GetInstance()
-        {
-            var container = new Container(defaultLifestyle: DefaultLifestyle.Singleton, log: Write, assemblies: typeof(string).Assembly);
             container.Resolve<ClassA>();
             Assert.Throws<TypeAccessException>(() => container.Resolve<IClassA>()).Output(Write);
         }

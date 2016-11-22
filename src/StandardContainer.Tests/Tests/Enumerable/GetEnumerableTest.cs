@@ -5,7 +5,7 @@ using StandardContainer.Tests.Utility;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace StandardContainer.Tests.Tests.Other
+namespace StandardContainer.Tests.Tests.Enumerable
 {
     public class GetEnumerableTest : TestBase
     {
@@ -25,27 +25,37 @@ namespace StandardContainer.Tests.Tests.Other
         public GetEnumerableTest(ITestOutputHelper output) : base(output) {}
 
         [Fact]
-        public void T00_Get_No_Types()
+        public void T00_Not_Registered()
         {
             var container = new Container(log: Write);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<IEnumerable<INotUsed>>()).Output(Write);
             Assert.Throws<TypeAccessException>(() => container.Resolve<IEnumerable<SomeClass1>>()).Output(Write);
         }
 
         [Fact]
-        public void T01_Enumerable()
+        public void T01_Registered()
         {
             var container = new Container(log: Write);
             container.RegisterSingleton<SomeClass1>();
             Assert.Equal(1, container.Resolve<IEnumerable<SomeClass1>>().Count());
-            Assert.Equal(1, container.Resolve<IEnumerable<IMarker>>().Count());
-            container.RegisterSingleton<SomeClass2>();
-            var list = container.Resolve<IEnumerable<IMarker>>();
-            Assert.Equal(2, list.Count());
         }
 
         [Fact]
-        public void T02_Enumerable_Auto()
+        public void T02_DefaultLifestyle()
+        {
+            var container = new Container(DefaultLifestyle.Singleton, log: Write);
+            Assert.Equal(1, container.Resolve<IEnumerable<SomeClass1>>().Count());
+        }
+
+        [Fact]
+        public void T03_Enumerable()
+        {
+            var container = new Container(DefaultLifestyle.Singleton, log: Write);
+            Assert.Equal(1, container.Resolve<IEnumerable<SomeClass1>>().Count());
+            Assert.Equal(2, container.Resolve<IEnumerable<IMarker>>().Count());
+        }
+
+        [Fact]
+        public void T04_Enumerable_Auto()
         {
             var container = new Container(log: Write, defaultLifestyle:DefaultLifestyle.Singleton);
             Assert.Equal(1, container.Resolve<IEnumerable<SomeClass1>>().Count());
@@ -53,46 +63,40 @@ namespace StandardContainer.Tests.Tests.Other
         }
 
         [Fact]
-        public void T03_Get_Enumerable_Types()
+        public void T05_Get_Enumerable_Types()
         {
-            var container = new Container(log: Write);
-            container.RegisterSingleton<SomeClass1>();
-            container.RegisterSingleton<SomeClass2>();
-            var list = container.Resolve<IEnumerable<IMarker>>();
-            Assert.Equal(2, list.Count());
-            list = container.Resolve<IList<IMarker>>();
-            Assert.Equal(2, list.Count());
-            list = container.Resolve<ICollection<IMarker>>();
-            Assert.Equal(2, list.Count());
-            list = container.Resolve<IReadOnlyCollection<IMarker>>();
-            Assert.Equal(2, list.Count());
-            list = container.Resolve<IReadOnlyList<IMarker>>();
-            Assert.Equal(2, list.Count());
+            var container = new Container(log: Write, defaultLifestyle: DefaultLifestyle.Singleton);
+            Assert.Equal(2, container.Resolve<IEnumerable<IMarker>>().Count());
+            Assert.Equal(2, container.Resolve<IList<IMarker>>().Count);
+            Assert.Equal(2, container.Resolve<ICollection<IMarker>>().Count);
+            Assert.Equal(2, container.Resolve<IReadOnlyCollection<IMarker>>().Count);
+            Assert.Equal(2, container.Resolve<IReadOnlyList<IMarker>>().Count);
         }
 
         [Fact]
-        public void T04_Register_Enumerable()
+        public void T06_Register_Enumerable()
         {
             var container = new Container(log: Write);
-            var list = new List<SomeClass1>();
-            container.RegisterInstance<IEnumerable<SomeClass1>>(list);
-            var instance = container.Resolve<IEnumerable<SomeClass1>>();
-            Assert.Equal(list, instance);
+            var list = new List<SomeClass1> {new SomeClass1()};
+            container.RegisterInstance(list);
+            var instance = container.Resolve<List<SomeClass1>>();
+            Assert.Equal(1, instance.Count());
         }
 
         [Fact]
-        public void T05_Injection()
+        public void T07_Injection()
         {
             var container = new Container(log: Write);
             container.RegisterSingleton<SomeClass1>();
             container.RegisterSingleton<SomeClass2>();
             container.RegisterSingleton<SomeClass3>();
+            container.RegisterSingleton<IEnumerable<IMarker>>();
             var instance = container.Resolve<SomeClass3>();
             Assert.Equal(2, instance.List.Count());
         }
 
         [Fact]
-        public void T06_Injection_auto()
+        public void T08_Injection_auto()
         {
             var container = new Container(log: Write, defaultLifestyle: DefaultLifestyle.Singleton);
             var instance = container.Resolve<SomeClass3>();

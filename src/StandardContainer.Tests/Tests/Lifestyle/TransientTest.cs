@@ -13,19 +13,32 @@ namespace StandardContainer.Tests.Tests.Lifestyle
         public class SomeClass : ISomeClass { }
 
         [Fact]
-        public void T01_Concrete()
+        public void T00_Not_Registered()
         {
             var container = new Container(log: Write);
-            container.RegisterTransient<SomeClass>();
-            Assert.Throws<TypeAccessException>(() => container.RegisterTransient<SomeClass>()).Output(Write);
-            var instance1 = container.Resolve<SomeClass>();
-            var instance2 = container.Resolve<SomeClass>();
-            Assert.NotEqual(instance1, instance2);
             Assert.Throws<TypeAccessException>(() => container.Resolve<ISomeClass>()).Output(Write);
         }
 
         [Fact]
-        public void T02_Interface()
+        public void T01_Already_Registered()
+        {
+            var container = new Container(log: Write);
+            container.RegisterTransient<SomeClass>();
+            Assert.Throws<TypeAccessException>(() => container.RegisterTransient<SomeClass>()).Output(Write);
+        }
+
+        [Fact]
+        public void T02_Concrete()
+        {
+            var container = new Container(log: Write);
+            container.RegisterTransient<SomeClass>();
+            var instance1 = container.Resolve<SomeClass>();
+            var instance2 = container.Resolve<SomeClass>();
+            Assert.NotEqual(instance1, instance2);
+        }
+
+        [Fact]
+        public void T03_Interface()
         {
             var container = new Container(log: Write);
             container.RegisterTransient<ISomeClass>();
@@ -37,7 +50,7 @@ namespace StandardContainer.Tests.Tests.Lifestyle
         }
 
         [Fact]
-        public void T03_Concrete_Interface()
+        public void T04_Concrete_Interface()
         {
             var container = new Container(log: Write);
             container.RegisterTransient<ISomeClass>();

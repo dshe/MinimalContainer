@@ -25,22 +25,23 @@ namespace StandardContainer.Tests.Tests.Other
             Assert.Throws<TypeAccessException>(() => container.RegisterSingleton(typeof(string))).Output(Write);
             Assert.Throws<TypeAccessException>(() => container.RegisterInstance(42)).Output(Write);
             Assert.Throws<ArgumentNullException>(() => container.Resolve(null)).Output(Write);
-            container.RegisterFactory(() => "string");
         }
 
         [Fact]
         public void T01_Abstract_No_Concrete()
         {
             var container = new Container(log: Write);
-            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<INoClass>()).Output(Write);
+            container.RegisterSingleton<INoClass>();
+            Assert.Throws<TypeAccessException>(() => container.Resolve<INoClass>()).Output(Write);
         }
 
         [Fact]
         public void T02_Not_Assignable()
         {
             var container = new Container(log: Write);
-            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton(typeof(IDisposable), typeof(SomeClass))).Output(Write);
-            Assert.Throws<TypeAccessException>(() => container.RegisterInstance(typeof(int), 42)).Output(Write);
+            container.RegisterSingleton(typeof(IDisposable), typeof(SomeClass));
+            Assert.Throws<TypeAccessException>(() => container.Resolve<INoClass>()).Output(Write);
+            //Assert.Throws<TypeAccessException>(() => container.RegisterInstance(typeof(int), 42)).Output(Write);
         }
 
         [Fact]

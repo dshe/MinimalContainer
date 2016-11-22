@@ -9,8 +9,8 @@ using System.Text;
 
 namespace StandardContainer
 {
-    internal enum Lifestyle { Transient, Singleton, Instance, Factory }
-    public enum DefaultLifestyle { Transient, Singleton, None }
+    internal enum Lifestyle { Undefined, Transient, Singleton, Instance, Factory }
+    public enum DefaultLifestyle { Undefined, Transient, Singleton }
 
     internal sealed class Registration
     {
@@ -30,7 +30,7 @@ namespace StandardContainer
         private readonly Stack<TypeInfo> typeStack = new Stack<TypeInfo>();
         private readonly Action<string> log;
 
-        public Container(DefaultLifestyle defaultLifestyle = DefaultLifestyle.None, Action<string> log = null, params Assembly[] assemblies)
+        public Container(DefaultLifestyle defaultLifestyle = DefaultLifestyle.Undefined, Action<string> log = null, params Assembly[] assemblies)
         {
             this.defaultLifestyle = defaultLifestyle;
             this.log = log;
@@ -63,7 +63,7 @@ namespace StandardContainer
         {
             if (instance == null)
                 throw new ArgumentNullException(nameof(instance));
-            return Register(type, instance.GetType(), Lifestyle.Instance, () => instance);
+            return Register(type, null, Lifestyle.Instance, () => instance, Expression.Constant(instance));
         }
 
         public Container RegisterFactory<T>(Func<T> factory) where T : class => RegisterFactory(typeof(T), factory);
@@ -71,44 +71,34 @@ namespace StandardContainer
         {
             if (factory == null)
                 throw new ArgumentNullException(nameof(factory));
-            return Register(type, null, Lifestyle.Factory, factory);
+            return Register(type, null, Lifestyle.Factory, factory, (Expression<Func<object>>)(() => factory()));
         }
 
-        private Container Register(Type type, Type typeConcrete, Lifestyle lifestyle, Func<object> factory = null, [CallerMemberName] string caller = null)
+        private Container Register(Type type, Type typeConcrete, Lifestyle lifestyle, Func<object> factory = null, Expression expression = null, [CallerMemberName] string caller = null)
         {
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
-            if (type.IsFunc())
-                throw new ArgumentException("Register Func<T> using RegisterFactory().");
-            AddRegistration(type.GetTypeInfo(), typeConcrete?.GetTypeInfo(), lifestyle, factory, caller);
+            var reg = AddRegistration(type.GetTypeInfo());
+            if (reg.Type.IsFunc())
+                throw new TypeAccessException("Use RegisterFactory() to register Func<T>.");
+            reg.TypeConcrete = typeConcrete?.GetTypeInfo();
+            reg.Lifestyle = lifestyle;
+            reg.Factory = factory;
+            reg.Expression = expression;
+            Log(() => $"{caller}: {reg}");
             return this;
         }
 
         //////////////////////////////////////////////////////////////////////////////
 
-        private Registration AddRegistration(TypeInfo type, TypeInfo typeConcrete, Lifestyle lifestyle, Func<object> factory, string caller)
+        private Registration AddRegistration(TypeInfo type)
         {
-            if (type == null)
-                throw new ArgumentNullException(nameof(type));
-            if (typeConcrete == null && lifestyle != Lifestyle.Instance && lifestyle != Lifestyle.Factory)
-                typeConcrete = allTypesConcrete.FindTypeConcrete(type);
-            if (typeConcrete != null)
-            {
-                if (!type.IsAssignableFrom(typeConcrete))
-                    throw new TypeAccessException($"Type '{typeConcrete.AsString()}' is not assignable to type '{type.AsString()}'.");
-                if (typeConcrete.IsValueType)
-                    throw new TypeAccessException("Cannot register value type.");
-                if (typeof(string).GetTypeInfo().IsAssignableFrom(typeConcrete))
-                    throw new TypeAccessException("Cannot register type 'string'.");
-            }
-            var reg = new Registration
-            {
-                Type = type, TypeConcrete = typeConcrete, Lifestyle = lifestyle, Factory = factory
-            };
-            Log(() => $"{caller}: {reg}");
+            if (type.AsType() == typeof(string) || (!type.IsClass && !type.IsInterface))
+                throw new TypeAccessException("not a class or interface.");
+            var reg = new Registration { Type = type };
             try
             {
-                 registrations.Add(type.AsType(), reg);
+                registrations.Add(type.AsType(), reg);
             }
             catch (ArgumentException ex)
             {
@@ -141,65 +131,15 @@ namespace StandardContainer
         {
             Registration reg;
             if (!registrations.TryGetValue(type, out reg))
-                reg = CreateRegistration(type, dependent);
+            {
+                var typeInfo = type.GetTypeInfo();
+                if (defaultLifestyle == DefaultLifestyle.Undefined && !typeInfo.IsFunc() && !typeInfo.IsEnumerable())
+                    throw new TypeAccessException($"Cannot resolve unregistered type '{type.AsString()}'.");
+                reg = AddRegistration(typeInfo);
+            }
             if (reg.Expression == null)
                 Initialize(reg, dependent);
             return reg;
-        }
-
-        private Registration CreateRegistration(Type type, Registration dependent)
-        {
-            var typeInfo = type.GetTypeInfo();
-            if (typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(typeInfo) && type != typeof(string))
-            {
-                var genericType = type.GenericTypeArguments.Single().GetTypeInfo();
-                var types = defaultLifestyle == DefaultLifestyle.None
-                    ? registrations.Values.Select(r => r.Type)
-                    : allTypesConcrete;
-                var expressions = types
-                    .Where(t => genericType.IsAssignableFrom(t))
-                    .Select(t => GetRegistration(t.AsType(), dependent))
-                    .Select(r => r.Expression)
-                    .ToList();
-                if (!expressions.Any())
-                    throw new TypeAccessException($"No types found assignable to generic type '{genericType.AsString()}'.");
-                Log($"Creating list of {expressions.Count} types assignable to '{genericType.AsString()}'.");
-                var expression = Expression.NewArrayInit(genericType.AsType(), expressions);
-                return new Registration
-                {
-                    Type = typeInfo,
-                    Lifestyle = Lifestyle.Transient,
-                    Expression = expression,
-                    Factory = Expression.Lambda<Func<object>>(expression).Compile()
-                };
-            }
-            if (type.IsFunc())
-            {
-                var generic = type.GenericTypeArguments.Single();
-                var regDependent = new Registration { Lifestyle = Lifestyle.Factory };
-                var genericReg = GetRegistration(generic, regDependent);
-                Expression expression;
-                if (genericReg.Lifestyle == Lifestyle.Transient)
-                    expression = Expression.Lambda(genericReg.Expression);
-                else if (genericReg.Lifestyle == Lifestyle.Factory)
-                    expression = Expression.Constant(genericReg.Factory);
-                else
-                    throw new TypeAccessException($"Type from factory '{type.AsString()}' is a {genericReg.Lifestyle}.");
-                return new Registration
-                {
-                    Type = typeInfo,
-                    Lifestyle = genericReg.Lifestyle,
-                    Expression = expression,
-                    Factory = Expression.Lambda<Func<object>>(expression).Compile()
-                };
-            }
-            if (defaultLifestyle == DefaultLifestyle.None)
-                throw new TypeAccessException($"Cannot resolve unregistered type '{type.AsString()}'.");
-            var style = dependent?.Lifestyle != Lifestyle.Factory &&
-                        (dependent?.Lifestyle == Lifestyle.Singleton || dependent?.Lifestyle == Lifestyle.Instance ||
-                            defaultLifestyle == DefaultLifestyle.Singleton)
-                ? Lifestyle.Singleton : Lifestyle.Transient;
-            return AddRegistration(typeInfo, null, style, null, "Auto-registration");
         }
 
         private void Initialize(Registration reg, Registration dependent)
@@ -212,50 +152,126 @@ namespace StandardContainer
             typeStack.Push(reg.Type);
             if (typeStack.Count(t => t.Equals(reg.Type)) != 1)
                 throw new TypeAccessException("Recursive dependency.");
+
+            InitializeTypes(reg, dependent);
+
             if (dependent?.Lifestyle == Lifestyle.Singleton && reg.Lifestyle == Lifestyle.Transient)
                 throw new TypeAccessException($"Captive dependency: the singleton '{dependent.Type.AsString()}' depends on transient '{reg.Type.AsString()}'.");
-            Initialize(reg);
             typeStack.Pop();
         }
 
-        private void Initialize(Registration reg)
+        private void InitializeTypes(Registration reg, Registration dependent)
         {
-            if (reg.Lifestyle == Lifestyle.Instance)
-                reg.Expression = Expression.Constant(reg.Factory());
-            else if (reg.Lifestyle == Lifestyle.Factory)
-                reg.Expression = (Expression<Func<object>>)(() => reg.Factory());
+            if (reg.Type.IsFunc())
+                InitializeFunc(reg);
+            else if (reg.Type.IsEnumerable())
+                InitializeEnumerable(reg);
             else
+                InitializeType(reg, dependent);
+        }
+
+        private void InitializeFunc(Registration reg)
+        {
+            reg.Lifestyle = Lifestyle.Singleton;
+            var genericType = reg.Type.GenericTypeArguments.Single();
+            var regDependent = new Registration { Type = reg.Type, Lifestyle = Lifestyle.Transient };
+            var genericReg = GetRegistration(genericType, regDependent);
+            if (genericReg.Lifestyle == Lifestyle.Transient)
+                reg.Expression = Expression.Lambda(genericReg.Expression);
+            else if (genericReg.Lifestyle == Lifestyle.Factory)
+                reg.Expression = Expression.Constant(genericReg.Factory);
+            else
+                throw new TypeAccessException($"Type from factory '{reg.Type.AsString()}' is a {genericReg.Lifestyle}.");
+            reg.Factory = Expression.Lambda<Func<object>>(reg.Expression).Compile();
+        }
+
+        private void InitializeEnumerable(Registration reg)
+        {
+            reg.Lifestyle = Lifestyle.Singleton;
+            var genericType = reg.Type.GenericTypeArguments.Single().GetTypeInfo();
+            var types = defaultLifestyle == DefaultLifestyle.Undefined
+                ? registrations.Values.Select(r => r.Type)
+                : allTypesConcrete;
+            var regDependent = new Registration { Type = reg.Type, Lifestyle = Lifestyle.Singleton };
+            var expressions = types
+                .Where(t => genericType.IsAssignableFrom(t))
+                .Select(t => GetRegistration(t.AsType(), regDependent))
+                .Select(r => r.Expression)
+                .ToList();
+            if (!expressions.Any())
+                throw new TypeAccessException($"No types found assignable to generic type '{genericType.AsString()}'.");
+            Log($"Creating list of {expressions.Count} types assignable to '{genericType.AsString()}'.");
+            reg.Expression = Expression.NewArrayInit(genericType.AsType(), expressions);
+            reg.Factory = Expression.Lambda<Func<object>>(reg.Expression).Compile();
+        }
+
+        private void InitializeType(Registration reg, Registration dependent)
+        {
+            if (reg.TypeConcrete == null)
+                reg.TypeConcrete = FindConcreteType(reg.Type);
+
+            // Use a previously registered instance, if any.
+            var previous = registrations.Values
+                .Where(r => Equals(r.TypeConcrete, reg.TypeConcrete))
+                .Where(r => r.Lifestyle == Lifestyle.Singleton || r.Lifestyle == Lifestyle.Transient)
+                .SingleOrDefault(r => r.Expression != null);
+            if (previous != null)
             {
-                reg.Expression = GetExpression(reg);
-                reg.Factory = Expression.Lambda<Func<object>>(reg.Expression).Compile();
-                if (reg.Lifestyle == Lifestyle.Singleton)
-                {
-                    var instance = reg.Factory();
-                    reg.Expression = Expression.Constant(instance);
-                    reg.Factory = () => instance;
-                }
+                if (reg.Lifestyle != Lifestyle.Undefined && reg.Lifestyle != previous.Lifestyle)
+                    throw new TypeAccessException($"{reg.Lifestyle} '{reg.Type.AsString()}' already registered as {previous.Lifestyle}.");
+                reg.Lifestyle = previous.Lifestyle;
+                reg.Expression = previous.Expression;
+                reg.Factory = previous.Factory;
+                return;
+            }
+
+            if (reg.Lifestyle == Lifestyle.Undefined)
+            {
+                if (dependent?.Lifestyle == Lifestyle.Singleton || dependent?.Lifestyle == Lifestyle.Transient)
+                    reg.Lifestyle = dependent.Lifestyle;
+                else if (defaultLifestyle == DefaultLifestyle.Singleton)
+                    reg.Lifestyle = Lifestyle.Singleton;
+                else if (defaultLifestyle == DefaultLifestyle.Transient)
+                    reg.Lifestyle = Lifestyle.Transient;
+                else
+                    throw new TypeAccessException($"No lifestyle found for type '{reg.Type.AsString()}'.");
+            }
+
+            SetExpression(reg);
+        }
+
+        private void SetExpression(Registration reg)
+        {
+            reg.Expression = GetExpression(reg);
+            reg.Factory = Expression.Lambda<Func<object>>(reg.Expression).Compile();
+            if (reg.Lifestyle == Lifestyle.Singleton)
+            {
+                var instance = reg.Factory();
+                reg.Expression = Expression.Constant(instance);
+                reg.Factory = () => instance;
             }
         }
 
         private Expression GetExpression(Registration reg)
         {
-            // For singleton registrations, use a previously registered singleton instance, if any.
-            if (reg.Lifestyle == Lifestyle.Singleton)
-            {
-                var expression = registrations.Values
-                    .Where(r => Equals(r.TypeConcrete, reg.TypeConcrete) && r.Lifestyle == Lifestyle.Singleton && r.Expression != null)
-                    .Select(r => r.Expression)
-                    .SingleOrDefault();
-                if (expression != null)
-                    return expression;
-            }
-            var type = reg.TypeConcrete;
-            var ctor = type.GetConstructor();
+            var ctor = reg.TypeConcrete.GetConstructor();
             var parameters = ctor.GetParameters()
                 .Select(p => p.HasDefaultValue ? Expression.Constant(p.DefaultValue, p.ParameterType) : GetRegistration(p.ParameterType, reg).Expression)
                 .ToList();
-            Log($"Constructing {reg.Lifestyle} instance: '{type.AsString()}'({parameters.Select(p => p?.Type.AsString()).JoinStrings(", ")}).");
+            Log($"Constructing {reg.Lifestyle} instance: '{reg.TypeConcrete.AsString()}({parameters.Select(p => p?.Type.AsString()).JoinStrings(", ")})'.");
             return Expression.New(ctor, parameters);
+        }
+
+        private TypeInfo FindConcreteType(TypeInfo type)
+        {
+            // When a non-concrete type is indicated (register or get instance), the concrete type is determined automatically.
+            // In this case, the non-concrete type must be assignable to exactly one concrete type.
+           if (!type.IsAbstract && !type.IsInterface)
+                return type;
+           var assignableTypes = allTypesConcrete.Where(type.IsAssignableFrom).ToList(); // slow
+           if (assignableTypes.Count == 1)
+                return assignableTypes.Single();
+            throw new TypeAccessException($"{assignableTypes.Count} types found assignable to '{type.AsString()}'.");
         }
 
         //////////////////////////////////////////////////////////////////////////////
@@ -285,14 +301,14 @@ namespace StandardContainer
         /// </summary>
         public void Dispose()
         {
-            foreach (var instance in registrations.Values
+            var instances = registrations.Values
                 .Where(r => r.Lifestyle == Lifestyle.Singleton || r.Lifestyle == Lifestyle.Instance)
                 .Select(r => r.Factory())
-                .Where(i => i != null && i != this)
-                .OfType<IDisposable>())
+                .Where(i => i != null && i != this);
+            foreach (var disposable in instances.OfType<IDisposable>())
             {
-                Log($"Disposing type '{instance.GetType().AsString()}'.");
-                instance.Dispose();
+                Log($"Disposing type '{disposable.GetType().AsString()}'.");
+                disposable.Dispose();
             }
             registrations.Clear();
             Log("Container disposed.");
@@ -309,22 +325,6 @@ namespace StandardContainer
 
     internal static class StandardContainerEx
     {
-        /// When a non-concrete type is indicated (register or get instance), the concrete type is determined automatically.
-        /// In this case, the non-concrete type must be assignable to exactly one concrete type.
-        internal static TypeInfo FindTypeConcrete(this List<TypeInfo> allTypesConcrete, TypeInfo type)
-        {
-            if (allTypesConcrete == null)
-                throw new ArgumentNullException(nameof(allTypesConcrete));
-            if (type == null)
-                throw new ArgumentNullException(nameof(type));
-            if (typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(type) || (!type.IsAbstract && !type.IsInterface))
-                return type;
-            var assignableTypes = allTypesConcrete.Where(type.IsAssignableFrom).ToList(); // slow
-            if (assignableTypes.Count != 1)
-                throw new TypeAccessException($"{assignableTypes.Count} types found assignable to '{type.AsString()}'.");
-            return assignableTypes.Single();
-        }
-
         internal static ConstructorInfo GetConstructor(this TypeInfo type)
         {
             if (type == null)
@@ -342,7 +342,8 @@ namespace StandardContainer
             return ctors.OrderBy(c => c.GetParameters().Length).First();
         }
 
-        internal static bool IsFunc(this Type type) => type.Name == "Func`1";
+        internal static bool IsFunc(this TypeInfo type) => type.Name == "Func`1";
+        internal static bool IsEnumerable(this TypeInfo type) => typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(type);
         internal static string JoinStrings(this IEnumerable<string> strings, string separator) => string.Join(separator, strings);
         internal static string AsString(this Type type) => type.GetTypeInfo().AsString();
         internal static string AsString(this TypeInfo type)
@@ -356,7 +357,7 @@ namespace StandardContainer
             if (index >= 0)
                 name = name.Substring(0, index);
             var args = type.GenericTypeArguments
-                .Select(a => a.GetTypeInfo().AsString())
+                .Select(a => a.AsString())
                 .JoinStrings(",");
             return $"{name}<{args}>";
         }

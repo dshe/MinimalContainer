@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using StandardContainer.Tests.Utility;
@@ -19,19 +20,31 @@ namespace StandardContainer.Tests.Tests
         {
             var container = new Container().RegisterInstance(new ClassA());
             Action action = () => container.Resolve<ClassA>();
-            MeasureRate(action, "instances/second");
+            MeasureRate(action, "instances from RegisterInstance / second");
 
             container = new Container().RegisterSingleton<ClassA>();
             action = () => container.Resolve<ClassA>();
-            MeasureRate(action, "singletons/second");
+            MeasureRate(action, "instances from RegisterSingleton / second");
 
             container = new Container().RegisterTransient<ClassA>();
             action = () => container.Resolve<ClassA>();
-            MeasureRate(action, "transients/second");
+            MeasureRate(action, "instances from RegisterTransient / second");
 
             container = new Container().RegisterFactory(() => new ClassA());
             action = () => container.Resolve<ClassA>();
-            MeasureRate(action, "factory instances/second");
+            MeasureRate(action, "instances from RegisterFactory / second");
+
+            container = new Container().RegisterFactory(() => new ClassA());
+            action = () => container.Resolve<Func<ClassA>>();
+            MeasureRate(action, "factories from RegisterFactory / second");
+
+            container = new Container().RegisterTransient<ClassA>();
+            action = () => container.Resolve<Func<ClassA>>();
+            MeasureRate(action, "factories from RegisterTransient / second");
+
+            container = new Container().RegisterSingleton<ClassA>();
+            action = () => container.Resolve<IEnumerable<ClassA>>();
+            MeasureRate(action, "enumerables / second");
         }
 
     }
