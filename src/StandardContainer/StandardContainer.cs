@@ -25,7 +25,7 @@ namespace StandardContainer
     public sealed class Container : IDisposable
     {
         private readonly DefaultLifestyle defaultLifestyle;
-        private readonly List<TypeInfo> allTypesConcrete;
+        private readonly Lazy<List<TypeInfo>> allTypesConcrete;
         private readonly Dictionary<Type, Registration> registrations = new Dictionary<Type, Registration>();
         private readonly Stack<TypeInfo> typeStack = new Stack<TypeInfo>();
         private readonly Action<string> log;
@@ -37,16 +37,16 @@ namespace StandardContainer
             Log("Creating Container.");
             var assemblyList = assemblies.ToList();
             if (!assemblyList.Any())
-            { 
+            {
                 var method = typeof(Assembly).GetTypeInfo().GetDeclaredMethod("GetCallingAssembly");
                 if (method == null)
                     throw new ArgumentException("Since the calling assembly cannot be determined, one or more assemblies must be indicated when constructing the container.");
                 assemblyList.Add((Assembly)method.Invoke(null, new object[0]));
             }
-            allTypesConcrete = assemblyList
+            allTypesConcrete = new Lazy<List<TypeInfo>>(() => assemblyList
                 .Select(a => a.DefinedTypes.Where(t => t.IsClass && !t.IsAbstract && !t.IsInterface).ToList())
                 .SelectMany(x => x)
-                .ToList();
+                .ToList());
             RegisterInstance(this); // container self-registration
         }
 
@@ -191,7 +191,7 @@ namespace StandardContainer
             var genericType = reg.Type.GenericTypeArguments.Single().GetTypeInfo();
             var types = defaultLifestyle == DefaultLifestyle.Undefined
                 ? registrations.Values.Select(r => r.Type)
-                : allTypesConcrete;
+                : allTypesConcrete.Value;
             var regDependent = new Registration { Type = reg.Type, Lifestyle = Lifestyle.Singleton };
             var expressions = types
                 .Where(t => genericType.IsAssignableFrom(t))
@@ -268,7 +268,7 @@ namespace StandardContainer
             // In this case, the non-concrete type must be assignable to exactly one concrete type.
            if (!type.IsAbstract && !type.IsInterface)
                 return type;
-           var assignableTypes = allTypesConcrete.Where(type.IsAssignableFrom).ToList(); // slow
+           var assignableTypes = allTypesConcrete.Value.Where(type.IsAssignableFrom).ToList(); // slow
            if (assignableTypes.Count == 1)
                 return assignableTypes.Single();
             throw new TypeAccessException($"{assignableTypes.Count} types found assignable to '{type.AsString()}'.");
