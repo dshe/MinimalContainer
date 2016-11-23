@@ -34,13 +34,13 @@ namespace StandardContainer.Tests.Tests
             action = () => container.Resolve<ClassA>();
             MeasureRate(action, "instances from RegisterFactory / second");
 
-            container = new Container().RegisterFactory(() => new ClassA());
-            action = () => container.Resolve<Func<ClassA>>();
-            MeasureRate(action, "factories from RegisterFactory / second");
-
             container = new Container().RegisterTransient<ClassA>();
             action = () => container.Resolve<Func<ClassA>>();
             MeasureRate(action, "factories from RegisterTransient / second");
+
+            container = new Container().RegisterFactory(() => new ClassA());
+            action = () => container.Resolve<Func<ClassA>>();
+            MeasureRate(action, "factories from RegisterFactory / second");
 
             container = new Container().RegisterSingleton<ClassA>();
             action = () => container.Resolve<IEnumerable<ClassA>>();

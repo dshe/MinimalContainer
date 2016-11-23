@@ -71,6 +71,7 @@ namespace StandardContainer.Tests.Tests.Enumerable
             Assert.Equal(2, container.Resolve<ICollection<IMarker>>().Count);
             Assert.Equal(2, container.Resolve<IReadOnlyCollection<IMarker>>().Count);
             Assert.Equal(2, container.Resolve<IReadOnlyList<IMarker>>().Count);
+            //Assert.Equal(2, container.Resolve<List<IMarker>>().Count);
         }
 
         [Fact]

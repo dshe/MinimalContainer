@@ -6,9 +6,9 @@ using Xunit.Abstractions;
 
 namespace StandardContainer.Tests.Tests.TypeFactory
 {
-    public class TypeFactoryGetInstanceTest : TestBase
+    public class TypeFactoryResolveTest : TestBase
     {
-        public TypeFactoryGetInstanceTest(ITestOutputHelper output) : base(output) {}
+        public TypeFactoryResolveTest(ITestOutputHelper output) : base(output) {}
 
         public class SomeClass {}
 
@@ -16,7 +16,7 @@ namespace StandardContainer.Tests.Tests.TypeFactory
         public void T00_not_registered()
         {
             var container = new Container(log: Write);
-            Assert.Throws<TypeAccessException>(() => container.RegisterTransient<Func<SomeClass>>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<Func<SomeClass>>()).Output(Write);
         }
 
         [Fact]
@@ -24,7 +24,6 @@ namespace StandardContainer.Tests.Tests.TypeFactory
         {
             var container = new Container(log: Write);
             container.RegisterTransient<SomeClass>();
-
             var factory = container.Resolve<Func<SomeClass>>();
             Assert.IsType(typeof(SomeClass), factory());
             Assert.NotEqual(factory(), factory());
@@ -34,9 +33,11 @@ namespace StandardContainer.Tests.Tests.TypeFactory
         public void T02_factory_from_factory()
         {
             var container = new Container(log: Write);
-            container.RegisterFactory(() => new SomeClass());
-            var factory = container.Resolve<Func<SomeClass>>();
-            Assert.NotEqual(factory(), factory());
+            Func<SomeClass> factory = () => new SomeClass();
+            container.RegisterFactory(factory);
+            var f = container.Resolve<Func<SomeClass>>();
+            Assert.Equal(factory, f);
+            Assert.NotEqual(f(), f());
         }
 
         [Fact]
@@ -66,7 +67,10 @@ namespace StandardContainer.Tests.Tests.TypeFactory
         public void T06_auto_singleton()
         {
             var container = new Container(DefaultLifestyle.Singleton, log:Write);
+            // SomeClass is registered as transient
             container.Resolve<Func<SomeClass>>();
+
+            Write("");
             container.Log();
         }
 
@@ -74,8 +78,30 @@ namespace StandardContainer.Tests.Tests.TypeFactory
         public void T07_auto_singleton()
         {
             var container = new Container(DefaultLifestyle.Singleton, log: Write);
+
+            // SomeClass registered as singleton
             container.Resolve<SomeClass>();
+
+            // cannot resolve Func of singleton
             Assert.Throws<TypeAccessException>(() => container.Resolve<Func<SomeClass>>()).Output(Write);
+
+            Write("");
+            container.Log();
+        }
+
+        [Fact]
+        public void T08_instance_of_factory()
+        {
+            var container = new Container(log: Write);
+
+            Func<SomeClass> factory = () => new SomeClass();
+            container.RegisterInstance(factory);
+
+            var f = container.Resolve<Func<SomeClass>>();
+            Assert.Equal(f, factory);
+            Assert.NotEqual(f(), factory());
+
+            Write("");
             container.Log();
         }
 

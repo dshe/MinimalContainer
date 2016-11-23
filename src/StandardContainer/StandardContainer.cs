@@ -79,8 +79,6 @@ namespace StandardContainer
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
             var reg = AddRegistration(type.GetTypeInfo());
-            if (reg.Type.IsFunc())
-                throw new TypeAccessException("Use RegisterFactory() to register Func<T>.");
             reg.TypeConcrete = typeConcrete?.GetTypeInfo();
             reg.Lifestyle = lifestyle;
             reg.Factory = factory;
@@ -202,6 +200,9 @@ namespace StandardContainer
                 throw new TypeAccessException($"No types found assignable to generic type '{genericType.AsString()}'.");
             Log($"Creating list of {expressions.Count} types assignable to '{genericType.AsString()}'.");
             reg.Expression = Expression.NewArrayInit(genericType.AsType(), expressions);
+            //var genericList = typeof(List<>).MakeGenericType(genericType.AsType());
+            //var newExpression = Expression.New(genericList);
+            //reg.Expression = Expression.ListInit(newExpression, expressions);
             reg.Factory = Expression.Lambda<Func<object>>(reg.Expression).Compile();
         }
 
@@ -231,10 +232,8 @@ namespace StandardContainer
                     reg.Lifestyle = dependent.Lifestyle;
                 else if (defaultLifestyle == DefaultLifestyle.Singleton)
                     reg.Lifestyle = Lifestyle.Singleton;
-                else if (defaultLifestyle == DefaultLifestyle.Transient)
-                    reg.Lifestyle = Lifestyle.Transient;
                 else
-                    throw new TypeAccessException($"No lifestyle found for type '{reg.Type.AsString()}'.");
+                    reg.Lifestyle = Lifestyle.Transient;
             }
 
             SetExpression(reg);
