@@ -6,7 +6,7 @@
 - supports **.NETStandard1.0**
 - supports automatic and/or explicit type registration
 - supports public and internal constructor injection
-- supports injection of instances and factories
+- supports injection of instances, type factories and enumerables
 - supports transient and singleton lifestyles
 - detects captive and recursive dependencies
 - fluent interface
