@@ -51,7 +51,7 @@ T instance = factory();
 ```
 #### resolution of enumerables
 ```csharp
-IEnumerable<T> foos = container.Resolve<IEnumerable<T>>();
+IEnumerable<T> instances = container.Resolve<IEnumerable<T>>();
 ```
 A list of instances of registered types which are assignable to `T` is returned. `IList<T>`, `IReadOnlyList<T>`, `ICollection<T>` and `IReadOnlyCollection<T>` are also supported.
 #### constructors
@@ -67,11 +67,11 @@ public class Foo
 ```
 #### automatic registration
 ```csharp
-public class Foo {}
+public class T {}
 
 var container = new Container(DefaultLifestyle.Singleton);
 
-Foo foo = container.Resolve<Foo>();
+T instance = container.Resolve<T>();
 ```
 To enable automatic registration, set the default lifestyle to singleton or transient when constructing the container. Note that the container will always register the dependencies of singleton instances as singletons. If automatic type resolution requires scanning assemblies other than the assembly where the container is created, include references to those assemblies in the container's constructor.
 #### fluency
