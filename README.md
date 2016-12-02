@@ -6,7 +6,7 @@
 - supports **.NETStandard1.0**
 - supports automatic and/or explicit type registration
 - supports public and internal constructor injection
-- supports injection of instances and factories
+- supports injection of instances, type factories and enumerables
 - supports transient and singleton lifestyles
 - detects captive and recursive dependencies
 - fluent interface
@@ -40,11 +40,20 @@ container.RegisterInstance<IFoo>(new Foo());
 container.RegisterFactory(() => new Foo());
 container.RegisterFactory<IFoo>(() => new Foo());
 ```
-#### resolution
+#### resolution of types
 ```csharp
-IFoo foo = container.Resolve<IFoo>();
-Func<IFoo> fooFactory = container.Resolve<Func<IFoo>>();
+T instance = container.Resolve<T>();
 ```
+#### resolution of type factories
+```csharp
+Func<T> factory = container.Resolve<Func<T>>();
+T instance = factory();
+```
+#### resolution of enumerables
+```csharp
+IEnumerable<T> instances = container.Resolve<IEnumerable<T>>();
+```
+A list of instances of registered types which are assignable to `T` is returned. `IList<T>`, `IReadOnlyList<T>`, `ICollection<T>` and `IReadOnlyCollection<T>` are also supported.
 #### constructors
 The container can create instances of types using public and internal constructors. In case a type has more than one constructor, indicate the constructor to be used with the 'ContainerConstructor' attribute. Otherwise, the constructor with the smallest number of arguments is selected.
 ```csharp
@@ -56,19 +65,15 @@ public class Foo
     public Foo(IFoo2 foo2) {}
 }
 ```
-#### enumerables
+#### automatic registration
 ```csharp
-public class IFoo {}
-public class Foo1 : IFoo {}
-public class Foo2 : IFoo {}
+public class T {}
 
-Container container = new Container();
-container.RegisterSingleton<Foo1>();
-container.RegisterSingleton<Foo2>();
+var container = new Container(DefaultLifestyle.Singleton);
 
-IEnumerable<IFoo> foos = container.Resolve<IEnumerable<IFoo>>();
+T instance = container.Resolve<T>();
 ```
-A list of instances of registered types which are assignable to `IFoo` is returned. `IEnumerable<T>`, `IList<T>`, `IReadOnlyList<T>`, `ICollection<T>` and `IReadOnlyCollection<T>` are supported.
+To enable automatic registration, set the default lifestyle to singleton or transient when constructing the container. Note that the container will always register the dependencies of singleton instances as singletons. If automatic type resolution requires scanning assemblies other than the assembly where the container is created, include references to those assemblies in the container's constructor.
 #### fluency
 ```csharp
 Foo1 foo1 = new Container()
@@ -78,16 +83,6 @@ Foo1 foo1 = new Container()
     .RegisterFactory(() => new Foo4())
     .Resolve<Foo1>();
 ```
-#### automatic registration
-```csharp
-public class Foo {}
-
-var container = new Container(DefaultLifestyle.Singleton);
-
-Foo foo = container.Resolve<Foo>();
-```
-To enable automatic registration, set the default lifestyle to singleton or transient when constructing the container. Note that the container will always register the dependencies of singleton instances as singletons. If automatic type resolution requires scanning assemblies other than the assembly where the container is created, include references to those assemblies in the container's constructor.
-
 #### example
 ```csharp
 internal interface IFoo1 {}
