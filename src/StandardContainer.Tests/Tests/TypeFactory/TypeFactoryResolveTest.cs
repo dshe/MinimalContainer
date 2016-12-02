@@ -16,7 +16,7 @@ namespace StandardContainer.Tests.Tests.TypeFactory
         public void T00_not_registered()
         {
             var container = new Container(log: Write);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<Func<SomeClass>>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<Func<SomeClass>>()).WriteMessageTo(Write);
         }
 
         [Fact]
@@ -45,7 +45,7 @@ namespace StandardContainer.Tests.Tests.TypeFactory
         {
             var container = new Container(log:Write);
             container.RegisterSingleton<SomeClass>();
-            Assert.Throws<TypeAccessException>(() => container.Resolve<Func<SomeClass>>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<Func<SomeClass>>()).WriteMessageTo(Write);
         }
 
         [Fact]
@@ -53,7 +53,7 @@ namespace StandardContainer.Tests.Tests.TypeFactory
         {
             var container = new Container(log: Write);
             container.RegisterInstance(new SomeClass());
-            Assert.Throws<TypeAccessException>(() => container.Resolve<Func<SomeClass>>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<Func<SomeClass>>()).WriteMessageTo(Write);
         }
 
         [Fact]
@@ -83,7 +83,7 @@ namespace StandardContainer.Tests.Tests.TypeFactory
             container.Resolve<SomeClass>();
 
             // cannot resolve Func of singleton
-            Assert.Throws<TypeAccessException>(() => container.Resolve<Func<SomeClass>>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<Func<SomeClass>>()).WriteMessageTo(Write);
 
             Write("");
             container.Log();

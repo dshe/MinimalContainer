@@ -22,8 +22,8 @@ namespace StandardContainer.Tests.Tests.Lifestyle
             Assert.Equal(instance, instance1);
             var instance2 = container.Resolve<SomeClass>();
             Assert.Equal(instance1, instance2);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<ISomeClass>()).Output(Write);
-            Assert.Throws<TypeAccessException>(() => container.RegisterInstance(instance)).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ISomeClass>()).WriteMessageTo(Write);
+            Assert.Throws<TypeAccessException>(() => container.RegisterInstance(instance)).WriteMessageTo(Write);
         }
 
         [Fact]
@@ -37,7 +37,7 @@ namespace StandardContainer.Tests.Tests.Lifestyle
             var instance2 = container.Resolve<ISomeClass>();
             Assert.Equal(instance1, instance2);
             Assert.Throws<TypeAccessException>(() => container.Resolve<SomeClass>());
-            Assert.Throws<TypeAccessException>(() => container.RegisterInstance<ISomeClass>(instance)).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.RegisterInstance<ISomeClass>(instance)).WriteMessageTo(Write);
         }
 
     }

@@ -200,9 +200,6 @@ namespace StandardContainer
                 throw new TypeAccessException($"No types found assignable to generic type '{genericType.AsString()}'.");
             Log($"Creating list of {expressions.Count} types assignable to '{genericType.AsString()}'.");
             reg.Expression = Expression.NewArrayInit(genericType.AsType(), expressions);
-            //var genericList = typeof(List<>).MakeGenericType(genericType.AsType());
-            //var newExpression = Expression.New(genericList);
-            //reg.Expression = Expression.ListInit(newExpression, expressions);
             reg.Factory = Expression.Lambda<Func<object>>(reg.Expression).Compile();
         }
 
@@ -270,7 +267,8 @@ namespace StandardContainer
            var assignableTypes = allTypesConcrete.Value.Where(type.IsAssignableFrom).ToList(); // slow
            if (assignableTypes.Count == 1)
                 return assignableTypes.Single();
-            throw new TypeAccessException($"{assignableTypes.Count} types found assignable to '{type.AsString()}'.");
+            var types = assignableTypes.Select(t => t.FullName).JoinStrings(", ");
+            throw new TypeAccessException($"{assignableTypes.Count} types found assignable to '{type.AsString()}': {types}.");
         }
 
         //////////////////////////////////////////////////////////////////////////////

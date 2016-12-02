@@ -28,7 +28,7 @@ namespace StandardContainer.Tests.Tests.Enumerable
         public void T00_Not_Registered()
         {
             var container = new Container(log: Write);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<IEnumerable<SomeClass1>>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<IEnumerable<SomeClass1>>()).WriteMessageTo(Write);
         }
 
         [Fact]

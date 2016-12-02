@@ -21,7 +21,7 @@ namespace StandardContainer.Tests.Tests.Other
             Assert.Throws<TypeAccessException>(() => container.Resolve<SomeClassA>());
             Assert.Throws<TypeAccessException>(() => container.Resolve<SomeClass>());
             Assert.Throws<TypeAccessException>(() => container.Resolve<ISomeClass>());
-            Assert.Throws<TypeAccessException>(() => container.Resolve<IEnumerable<ISomeClass>>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<IEnumerable<ISomeClass>>()).WriteMessageTo(Write);
         }
 
         [Fact]

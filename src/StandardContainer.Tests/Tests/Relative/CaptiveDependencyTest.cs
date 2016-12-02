@@ -25,7 +25,7 @@ namespace StandardContainer.Tests.Tests.Relative
             var container = new Container(log: Write);
             container.RegisterSingleton<ClassA>();
             container.RegisterTransient<ClassB>();
-            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassA>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassA>()).WriteMessageTo(Write);
         }
 
         [Fact]

@@ -17,9 +17,9 @@ namespace StandardContainer.Tests.Tests.Lifestyle
         {
             var container = new Container(log: Write);
             container.RegisterSingleton<SomeClass>();
-            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<SomeClass>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<SomeClass>()).WriteMessageTo(Write);
             Assert.Equal(container.Resolve<SomeClass>(), container.Resolve<SomeClass>());
-            Assert.Throws<TypeAccessException>(() => container.Resolve<ISomeClass>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ISomeClass>()).WriteMessageTo(Write);
         }
 
         [Fact]
@@ -27,9 +27,9 @@ namespace StandardContainer.Tests.Tests.Lifestyle
         {
             var container = new Container(log: Write);
             container.RegisterSingleton<ISomeClass>();
-            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<ISomeClass>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<ISomeClass>()).WriteMessageTo(Write);
             Assert.Equal(container.Resolve<ISomeClass>(), container.Resolve<ISomeClass>());
-            Assert.Throws<TypeAccessException>(() => container.Resolve<SomeClass>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<SomeClass>()).WriteMessageTo(Write);
         }
 
         [Fact]
@@ -46,7 +46,7 @@ namespace StandardContainer.Tests.Tests.Lifestyle
         {
             var container = new Container(log: Write);
             container.RegisterSingleton<ISomeClass, SomeClass>();
-            Assert.Throws<TypeAccessException>(() => container.Resolve<SomeClass>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<SomeClass>()).WriteMessageTo(Write);
             container.RegisterSingleton<SomeClass>();
             Assert.Equal(container.Resolve<ISomeClass>(), container.Resolve<SomeClass>());
         }

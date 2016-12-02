@@ -29,9 +29,9 @@ namespace StandardContainer.Tests.Tests.Relative
         public void Test_Recursive_Dependency()
         {
             var container = new Container(DefaultLifestyle.Singleton, log: Write);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<Class1>()).Output(Write);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<Class2>()).Output(Write);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<Class3>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<Class1>()).WriteMessageTo(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<Class2>()).WriteMessageTo(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<Class3>()).WriteMessageTo(Write);
         }
 
     }

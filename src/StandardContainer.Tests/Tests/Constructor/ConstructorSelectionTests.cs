@@ -49,7 +49,7 @@ namespace StandardContainer.Tests.Tests.Constructor
         public void T03_Class_With_Multiple_Attributes()
         {
             var container = new Container(DefaultLifestyle.Singleton, log: Write);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassC>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassC>()).WriteMessageTo(Write);
         }
 
     }

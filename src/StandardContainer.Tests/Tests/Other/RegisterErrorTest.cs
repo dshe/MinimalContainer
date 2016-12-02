@@ -18,13 +18,13 @@ namespace StandardContainer.Tests.Tests.Other
         public void T00_Various_types()
         {
             var container = new Container(log: Write);
-            Assert.Throws<ArgumentNullException>(() => container.RegisterSingleton(null)).Output(Write);
-            Assert.Throws<ArgumentNullException>(() => container.RegisterFactory(typeof(object), null)).Output(Write);
-            Assert.Throws<ArgumentNullException>(() => container.RegisterInstance(typeof(object), null)).Output(Write);
-            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton(typeof(int))).Output(Write);
-            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton(typeof(string))).Output(Write);
-            Assert.Throws<TypeAccessException>(() => container.RegisterInstance(42)).Output(Write);
-            Assert.Throws<ArgumentNullException>(() => container.Resolve(null)).Output(Write);
+            Assert.Throws<ArgumentNullException>(() => container.RegisterSingleton(null)).WriteMessageTo(Write);
+            Assert.Throws<ArgumentNullException>(() => container.RegisterFactory(typeof(object), null)).WriteMessageTo(Write);
+            Assert.Throws<ArgumentNullException>(() => container.RegisterInstance(typeof(object), null)).WriteMessageTo(Write);
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton(typeof(int))).WriteMessageTo(Write);
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton(typeof(string))).WriteMessageTo(Write);
+            Assert.Throws<TypeAccessException>(() => container.RegisterInstance(42)).WriteMessageTo(Write);
+            Assert.Throws<ArgumentNullException>(() => container.Resolve(null)).WriteMessageTo(Write);
         }
 
         [Fact]
@@ -32,7 +32,7 @@ namespace StandardContainer.Tests.Tests.Other
         {
             var container = new Container(log: Write);
             container.RegisterSingleton<INoClass>();
-            Assert.Throws<TypeAccessException>(() => container.Resolve<INoClass>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<INoClass>()).WriteMessageTo(Write);
         }
 
         [Fact]
@@ -40,8 +40,8 @@ namespace StandardContainer.Tests.Tests.Other
         {
             var container = new Container(log: Write);
             container.RegisterSingleton(typeof(IDisposable), typeof(SomeClass));
-            Assert.Throws<TypeAccessException>(() => container.Resolve<INoClass>()).Output(Write);
-            //Assert.Throws<TypeAccessException>(() => container.RegisterInstance(typeof(int), 42)).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<INoClass>()).WriteMessageTo(Write);
+            //Assert.Throws<TypeAccessException>(() => container.RegisterInstance(typeof(int), 42)).WriteMessageTo(Write);
         }
 
         [Fact]
@@ -49,7 +49,7 @@ namespace StandardContainer.Tests.Tests.Other
         {
             var container = new Container(log: Write);
             container.RegisterSingleton<SomeClass>();
-            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<SomeClass>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<SomeClass>()).WriteMessageTo(Write);
         }
 
         [Fact]
@@ -57,7 +57,7 @@ namespace StandardContainer.Tests.Tests.Other
         {
             var container = new Container(log: Write);
             container.RegisterSingleton<ISomeClass>();
-            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<ISomeClass>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<ISomeClass>()).WriteMessageTo(Write);
         }
 
         [Fact]
@@ -66,7 +66,7 @@ namespace StandardContainer.Tests.Tests.Other
             var container = new Container(log: Write);
             container.RegisterSingleton<ISomeClass, SomeClass>();
             container.RegisterSingleton<SomeClass>();
-            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<SomeClass>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<SomeClass>()).WriteMessageTo(Write);
         }
 
         [Fact]
@@ -74,16 +74,16 @@ namespace StandardContainer.Tests.Tests.Other
         {
             var container = new Container(log: Write);
             container.RegisterSingleton<SomeClass>();
-            Assert.Throws<TypeAccessException>(() => container.RegisterInstance(new SomeClass())).Output(Write); ;
+            Assert.Throws<TypeAccessException>(() => container.RegisterInstance(new SomeClass())).WriteMessageTo(Write); ;
         }
 
         [Fact]
         public void T06_Unregistered()
         {
             var container = new Container(log: Write);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<SomeClass>()).Output(Write); ;
-            Assert.Throws<TypeAccessException>(() => container.Resolve<ISomeClass>()).Output(Write); ;
-            Assert.Throws<TypeAccessException>(() => container.Resolve<IEnumerable<ISomeClass>>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<SomeClass>()).WriteMessageTo(Write); ;
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ISomeClass>()).WriteMessageTo(Write); ;
+            Assert.Throws<TypeAccessException>(() => container.Resolve<IEnumerable<ISomeClass>>()).WriteMessageTo(Write);
         }
 
     }

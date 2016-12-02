@@ -18,15 +18,15 @@ namespace StandardContainer.Tests.Tests.Other
         {
             var container = new Container(defaultLifestyle: DefaultLifestyle.Singleton, log: Write, assemblies: typeof(string).Assembly);
             container.Resolve<ClassA>();
-            Assert.Throws<TypeAccessException>(() => container.Resolve<IClassA>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<IClassA>()).WriteMessageTo(Write);
         }
 
         [Fact]
         public void T03_No_Assembly_GetInstance_List()
         {
             var container = new Container(defaultLifestyle: DefaultLifestyle.Singleton, log: Write, assemblies: typeof(string).Assembly);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<IList<ClassA>>()).Output(Write);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<IList<IClassA>>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<IList<ClassA>>()).WriteMessageTo(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<IList<IClassA>>()).WriteMessageTo(Write);
         }
 
     }

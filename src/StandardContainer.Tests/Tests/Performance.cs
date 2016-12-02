@@ -11,40 +11,50 @@ namespace StandardContainer.Tests.Tests
     [Trait("Category", "Performance")]
     public class Performance : TestBase
     {
-        public Performance(ITestOutputHelper output) : base(output) {}
+        private readonly Perf perf;
+        public Performance(ITestOutputHelper output) : base(output)
+        {
+            perf = new Perf(output.WriteLine);
+        }
 
-        public class ClassA {}
+        public class ClassA
+        {
+            public ClassA()
+            {
+                Task.Delay(1).Wait(0);
+            }
+        }
 
         [Fact]
         public void Test_Performance()
         {
             var container = new Container().RegisterInstance(new ClassA());
             Action action = () => container.Resolve<ClassA>();
-            MeasureRate(action, "instances from RegisterInstance / second");
+            perf.MeasureRate(action, "instances from RegisterInstance / second");
 
             container = new Container().RegisterSingleton<ClassA>();
             action = () => container.Resolve<ClassA>();
-            MeasureRate(action, "instances from RegisterSingleton / second");
+            perf.MeasureRate(action, "instances from RegisterSingleton / second");
 
             container = new Container().RegisterTransient<ClassA>();
             action = () => container.Resolve<ClassA>();
-            MeasureRate(action, "instances from RegisterTransient / second");
+            perf.MeasureRate(action, "instances from RegisterTransient / second");
 
             container = new Container().RegisterFactory(() => new ClassA());
             action = () => container.Resolve<ClassA>();
-            MeasureRate(action, "instances from RegisterFactory / second");
+            perf.MeasureRate(action, "instances from RegisterFactory / second");
 
             container = new Container().RegisterTransient<ClassA>();
             action = () => container.Resolve<Func<ClassA>>();
-            MeasureRate(action, "factories from RegisterTransient / second");
+            perf.MeasureRate(action, "factories from RegisterTransient / second");
 
             container = new Container().RegisterFactory(() => new ClassA());
             action = () => container.Resolve<Func<ClassA>>();
-            MeasureRate(action, "factories from RegisterFactory / second");
+            perf.MeasureRate(action, "factories from RegisterFactory / second");
 
             container = new Container().RegisterSingleton<ClassA>();
             action = () => container.Resolve<IEnumerable<ClassA>>();
-            MeasureRate(action, "enumerables / second");
+            perf.MeasureRate(action, "enumerable of singleton / second");
         }
 
     }

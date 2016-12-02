@@ -67,6 +67,7 @@
     <Compile Include="Tests\TypeFactory\TypeFactoryInjectionTest.cs" />
     <Compile Include="Tests\TypeFactory\TypeFactoryResolveTest.cs" />
     <Compile Include="Tests\TypeFactory\TypeFactoryWithInterfaceTest.cs" />
+    <Compile Include="Utility\Perf.cs" />
     <Compile Include="Utility\TestBase.cs" />
   </ItemGroup>
   <ItemGroup>

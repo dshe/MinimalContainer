@@ -30,9 +30,9 @@ namespace StandardContainer.Tests.Tests.Relative
         public void Test_Cannot_Create_Dependency()
         {
             var container = new Container(DefaultLifestyle.Singleton, log: Write);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassZ>()).Output(Write);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassY>()).Output(Write);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassX>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassZ>()).WriteMessageTo(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassY>()).WriteMessageTo(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassX>()).WriteMessageTo(Write);
         }
     }
 }

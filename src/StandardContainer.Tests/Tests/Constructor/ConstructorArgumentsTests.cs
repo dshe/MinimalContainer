@@ -18,7 +18,7 @@ namespace StandardContainer.Tests.Tests.Constructor
         public void T01_Class_With_Value_Type_Argument()
         {
             var container = new Container(DefaultLifestyle.Singleton, log: Write);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassWithValueTypeArgument>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassWithValueTypeArgument>()).WriteMessageTo(Write);
         }
 
         public class ClassWithStringArgument
@@ -29,7 +29,7 @@ namespace StandardContainer.Tests.Tests.Constructor
         public void T02_Class_With_String_Argument()
         {
             var container = new Container(DefaultLifestyle.Singleton, log: Write);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassWithStringArgument>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassWithStringArgument>()).WriteMessageTo(Write);
         }
 
         public class ClassWithDefaultValueTypeArgument

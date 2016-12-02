@@ -33,7 +33,7 @@ namespace StandardContainer.Tests.Tests.Lifestyle
         {
             var container = new Container(log: Write);
             container.RegisterFactory(factory1);
-            Assert.Throws<TypeAccessException>(() => container.RegisterFactory(factory1)).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.RegisterFactory(factory1)).WriteMessageTo(Write);
             var instance1 = container.Resolve<SomeClass>();
             Assert.Equal(1, counter1);
             var instance2 = container.Resolve<SomeClass>();

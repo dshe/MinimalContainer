@@ -16,7 +16,7 @@ namespace StandardContainer.Tests.Tests.Lifestyle
         public void T00_Not_Registered()
         {
             var container = new Container(log: Write);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<ISomeClass>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ISomeClass>()).WriteMessageTo(Write);
         }
 
         [Fact]
@@ -24,7 +24,7 @@ namespace StandardContainer.Tests.Tests.Lifestyle
         {
             var container = new Container(log: Write);
             container.RegisterTransient<SomeClass>();
-            Assert.Throws<TypeAccessException>(() => container.RegisterTransient<SomeClass>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.RegisterTransient<SomeClass>()).WriteMessageTo(Write);
         }
 
         [Fact]
@@ -42,11 +42,11 @@ namespace StandardContainer.Tests.Tests.Lifestyle
         {
             var container = new Container(log: Write);
             container.RegisterTransient<ISomeClass>();
-            Assert.Throws<TypeAccessException>(() => container.RegisterTransient<ISomeClass>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.RegisterTransient<ISomeClass>()).WriteMessageTo(Write);
             var instance3 = container.Resolve<ISomeClass>();
             var instance4 = container.Resolve<ISomeClass>();
             Assert.NotEqual(instance3, instance4);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<SomeClass>()).Output(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<SomeClass>()).WriteMessageTo(Write);
         }
 
         [Fact]
