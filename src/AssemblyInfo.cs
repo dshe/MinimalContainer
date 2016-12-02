@@ -27,4 +27,3 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyFileVersion("1.26.3.0")]
 [assembly: AssemblyInformationalVersion("1.26.3+133.Branch.master.Sha.145cd81b7d5d1849618474c69189e0745dad2c0c")]
 [assembly: CLSCompliant(true)]
-//[assembly: InternalsVisibleTo("StandardContainer.Tests")]
