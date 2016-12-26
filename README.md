@@ -86,7 +86,7 @@ Foo1 foo1 = new Container()
 #### example
 ```csharp
 internal interface IFoo {}
-internal class Foo1 : IFoo {}
+internal class Foo : IFoo {}
 internal interface IBar {}
 internal class Bar : IBar {}
 internal class Root
