@@ -62,7 +62,7 @@ public class Foo
     public Foo() {}
 
     [ContainerConstructor]    
-    public Foo(IFoo2 foo2) {}
+    public Foo(IBar bar) {}
 }
 ```
 #### automatic registration
@@ -85,23 +85,27 @@ Foo1 foo1 = new Container()
 ```
 #### example
 ```csharp
-internal interface IFoo1 {}
-internal class Foo1 : IFoo1 {}
-internal interface IFoo2 {}
-internal class Foo2 : IFoo2 {}
+internal interface IFoo {}
+internal interface IBar {}
+internal class Foo : IFoo {}
+internal class Bar : IBar {}
+
 internal class Root
 {
-    private readonly IFoo1 foo1;
-    private readonly Func<IFoo2> foo2Factory;
-    internal Root(IFoo1 foo1, Func<IFoo2> foo2Factory)
+    private readonly IFoo foo;
+    private readonly Func<IBar> barFactory;
+
+    internal Root(IFoo foo, Func<IBar> barFactory)
     {
-        this.foo1 = foo1;
-        this.foo2Factory = foo2Factory;
+        this.foo = foo;
+        this.barFactory = barFactory;
     }
+
     private void StartApplication()
     {
         //...
     }
+    
     public static void Main()
     {
         new Container(DefaultLifestyle.Singleton)
