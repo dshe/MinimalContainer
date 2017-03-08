@@ -27,11 +27,9 @@ public static void Main()
 #### registration
 ```csharp
 container.RegisterSingleton<Foo>();
-container.RegisterSingleton<IFoo>();
 container.RegisterSingleton<IFoo, Foo>();
 
 container.RegisterTransient<Foo>();
-container.RegisterTransient<IFoo>();
 container.RegisterTransient<IFoo, Foo>();
 
 container.RegisterInstance(new Foo());
