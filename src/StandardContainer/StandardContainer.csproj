@@ -1,8 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard1.0</TargetFramework>
-    <Description>A very simple and portable IoC (inversion of control) container.</Description>
-    <Company>dshe</Company>
+    <Description>A very simple and portable IoC (inversion of control) container. 
+Supports .NETStandard1.0.</Description>
+    <Company>DavidS</Company>
+    <PackageProjectUrl>https://github.com/dshe/StandardContainer</PackageProjectUrl>
+    <Authors>DavidS</Authors>
+    <Copyright>Copyright 2016 (c) dshe.</Copyright>
+    <PackageTags>IoC container dependency injection NetStandard portable source</PackageTags>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageIconUrl>https://github.com/dshe.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/dshe/StandardContainer</RepositoryUrl>
+    <Version>2.0.1</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <PackageLicenseUrl>https://opensource.org/licenses/Apache-2.0</PackageLicenseUrl>
+    <PackageReleaseNotes></PackageReleaseNotes>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>TangentKeyPair.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>False</DelaySign>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <PlatformTarget>x86</PlatformTarget>
