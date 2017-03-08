@@ -1,5 +1,5 @@
 
-## StandardContainer&nbsp;&nbsp; [![release](https://img.shields.io/github/release/dshe/StandardContainer.svg)](https://github.com/dshe/StandardContainer/releases) [![status](https://ci.appveyor.com/api/projects/status/uuft89jhlm0xw22q/branch/master?svg=true)](https://ci.appveyor.com/project/dshe/standardcontainer/branch/master) [![License](https://img.shields.io/badge/license-Apache%202.0-7755BB.svg)](https://opensource.org/licenses/Apache-2.0)
+## StandardContainer&nbsp;&nbsp; [![release](https://img.shields.io/github/release/dshe/StandardContainer.svg)](https://github.com/dshe/StandardContainer/releases) [![License](https://img.shields.io/badge/license-Apache%202.0-7755BB.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ***A simple and portable IoC (Inversion of Control) container.***
 - one C# 7 source file with no dependencies
@@ -113,13 +113,6 @@ internal class Root
 }
 ```
 The complete object graph is created by simply resolving the compositional root. 
-
-#### resolution strategy
-The following graphic illustrates the automatic type resolution strategy:
-
-![Image of Resolution Strategy](https://github.com/dshe/InternalContainer/blob/master/TypeResolutionFlowChart.png)
-
-
 #### disposal
 ```csharp
 container.Dispose();
