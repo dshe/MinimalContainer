@@ -32,7 +32,7 @@ namespace Testing.Examples
         private void StartApplication()
         {
             var bar = _foo.BarFactory();
-            Assert.IsType(typeof(Bar), bar);
+            Assert.IsType<Bar>(bar);
         }
 
         public static void Mainx()

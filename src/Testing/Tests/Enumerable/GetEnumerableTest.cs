@@ -37,21 +37,21 @@ namespace Testing.Tests.Enumerable
         {
             var container = new Container(log: Write);
             container.RegisterSingleton<SomeClass1>();
-            Assert.Equal(1, container.Resolve<IEnumerable<SomeClass1>>().Count());
+            Assert.Single(container.Resolve<IEnumerable<SomeClass1>>());
         }
 
         [Fact]
         public void T02_DefaultLifestyle()
         {
             var container = new Container(DefaultLifestyle.Singleton, Write);
-            Assert.Equal(1, container.Resolve<IEnumerable<SomeClass1>>().Count());
+            Assert.Single(container.Resolve<IEnumerable<SomeClass1>>());
         }
 
         [Fact]
         public void T03_Enumerable()
         {
             var container = new Container(DefaultLifestyle.Singleton, Write);
-            Assert.Equal(1, container.Resolve<IEnumerable<SomeClass1>>().Count());
+            Assert.Single(container.Resolve<IEnumerable<SomeClass1>>());
             Assert.Equal(2, container.Resolve<IEnumerable<IMarker>>().Count());
         }
 
@@ -59,7 +59,7 @@ namespace Testing.Tests.Enumerable
         public void T04_Enumerable_Auto()
         {
             var container = new Container(log: Write, defaultLifestyle:DefaultLifestyle.Singleton);
-            Assert.Equal(1, container.Resolve<IEnumerable<SomeClass1>>().Count());
+            Assert.Single(container.Resolve<IEnumerable<SomeClass1>>());
             Assert.Equal(2, container.Resolve<IEnumerable<IMarker>>().Count());
         }
 
@@ -83,7 +83,7 @@ namespace Testing.Tests.Enumerable
             var list = new List<SomeClass1> {new SomeClass1()};
             container.RegisterInstance(list);
             var instance = container.Resolve<List<SomeClass1>>();
-            Assert.Equal(1, instance.Count());
+            Assert.Single(instance);
         }
 
         [Fact]

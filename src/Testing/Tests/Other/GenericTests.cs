@@ -47,7 +47,7 @@ namespace Testing.Tests.Other
             Assert.True(typeof(Bar1<>).GetTypeInfo().IsGenericType);
             Assert.True(typeof(Bar1<>).GetTypeInfo().IsGenericTypeDefinition);
             Assert.False(typeof(Bar1<int>).GetTypeInfo().IsGenericTypeDefinition);
-            Assert.Equal(typeof(Bar1<int>).GetGenericTypeDefinition(), typeof(Bar1<>));
+            Assert.Equal(typeof(Bar1<>), typeof(Bar1<int>).GetGenericTypeDefinition());
         }
 
     }

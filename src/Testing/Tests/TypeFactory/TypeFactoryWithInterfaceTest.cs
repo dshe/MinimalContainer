@@ -25,7 +25,7 @@ namespace Testing.Tests.TypeFactory
             var container = new Container();
             container.RegisterTransient<IFoo, Foo>();
             var factory = container.Resolve<Func<IFoo>>();
-            Assert.IsType(typeof(Foo), factory());
+            Assert.IsType<Foo>(factory());
             Assert.NotEqual(factory(), factory());
         }
 
