@@ -120,9 +120,9 @@ container.Dispose();
 Disposing the container disposes any registered disposable singletons.
 #### logging
 ```csharp
-var container = new Container(log:Console.WriteLine);
+var container = new Container(log:Debug.WriteLine);
 ```
 #### diagnostic
 ```csharp
-Console.WriteLine(container.ToString());
+Debug.WriteLine(container.ToString());
 ```
