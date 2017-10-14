@@ -1,8 +1,8 @@
 
 ## StandardContainer&nbsp;&nbsp; [![release](https://img.shields.io/github/release/dshe/StandardContainer.svg)](https://github.com/dshe/StandardContainer/releases) [![Build status](https://ci.appveyor.com/api/projects/status/ur57kpmbos2ok7e9?svg=true)](https://ci.appveyor.com/project/dshe/standardcontainer) [![License](https://img.shields.io/badge/license-Apache%202.0-7755BB.svg)](https://opensource.org/licenses/Apache-2.0)
 
-***A simple and portable IoC (Inversion of Control) container.***
-- **one** C# 7 source file supporting **.NET Standard 2.0+** with no dependencies
+***A simple and portable single file IoC (Inversion of Control) container.***
+- **single** C# 7 source file supporting **.NET Standard 2.0+** with no dependencies
 - automatic and/or explicit type registration
 - public and **internal** constructor injection
 - injection of instances, type factories and enumerables
