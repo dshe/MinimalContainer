@@ -1,16 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard1.0</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <Description>A very simple and portable IoC (inversion of control) container which supports .NETStandard1.0.</Description>
     <Company>DavidS</Company>
     <PackageProjectUrl>https://github.com/dshe/StandardContainer</PackageProjectUrl>
     <Authors>DavidS</Authors>
-    <Copyright>Copyright 2016 (c) DavidS.</Copyright>
-    <PackageTags>IoC container dependency injection NetStandard portable source</PackageTags>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Copyright>Copyright 2017 (c) DavidS.</Copyright>
+    <PackageTags>IoC container dependency injection NetStandard portable source netcore</PackageTags>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageIconUrl>https://github.com/dshe.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/dshe/StandardContainer</RepositoryUrl>
-    <Version>2.0</Version>
+    <Version>2.1</Version>
     <AssemblyVersion>2.0.0.0</AssemblyVersion>
     <FileVersion>2.0.0.0</FileVersion>
     <PackageLicenseUrl>https://opensource.org/licenses/Apache-2.0</PackageLicenseUrl>

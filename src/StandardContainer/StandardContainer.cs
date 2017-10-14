@@ -1,5 +1,5 @@
 /*
-StandardContainer.cs version 2.0
+StandardContainer.cs version 2.1
 Copyright(c) 2017 DavidS.
 Licensed under the Apache License 2.0:
 http://www.apache.org/licenses/LICENSE-2.0
@@ -47,12 +47,8 @@ namespace StandardContainer
 
             var assemblyList = assemblies.ToList();
             if (!assemblyList.Any())
-            {
-                var method = typeof(Assembly).GetTypeInfo().GetDeclaredMethod("GetCallingAssembly");
-                if (method == null)
-                    throw new ArgumentException("Since the calling assembly cannot be determined, one or more assemblies must be indicated when constructing the container.");
-                assemblyList.Add((Assembly)method.Invoke(null, new object[0]));
-            }
+                assemblyList.Add(Assembly.GetCallingAssembly());
+
             allTypesConcrete = new Lazy<List<TypeInfo>>(() => assemblyList
                 .Select(a => a.DefinedTypes.Where(t => t.IsClass && !t.IsAbstract && !t.IsInterface))
                 .SelectMany(x => x)

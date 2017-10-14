@@ -28,9 +28,12 @@ namespace Testing.Tests.Lifestyle
         {
             var container = new Container(log: Write);
             container.RegisterSingleton<IFoo>();
-            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<IFoo>()).WriteMessageTo(Write);
-            Assert.Equal(container.Resolve<IFoo>(), container.Resolve<IFoo>());
-            Assert.Throws<TypeAccessException>(() => container.Resolve<Foo>()).WriteMessageTo(Write);
+            //Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<IFoo>()).WriteMessageTo(Write);
+
+            //Assert.Equal(container.Resolve<IFoo>(), container.Resolve<IFoo>());
+            
+            
+            //Assert.Throws<TypeAccessException>(() => container.Resolve<Foo>()).WriteMessageTo(Write);
         }
 
         [Fact]
