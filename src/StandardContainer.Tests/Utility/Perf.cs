@@ -35,6 +35,5 @@ namespace StandardContainer.Tests.Utility
             var ts = TimeSpan.FromTicks(ticks);
             write($"{ts} {label}");
         }
-
     }
 }

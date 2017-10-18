@@ -55,11 +55,11 @@ namespace StandardContainer.Tests.Performance
             /*
             container = new Container().RegisterTransient<IFoo,Foo>();
             action = () => container.Resolve<Func<IFoo>>();
-            _perf.MeasureRate(action, "factories / second from RegisterTransient.");
+            perf.MeasureRate(action, "factories / second from RegisterTransient.");
 
             container = new Container().RegisterFactory<IFoo>(() => new Foo());
             action = () => container.Resolve<Func<IFoo>>();
-            _perf.MeasureRate(action, "factories / second from RegisterFactory.");
+            perf.MeasureRate(action, "factories / second from RegisterFactory.");
             */
 
             container = new Container().RegisterFactory<IFoo>(() => new Foo());
@@ -73,7 +73,7 @@ namespace StandardContainer.Tests.Performance
             /*
             container = new Container().RegisterSingleton<IFoo, Foo>();
             action = () => container.Resolve<Func<IEnumerable<IFoo>>>();
-            _perf.MeasureRate(action, "factory enumerables / second from RegisterSingleton.");
+            perf.MeasureRate(action, "factory enumerables / second from RegisterSingleton.");
             */
 
             container = new Container().RegisterSingleton<IFoo>();

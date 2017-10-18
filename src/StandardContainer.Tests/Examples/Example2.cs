@@ -12,12 +12,12 @@ namespace StandardContainer.Tests.Examples
 
         internal class Root
         {
-            private readonly IFoo _foo;
-            private readonly Func<IBar> _barFactory;
+            private readonly IFoo foo;
+            private readonly Func<IBar> barFactory;
             internal Root(IFoo foo, Func<IBar> barFactory)
             {
-                _foo = foo;
-                _barFactory = barFactory;
+                this.foo = foo;
+                this.barFactory = barFactory;
             }
 
             private void StartApplication()

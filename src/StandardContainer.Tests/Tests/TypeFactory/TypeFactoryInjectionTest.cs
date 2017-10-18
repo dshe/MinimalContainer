@@ -22,6 +22,7 @@ namespace StandardContainer.Tests.TypeFactory
         {
             var container = new Container();
             container.RegisterTransient<Bar>();
+            container.RegisterTransient<Foo>();
 
             var instance = container.Resolve<Bar>();
             Assert.NotEqual(instance.Factory(), instance.Factory());
