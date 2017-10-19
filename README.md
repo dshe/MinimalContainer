@@ -5,7 +5,7 @@
 - **single** C# 7 source file supporting **.NET Standard 2.0+** with no dependencies
 - automatic and/or explicit type registration
 - public and **internal** constructor injection
-- injection of instances, type factories and enumerables
+- injection of instances, type factories and collections
 - transient and singleton lifestyles
 - captive and recursive dependency detection
 - fluent interface
