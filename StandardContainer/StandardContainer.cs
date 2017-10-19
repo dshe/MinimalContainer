@@ -1,9 +1,9 @@
 /*
-StandardContainer.cs version 2.1
+StandardContainer version 2.1
+https://github.com/dshe/StandardContainer
 Copyright(c) 2017 DavidS.
 Licensed under the Apache License 2.0:
 http://www.apache.org/licenses/LICENSE-2.0
-You may not use this file except in compliance with the License.
 */
 
 using System;
