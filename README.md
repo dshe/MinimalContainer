@@ -19,7 +19,7 @@ public class Foo : IFoo {}
 
 public static void Main()
 {
-    var container = new Container();
+    Container container = new Container();
     container.RegisterTransient<IFoo, Foo>();
     IFoo foo = container.Resolve<IFoo>();
     ...
@@ -49,9 +49,9 @@ T instance = factory();
 ```
 #### resolution of enumerables
 ```csharp
-IEnumerable<T> instances = container.Resolve<IEnumerable<T>>();
+IList<T> instances = container.Resolve<IList<T>>();
 ```
-A list of instances of registered types which are assignable to `T` is returned. `IList<T>`, `IReadOnlyList<T>`, `ICollection<T>` and `IReadOnlyCollection<T>` are also supported.
+A list of instances of registered types which are assignable to `T` is returned.
 #### constructors
 The container can create instances of types using public and internal constructors. In case a type has more than one constructor, indicate the constructor to be used with the 'ContainerConstructor' attribute. Otherwise, the constructor with the smallest number of arguments is selected.
 ```csharp
