@@ -38,20 +38,20 @@ container.RegisterInstance<IFoo>(new Foo());
 container.RegisterFactory(() => new Foo());
 container.RegisterFactory<IFoo>(() => new Foo());
 ```
-#### resolution of types
+#### type resolution
 ```csharp
 T instance = container.Resolve<T>();
 ```
+#### resolution of assignable types
+```csharp
+IList<T> instances = container.Resolve<IList<T>>();
+```
+A list of instances of registered types which are assignable to `T` is returned.
 #### resolution of type factories
 ```csharp
 Func<T> factory = container.Resolve<Func<T>>();
 T instance = factory();
 ```
-#### resolution of enumerables
-```csharp
-IList<T> instances = container.Resolve<IList<T>>();
-```
-A list of instances of registered types which are assignable to `T` is returned.
 #### constructors
 The container can create instances of types using public and internal constructors. In case a type has more than one constructor, indicate the constructor to be used with the 'ContainerConstructor' attribute. Otherwise, the constructor with the smallest number of arguments is selected.
 ```csharp
