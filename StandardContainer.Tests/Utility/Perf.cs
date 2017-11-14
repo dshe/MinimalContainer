@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
+/*
+ 1.0
+ */
 
 namespace StandardContainer.Tests.Utility
 {

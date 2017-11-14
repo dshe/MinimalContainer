@@ -1,5 +1,5 @@
 /*
-StandardContainer version 2.1
+StandardContainer version 2.13
 https://github.com/dshe/StandardContainer
 Copyright(c) 2017 DavidS.
 Licensed under the Apache License 2.0:
@@ -199,7 +199,7 @@ namespace StandardContainer
         private void InitializeTypes(Registration reg)
         {
             if (reg.Type.IsEnumerable())
-                InitializeEnumerable(reg);
+                InitializeList(reg);
             else
                 InitializeType(reg);
 
@@ -228,7 +228,7 @@ namespace StandardContainer
             reg.Factory = Expression.Lambda<Func<object>>(reg.Expression).Compile();
         }
 
-        private void InitializeEnumerable(Registration reg)
+        private void InitializeList(Registration reg)
         {
             var genericType = reg.Type.GenericTypeArguments.Single().GetTypeInfo();
             var assignableTypes = (defaultLifestyle == DefaultLifestyle.Undefined
