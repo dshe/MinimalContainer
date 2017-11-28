@@ -120,7 +120,7 @@ namespace StandardContainer
                 throw new ArgumentNullException(nameof(type));
             try
             {
-                var reg = GetOrAddInitializeRegistration(type, out bool isFunc, null);
+                (Registration reg, bool isFunc) = GetOrAddInitializeRegistration(type, null);
                 if (!isFunc)
                     return reg.Factory();
                 return reg.FuncDelegate ?? (reg.FuncDelegate = Expression.Lambda(reg.Expression).Compile());
@@ -136,23 +136,23 @@ namespace StandardContainer
 
         private Expression GetOrAddExpression(Type type, Registration dependent)
         {
-            var expression = GetOrAddInitializeRegistration(type, out bool isFunc, dependent).Expression;
-            return isFunc ? Expression.Lambda(expression) : expression;
+            (Registration reg, bool isFunc) = GetOrAddInitializeRegistration(type, dependent);
+            return isFunc ? Expression.Lambda(reg.Expression) : reg.Expression;
         }
 
-        private Registration GetOrAddInitializeRegistration(Type type, out bool isFunc, Registration dependent)
+        private (Registration reg, bool isFunc) GetOrAddInitializeRegistration(Type type, Registration dependent)
         {
-            var reg = GetOrAddRegistration(type, out isFunc);
+            (Registration reg, bool isFunc) = GetOrAddRegistration(type);
             if (reg.Expression == null)
                 Initialize(reg, dependent, isFunc);
-            return reg;
+            return (reg, isFunc);
         }
 
-        private Registration GetOrAddRegistration(Type type, out bool isFunc)
+        private (Registration reg, bool isFunc) GetOrAddRegistration(Type type)
         {
-            isFunc = false;
+            var isFunc = false;
             if (registrations.TryGetValue(type, out Registration reg))
-                return reg;
+                return (reg, isFunc);
             var typeInfo = type.GetTypeInfo();
             if (typeInfo.GetFuncArgumentType(out TypeInfo funcType))
             {
@@ -162,7 +162,7 @@ namespace StandardContainer
                 {
                     if (reg.Lifestyle == Lifestyle.Singleton || reg.Lifestyle == Lifestyle.Instance)
                         throw new TypeAccessException($"Func argument type '{typeInfo.AsString()}' must be Transient or Factory.");
-                    return reg;
+                    return (reg, isFunc);
                 }
             }
             if (defaultLifestyle == DefaultLifestyle.Undefined && !typeInfo.IsEnumerable())
@@ -170,7 +170,7 @@ namespace StandardContainer
             reg = AddRegistration(typeInfo);
             if (isFunc)
                 reg.Lifestyle = Lifestyle.Transient;
-            return reg;
+            return (reg, isFunc);
         }
 
         private void Initialize(Registration reg, Registration dependent, bool isFunc)
