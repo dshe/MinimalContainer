@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\StandardContainer\StandardContainer.csproj" />
+    <ProjectReference Include="..\MinimalContainer\MinimalContainer.csproj" />
   </ItemGroup>
 
 </Project>
