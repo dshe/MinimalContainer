@@ -1,13 +1,13 @@
 
-## StandardContainer&nbsp;&nbsp; [![release](https://img.shields.io/github/release/dshe/StandardContainer.svg)](https://github.com/dshe/StandardContainer/releases) [![Build status](https://ci.appveyor.com/api/projects/status/ur57kpmbos2ok7e9?svg=true)](https://ci.appveyor.com/project/dshe/standardcontainer) [![License](https://img.shields.io/badge/license-Apache%202.0-7755BB.svg)](https://opensource.org/licenses/Apache-2.0)
+## MinimalContainer&nbsp;&nbsp; [![release](https://img.shields.io/github/release/dshe/StandardContainer.svg)](https://github.com/dshe/StandardContainer/releases) [![Build status](https://ci.appveyor.com/api/projects/status/ur57kpmbos2ok7e9?svg=true)](https://ci.appveyor.com/project/dshe/standardcontainer) [![License](https://img.shields.io/badge/license-Apache%202.0-7755BB.svg)](https://opensource.org/licenses/Apache-2.0)
 
-***A simple and portable single file IoC (Inversion of Control) container.***
+***A minimal single file IoC (Inversion of Control) container.***
 - automatic and/or explicit type registration
 - public and **internal** constructor injection
 - injection of instances, type factories and collections
 - transient and singleton lifestyles
 - captive and recursive dependency detection
-- contained in **single** C# 7 source file supporting **.NET Standard 2.0**
+- contained in a **single** C# 7.2 source file supporting **.NET Standard 2.0**
 - fluent interface
 - tested
 - fast
@@ -53,13 +53,13 @@ Func<T> factory = container.Resolve<Func<T>>();
 T instance = factory();
 ```
 #### constructors
-The container can create instances of types using public and internal constructors. In case a type has more than one constructor, indicate the constructor to be used with the 'ContainerConstructor' attribute. Otherwise, the constructor with the smallest number of arguments is selected.
+The container can create instances of types using public and internal constructors. In case a type has more than one constructor, decorate the constructor to be used with the 'ContainerConstructor' attribute. Otherwise, the constructor with the smallest number of arguments is selected.
 ```csharp
 public class Foo
 {
     public Foo() {}
 
-    [ContainerConstructor]    
+    [ContainerConstructor]
     public Foo(IBar bar) {}
 }
 ```
