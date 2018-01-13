@@ -2,7 +2,7 @@
 using Xunit;
 using Xunit.Abstractions;
 
-namespace StandardContainer.Tests.TypeFactory
+namespace MinimalContainer.Tests.TypeFactory
 {
     public class TypeFactoryWithInterfaceTest
     {

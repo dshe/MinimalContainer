@@ -1,4 +1,4 @@
-﻿namespace StandardContainer.Tests.Examples
+﻿namespace MinimalContainer.Tests.Examples
 {
     public class Example1
     {

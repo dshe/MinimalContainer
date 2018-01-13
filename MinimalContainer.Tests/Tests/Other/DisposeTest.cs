@@ -2,7 +2,7 @@
 using Xunit;
 using Xunit.Abstractions;
 
-namespace StandardContainer.Tests.Other
+namespace MinimalContainer.Tests.Other
 {
     public class DisposeTest
     {

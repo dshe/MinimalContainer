@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
-using StandardContainer.Tests.Utility;
+using MinimalContainer.Tests.Utility;
 
-namespace StandardContainer.Tests.Other
+namespace MinimalContainer.Tests.Other
 {
     public class AssemblyTest
     {

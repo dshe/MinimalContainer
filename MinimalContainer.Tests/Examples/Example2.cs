@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace StandardContainer.Tests.Examples
+namespace MinimalContainer.Tests.Examples
 {
     public class Example2
     {

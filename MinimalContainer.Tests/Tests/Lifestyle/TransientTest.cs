@@ -1,9 +1,9 @@
 ﻿using System;
 using Xunit;
 using Xunit.Abstractions;
-using StandardContainer.Tests.Utility;
+using MinimalContainer.Tests.Utility;
 
-namespace StandardContainer.Tests.Lifestyle
+namespace MinimalContainer.Tests.Lifestyle
 {
     public class TransientTest
     {

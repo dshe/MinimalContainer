@@ -2,7 +2,7 @@
 using Xunit;
 using Xunit.Abstractions;
 
-namespace StandardContainer.Tests.TypeFactory
+namespace MinimalContainer.Tests.TypeFactory
 {
     public class TypeFactoryInjectionTest
     {
@@ -24,24 +24,24 @@ namespace StandardContainer.Tests.TypeFactory
             container.RegisterTransient<Bar>();
             container.RegisterTransient<Foo>();
 
-            var instance = container.Resolve<Bar>();
-            Assert.NotEqual(instance.Factory(), instance.Factory());
+            var bar = container.Resolve<Bar>();
+            Assert.NotEqual(bar.Factory(), bar.Factory());
         }
 
         [Fact]
         public void T01_auto_singleton_injection()
         {
             var container = new Container(DefaultLifestyle.Singleton);
-            var instance = container.Resolve<Bar>();
-            Assert.NotEqual(instance.Factory(), instance.Factory());
+            var bar = container.Resolve<Bar>();
+            Assert.NotEqual(bar.Factory(), bar.Factory());
         }
 
         [Fact]
         public void T02_auto_transient_injection()
         {
             var container = new Container(DefaultLifestyle.Transient);
-            var instance = container.Resolve<Bar>();
-            Assert.NotEqual(instance.Factory(), instance.Factory());
+            var bar = container.Resolve<Bar>();
+            Assert.NotEqual(bar.Factory(), bar.Factory());
         }
 
         [Fact]

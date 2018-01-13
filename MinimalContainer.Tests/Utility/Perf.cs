@@ -4,7 +4,7 @@ using System.Diagnostics;
  1.0
  */
 
-namespace StandardContainer.Tests.Utility
+namespace MinimalContainer.Tests.Utility
 {
     public class Perf
     {

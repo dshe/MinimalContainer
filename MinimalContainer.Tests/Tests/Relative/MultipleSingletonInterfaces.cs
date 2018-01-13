@@ -2,7 +2,7 @@
 using Xunit;
 using Xunit.Abstractions;
 
-namespace StandardContainer.Tests.Relative
+namespace MinimalContainer.Tests.Relative
 {
     public class MultipleSingletonInterfaces
     {

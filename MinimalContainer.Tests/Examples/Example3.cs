@@ -1,7 +1,7 @@
 ﻿using System;
 using Xunit;
 
-namespace StandardContainer.Tests.Examples
+namespace MinimalContainer.Tests.Examples
 {
     internal interface IBar { }
     internal class Bar : IBar { }

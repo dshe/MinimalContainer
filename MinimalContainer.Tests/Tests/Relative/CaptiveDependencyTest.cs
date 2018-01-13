@@ -1,9 +1,9 @@
 ﻿using System;
 using Xunit;
 using Xunit.Abstractions;
-using StandardContainer.Tests.Utility;
+using MinimalContainer.Tests.Utility;
 
-namespace StandardContainer.Tests.Relative
+namespace MinimalContainer.Tests.Relative
 {
     public class CaptiveDependencyTests
     {

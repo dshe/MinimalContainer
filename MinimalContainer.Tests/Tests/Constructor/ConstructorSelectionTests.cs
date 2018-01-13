@@ -1,9 +1,9 @@
 ﻿using System;
 using Xunit;
 using Xunit.Abstractions;
-using StandardContainer.Tests.Utility;
+using MinimalContainer.Tests.Utility;
 
-namespace StandardContainer.Tests.Constructor
+namespace MinimalContainer.Tests.Constructor
 {
     public class ConstructorSelectionTests
     {

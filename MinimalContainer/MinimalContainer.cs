@@ -1,22 +1,24 @@
-/*
-StandardContainer version 2.13
-https://github.com/dshe/StandardContainer
-Copyright(c) 2017 DavidS.
-Licensed under the Apache License 2.0:
-http://www.apache.org/licenses/LICENSE-2.0
-*/
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace StandardContainer
+namespace MinimalContainer
 {
+    /// <summary>
+    /// The container can create instances of types using public and internal constructors. 
+    /// In case a type has more than one constructor, indicate the constructor to be used with the ContainerConstructor attribute.
+    /// Otherwise, the constructor with the smallest number of arguments is selected.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Constructor)]
+    public sealed class ContainerConstructor : Attribute { }
+
+
     public enum DefaultLifestyle { Undefined, Transient, Singleton }
     internal enum Lifestyle { Undefined, Transient, Singleton, Instance, Factory }
 
@@ -114,7 +116,7 @@ namespace StandardContainer
 
         public T Resolve<T>() => (T)Resolve(typeof(T));
 
-        public object Resolve(Type type)
+        public object Resolve(in Type type)
         {
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
@@ -134,43 +136,44 @@ namespace StandardContainer
             }
         }
 
-        private Expression GetOrAddExpression(Type type, Registration dependent)
+        private Expression GetOrAddExpression(in Type type, in Registration dependent)
         {
             (Registration reg, bool isFunc) = GetOrAddInitializeRegistration(type, dependent);
             return isFunc ? Expression.Lambda(reg.Expression) : reg.Expression;
         }
 
-        private (Registration reg, bool isFunc) GetOrAddInitializeRegistration(Type type, Registration dependent)
+        private (Registration reg, bool isFunc) GetOrAddInitializeRegistration(Type type, in Registration dependent)
         {
-            (Registration reg, bool isFunc) = GetOrAddRegistration(type);
+            Registration reg;
+            bool isFunc = false;
+            GetOrAddRegistration();
             if (reg.Expression == null)
                 Initialize(reg, dependent, isFunc);
             return (reg, isFunc);
-        }
 
-        private (Registration reg, bool isFunc) GetOrAddRegistration(Type type)
-        {
-            var isFunc = false;
-            if (registrations.TryGetValue(type, out Registration reg))
-                return (reg, isFunc);
-            var typeInfo = type.GetTypeInfo();
-            if (typeInfo.GetFuncArgumentType(out TypeInfo funcType))
+            // local function
+            void GetOrAddRegistration()
             {
-                isFunc = true;
-                typeInfo = funcType;
-                if (registrations.TryGetValue(typeInfo.AsType(), out reg))
+                if (registrations.TryGetValue(type, out reg))
+                    return;
+                var typeInfo = type.GetTypeInfo();
+                if (typeInfo.GetFuncArgumentType(out TypeInfo funcType))
                 {
-                    if (reg.Lifestyle == Lifestyle.Singleton || reg.Lifestyle == Lifestyle.Instance)
-                        throw new TypeAccessException($"Func argument type '{typeInfo.AsString()}' must be Transient or Factory.");
-                    return (reg, isFunc);
+                    isFunc = true;
+                    typeInfo = funcType;
+                    if (registrations.TryGetValue(typeInfo.AsType(), out reg))
+                    {
+                        if (reg.Lifestyle == Lifestyle.Singleton || reg.Lifestyle == Lifestyle.Instance)
+                            throw new TypeAccessException($"Func argument type '{typeInfo.AsString()}' must be Transient or Factory.");
+                        return;
+                    }
                 }
+                if (defaultLifestyle == DefaultLifestyle.Undefined && !typeInfo.IsEnumerable())
+                    throw new TypeAccessException($"Cannot resolve unregistered type '{typeInfo.AsString()}'.");
+                reg = AddRegistration(typeInfo);
+                if (isFunc)
+                    reg.Lifestyle = Lifestyle.Transient;
             }
-            if (defaultLifestyle == DefaultLifestyle.Undefined && !typeInfo.IsEnumerable())
-                throw new TypeAccessException($"Cannot resolve unregistered type '{typeInfo.AsString()}'.");
-            reg = AddRegistration(typeInfo);
-            if (isFunc)
-                reg.Lifestyle = Lifestyle.Transient;
-            return (reg, isFunc);
         }
 
         private void Initialize(Registration reg, Registration dependent, bool isFunc)
@@ -219,13 +222,35 @@ namespace StandardContainer
         {
             if (reg.TypeConcrete == null)
                 reg.TypeConcrete = allTypesConcrete.Value.FindConcreteType(reg.Type);
+
             var ctor = reg.TypeConcrete.GetConstructor();
+
             var parameters = ctor.GetParameters()
-                .Select(p => p.HasDefaultValue ? Expression.Constant(p.DefaultValue, p.ParameterType) : GetOrAddExpression(p.ParameterType, reg))
+                .Select(GetValueOfParameter)
                 .ToArray();
+
             Log($"Constructing type '{reg.TypeConcrete.AsString()}({parameters.Select(p => p?.Type.AsString()).JoinStrings(", ")})'.");
             reg.Expression = Expression.New(ctor, parameters);
             reg.Factory = Expression.Lambda<Func<object>>(reg.Expression).Compile();
+
+            // local function
+            Expression GetValueOfParameter(ParameterInfo p)
+            {
+
+                var type = p.ParameterType;
+                if (type.IsByRef) 
+                {
+                    var readOnly= p.GetCustomAttributes().Any(x => x.ToString().EndsWith("IsReadOnlyAttribute"));
+                    if (!readOnly)
+                        throw new TypeAccessException($"Invalid ref or out type '{type.Name}'.");
+                    type = type.GetElementType(); // support 'In' parameter type only
+                }
+
+                if (p.HasDefaultValue)
+                    return Expression.Constant(p.DefaultValue, type);
+
+                return GetOrAddExpression(type, reg);
+            }
         }
 
         private void InitializeList(Registration reg)
@@ -295,81 +320,4 @@ namespace StandardContainer
         }
     }
 
-    /// <summary>
-    /// The container can create instances of types using public and internal constructors. 
-    /// In case a type has more than one constructor, indicate the constructor to be used with the ContainerConstructor attribute.
-    /// Otherwise, the constructor with the smallest number of arguments is selected.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Constructor)]
-    public sealed class ContainerConstructorAttribute : Attribute {}
-
-    internal static class StandardContainerEx
-    {
-        internal static TypeInfo FindConcreteType(this List<TypeInfo> allTypesConcrete, TypeInfo type)
-        {
-            if (type == null)
-                throw new ArgumentNullException(nameof(type));
-            if (!type.IsAbstract && !type.IsInterface)
-                return type;
-            // When a non-concrete type is indicated, the concrete type is determined automatically.
-            var assignableTypes = allTypesConcrete.Where(type.IsAssignableFrom).ToList(); // slow
-            // The non-concrete type must be assignable to exactly one concrete type.
-            if (assignableTypes.Count == 1)
-                return assignableTypes.Single();
-            var types = assignableTypes.Select(t => t.FullName).JoinStrings(", ");
-            throw new TypeAccessException($"{assignableTypes.Count} concrete types found assignable to '{type.AsString()}': {types}.");
-        }
-
-        internal static bool GetFuncArgumentType(this TypeInfo type, out TypeInfo funcType)
-        {
-            if (type == null)
-                throw new ArgumentNullException(nameof(type));
-            if (type.IsGenericType && !type.IsGenericTypeDefinition &&
-                typeof(Delegate).GetTypeInfo().IsAssignableFrom(type.BaseType?.GetTypeInfo()))
-            {
-                funcType = type.GenericTypeArguments.SingleOrDefault()?.GetTypeInfo();
-                return true;
-            }
-            funcType = null;
-            return false;
-        }
-
-        internal static ConstructorInfo GetConstructor(this TypeInfo type)
-        {
-            if (type == null)
-                throw new ArgumentNullException(nameof(type));
-            var ctors = type.DeclaredConstructors.Where(c => !c.IsPrivate).ToList();
-            if (ctors.Count == 1)
-                return ctors.Single();
-            if (!ctors.Any())
-                throw new TypeAccessException($"Type '{type.AsString()}' has no public or internal constructor.");
-            var ctorsWithAttribute = ctors.Where(c => c.GetCustomAttribute<ContainerConstructorAttribute>() != null).ToList();
-            if (ctorsWithAttribute.Count == 1)
-                return ctorsWithAttribute.Single();
-            if (ctorsWithAttribute.Count > 1)
-                throw new TypeAccessException($"Type '{type.AsString()}' has more than one constructor decorated with '{nameof(ContainerConstructorAttribute)}'.");
-            return ctors.OrderBy(c => c.GetParameters().Length).First();
-        }
-
-        internal static bool IsEnumerable(this TypeInfo type) => typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(type);
-
-        internal static string JoinStrings(this IEnumerable<string> strings, string separator) => string.Join(separator, strings);
-
-        internal static string AsString(this Type type) => type.GetTypeInfo().AsString();
-        internal static string AsString(this TypeInfo type)
-        {
-            if (type == null)
-                throw new ArgumentNullException(nameof(type));
-            var name = type.Name;
-            if (type.IsGenericParameter || !type.IsGenericType)
-                return name;
-            var index = name.IndexOf("`", StringComparison.Ordinal);
-            if (index >= 0)
-                name = name.Substring(0, index);
-            var args = type.GenericTypeArguments
-                .Select(a => a.GetTypeInfo().AsString())
-                .JoinStrings(",");
-            return $"{name}<{args}>";
-        }
-    }
 }
