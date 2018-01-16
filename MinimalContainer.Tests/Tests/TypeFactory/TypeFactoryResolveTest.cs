@@ -15,14 +15,14 @@ namespace MinimalContainer.Tests.TypeFactory
         [Fact]
         public void T00_not_registered()
         {
-            var container = new Container(log: Write);
+            var container = new Container(logAction: Write);
             Assert.Throws<TypeAccessException>(() => container.Resolve<Func<Foo>>()).WriteMessageTo(Write);
         }
 
         [Fact]
         public void T01_factory_from_transient()
         {
-            var container = new Container(log: Write);
+            var container = new Container(logAction: Write);
             container.RegisterTransient<Foo>();
             var factory = container.Resolve<Func<Foo>>();
             Assert.IsType<Foo>(factory());
@@ -32,7 +32,7 @@ namespace MinimalContainer.Tests.TypeFactory
         [Fact]
         public void T02_factory_from_factory()
         {
-            var container = new Container(log: Write);
+            var container = new Container(logAction: Write);
             Func<Foo> factory = () => new Foo();
             container.RegisterFactory(factory);
             var f = container.Resolve<Func<Foo>>();
@@ -43,7 +43,7 @@ namespace MinimalContainer.Tests.TypeFactory
         [Fact]
         public void T03_factory_from_singleton()
         {
-            var container = new Container(log:Write);
+            var container = new Container(logAction:Write);
             container.RegisterSingleton<Foo>();
             Assert.Throws<TypeAccessException>(() => container.Resolve<Func<Foo>>()).WriteMessageTo(Write);
         }
@@ -51,7 +51,7 @@ namespace MinimalContainer.Tests.TypeFactory
         [Fact]
         public void T04_factory_from_instance()
         {
-            var container = new Container(log: Write);
+            var container = new Container(logAction: Write);
             container.RegisterInstance(new Foo());
             Assert.Throws<TypeAccessException>(() => container.Resolve<Func<Foo>>());
         }
@@ -80,7 +80,7 @@ namespace MinimalContainer.Tests.TypeFactory
         [Fact]
         public void T08_instance_of_factory()
         {
-            var container = new Container(log: Write);
+            var container = new Container(logAction: Write);
 
             Func<Foo> factory = () => new Foo();
             container.RegisterInstance(factory);

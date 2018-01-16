@@ -20,7 +20,7 @@ namespace MinimalContainer.Tests.Relative
         [Fact]
         public void Test_CaptiveDependency_Singleton_Transient()
         {
-            var container = new Container(log: Write);
+            var container = new Container(logAction: Write);
             container.RegisterSingleton<Foo>();
             container.RegisterTransient<Bar>();
             Assert.Throws<TypeAccessException>(() => container.Resolve<Foo>()).WriteMessageTo(Write);
@@ -29,7 +29,7 @@ namespace MinimalContainer.Tests.Relative
         [Fact]
         public void Test_CaptiveDependency_Transient_Singleton()
         {
-            var container = new Container(log: Write);
+            var container = new Container(logAction: Write);
             container.RegisterTransient<Foo>();
             container.RegisterSingleton<Bar>();
             container.Resolve<Foo>();
@@ -38,7 +38,7 @@ namespace MinimalContainer.Tests.Relative
         [Fact]
         public void Test_CaptiveDependency_Singleton_Singleton()
         {
-            var container = new Container(log: Write);
+            var container = new Container(logAction: Write);
             container.RegisterSingleton<Foo>();
             container.RegisterSingleton<Bar>();
             container.Resolve<Foo>();
@@ -47,7 +47,7 @@ namespace MinimalContainer.Tests.Relative
         [Fact]
         public void Test_CaptiveDependency_Transient_Transient()
         {
-            var container = new Container(log: Write);
+            var container = new Container(logAction: Write);
             container.RegisterTransient<Foo>();
             container.RegisterTransient<Bar>();
             container.Resolve<Foo>();

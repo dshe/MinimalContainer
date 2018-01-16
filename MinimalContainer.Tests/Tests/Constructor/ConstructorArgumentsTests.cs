@@ -3,96 +3,87 @@ using Xunit;
 using Xunit.Abstractions;
 using MinimalContainer.Tests.Utility;
 
+/*             Value Type    Value Type Default        Reference Type    null
+ * none        throw         ok                        ok                ok
+ * in          throw         ok                        ok                ok
+ * ref         throw         -                         throw!            -
+ * out         throw         -                         throw!            -
+ */
+
 namespace MinimalContainer.Tests.Constructor
 {
     public class ConstructorArgumentTests
     {
+        public class Class0 { }
+
+        private Container Container;
         protected readonly Action<string> Write;
-        public ConstructorArgumentTests(ITestOutputHelper output) => Write = output.WriteLine;
-
-        public class ClassWithValueTypeArgument
+        public ConstructorArgumentTests(ITestOutputHelper output)
         {
-            public ClassWithValueTypeArgument(int i) { }
+            Write = output.WriteLine;
+            Container = new Container(DefaultLifestyle.Singleton, Write);
+        }
+
+        public class Class1
+        {
+            public Class1(int i) { }
         }
         [Fact]
-        public void T01_Class_With_Value_Type_Argument()
+        public void T01_Value_Type()
         {
-            var container = new Container(DefaultLifestyle.Singleton, Write);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassWithValueTypeArgument>()).WriteMessageTo(Write);
+            Assert.Throws<TypeAccessException>(() => Container.Resolve<Class1>()).WriteMessageTo(Write);
         }
 
-        public class ClassWithStringArgument
+        public class Class2
         {
-            public ClassWithStringArgument(string s) { }
+            public Class2(int i = 42) { }
         }
         [Fact]
-        public void T02_Class_With_String_Argument()
+        public void T02_Value_Type_Default()
         {
-            var container = new Container(DefaultLifestyle.Singleton, Write);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassWithStringArgument>()).WriteMessageTo(Write);
+            Container.Resolve<Class2>();
         }
 
-        public class ClassWithDefaultValueTypeArgument
+        public class Class3
         {
-            public ClassWithDefaultValueTypeArgument(int i = 42) { }
+            public Class0 class0;
+            public Class3(Class0 c0) => class0 = c0;
         }
         [Fact]
-        public void T03_Class_With_Default_Value_Type_Argument()
+        public void T03_Ref_Type()
         {
-            var container = new Container(DefaultLifestyle.Singleton, Write);
-            container.Resolve<ClassWithDefaultValueTypeArgument>();
+            var class3 = Container.Resolve<Class3>();
+            Assert.NotNull(class3.class0);
         }
 
-        public class ClassWithDefaultStringArgument
+        public class Class4
         {
-            public ClassWithDefaultStringArgument(string s = "test") { }
+            public Class4(Class0 c0 = null) { }
         }
         [Fact]
-        public void T04_Class_With_Default_String_Argument()
+        public void T04_Ref_Type_Default()
         {
-            var container = new Container(DefaultLifestyle.Singleton, Write);
-            container.Resolve<ClassWithDefaultStringArgument>();
+            Container.Resolve<Class4>();
         }
 
-        public class ClassWithNullArgument
+        public class Class5
         {
-            public ClassWithNullArgument(string s = null) { }
+            public Class5(ref Class0 c0) { }
         }
         [Fact]
-        public void T05_Class_With_Null_Argument()
+        public void T05_Ref_Type_Ref()
         {
-            var container = new Container(DefaultLifestyle.Singleton, Write);
-            container.Resolve<ClassWithNullArgument>();
+            Assert.Throws<TypeAccessException>(() => Container.Resolve<Class5>()).WriteMessageTo(Write);
         }
 
-        public class ClassWithRefValueTypeArgument
+        public class Class6
         {
-            public ClassWithRefValueTypeArgument(in int i = 7) { }
+            public Class6(out Class0 c0) { c0 = null; }
         }
         [Fact]
-        public void T06_Class_With_Ref_Value_Type_Argument()
+        public void T06_Ref_Type_Out()
         {
-            var container = new Container(DefaultLifestyle.Singleton, Write);
-            container.Resolve<ClassWithRefValueTypeArgument>();
+            Assert.Throws<TypeAccessException>(() => Container.Resolve<Class6>()).WriteMessageTo(Write);
         }
-
-        public class ClassWithRefRefTypeArgument
-        {
-            public ClassWithRefRefTypeArgument(in ClassX i) { }
-        }
-        [Fact]
-        public void T07_Class_With_Ref_Ref_Type_Argument()
-        {
-            var container = new Container(DefaultLifestyle.Singleton, Write);
-            container.Resolve<ClassWithRefRefTypeArgument>();
-        }
-
-
     }
-
-    public class ClassX
-    {
-        public ClassX() { }
-    }
-
 }

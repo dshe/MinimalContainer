@@ -16,7 +16,7 @@ namespace MinimalContainer.Tests.Lifestyle
         [Fact]
         public void T01_Concrete()
         {
-            var container = new Container(log: Write);
+            var container = new Container(logAction: Write);
             container.RegisterSingleton<Foo>();
             Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<Foo>()).WriteMessageTo(Write);
             Assert.Equal(container.Resolve<Foo>(), container.Resolve<Foo>());
@@ -26,7 +26,7 @@ namespace MinimalContainer.Tests.Lifestyle
         [Fact]
         public void T02_Interface()
         {
-            var container = new Container(log: Write);
+            var container = new Container(logAction: Write);
             container.RegisterSingleton<IFoo>();
             Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<IFoo>()).WriteMessageTo(Write);
             Assert.Equal(container.Resolve<IFoo>(), container.Resolve<IFoo>());
@@ -36,7 +36,7 @@ namespace MinimalContainer.Tests.Lifestyle
         [Fact]
         public void T03_Concrete_Interface()
         {
-            var container = new Container(log: Write);
+            var container = new Container(logAction: Write);
             container.RegisterSingleton<IFoo>();
             container.RegisterSingleton<Foo>();
             Assert.NotEqual(container.Resolve<Foo>(), container.Resolve<IFoo>());
@@ -45,7 +45,7 @@ namespace MinimalContainer.Tests.Lifestyle
         [Fact]
         public void T04_Register_Singleton()
         {
-            var container = new Container(log: Write);
+            var container = new Container(logAction: Write);
             container.RegisterSingleton<IFoo, Foo>();
             Assert.Throws<TypeAccessException>(() => container.Resolve<Foo>()).WriteMessageTo(Write);
             container.RegisterSingleton<Foo>();

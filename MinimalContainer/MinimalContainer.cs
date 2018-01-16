@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -10,15 +8,6 @@ using System.Text;
 
 namespace MinimalContainer
 {
-    /// <summary>
-    /// The container can create instances of types using public and internal constructors. 
-    /// In case a type has more than one constructor, indicate the constructor to be used with the ContainerConstructor attribute.
-    /// Otherwise, the constructor with the smallest number of arguments is selected.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Constructor)]
-    public sealed class ContainerConstructor : Attribute { }
-
-
     public enum DefaultLifestyle { Undefined, Transient, Singleton }
     internal enum Lifestyle { Undefined, Transient, Singleton, Instance, Factory }
 
@@ -35,23 +24,23 @@ namespace MinimalContainer
 
     public sealed class Container : IDisposable
     {
-        private readonly DefaultLifestyle defaultLifestyle;
-        private readonly Lazy<List<TypeInfo>> allTypesConcrete;
-        private readonly Dictionary<Type, Registration> registrations = new Dictionary<Type, Registration>();
-        private readonly Stack<TypeInfo> typeStack = new Stack<TypeInfo>();
-        private readonly Action<string> log;
+        private readonly DefaultLifestyle DefaultLifestyle;
+        private readonly Lazy<List<TypeInfo>> AllTypesConcrete;
+        private readonly Dictionary<Type, Registration> Registrations = new Dictionary<Type, Registration>();
+        private readonly Stack<TypeInfo> TypeStack = new Stack<TypeInfo>();
+        private readonly Action<string> LogAction;
 
-        public Container(DefaultLifestyle defaultLifestyle = DefaultLifestyle.Undefined, Action<string> log = null, params Assembly[] assemblies)
+        public Container(DefaultLifestyle defaultLifestyle = DefaultLifestyle.Undefined, Action<string> logAction = null, params Assembly[] assemblies)
         {
-            this.defaultLifestyle = defaultLifestyle;
-            this.log = log;
+            DefaultLifestyle = defaultLifestyle;
+            LogAction = logAction;
             Log("Creating Container.");
 
             var assemblyList = assemblies.ToList();
             if (!assemblyList.Any())
                 assemblyList.Add(Assembly.GetCallingAssembly());
 
-            allTypesConcrete = new Lazy<List<TypeInfo>>(() => assemblyList
+            AllTypesConcrete = new Lazy<List<TypeInfo>>(() => assemblyList
                 .Select(a => a.DefinedTypes.Where(t => t.IsClass && !t.IsAbstract && !t.IsInterface))
                 .SelectMany(x => x)
                 .ToList());
@@ -75,6 +64,7 @@ namespace MinimalContainer
         {
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
+
             var reg = AddRegistration(type.GetTypeInfo());
             reg.TypeConcrete = typeConcrete?.GetTypeInfo();
             reg.Lifestyle = lifestyle;
@@ -103,7 +93,7 @@ namespace MinimalContainer
             var reg = new Registration { Type = type };
             try
             {
-                registrations.Add(type.AsType(), reg);
+                Registrations.Add(type.AsType(), reg);
             }
             catch (ArgumentException ex)
             {
@@ -129,9 +119,9 @@ namespace MinimalContainer
             }
             catch (TypeAccessException ex)
             {
-                if (!typeStack.Any())
-                    typeStack.Push(type.GetTypeInfo());
-                var typePath = typeStack.Select(t => t.AsString()).JoinStrings("->");
+                if (!TypeStack.Any())
+                    TypeStack.Push(type.GetTypeInfo());
+                var typePath = TypeStack.Select(t => t.AsString()).JoinStrings("->");
                 throw new TypeAccessException($"Could not get instance of type {typePath}. {ex.Message}", ex);
             }
         }
@@ -154,21 +144,21 @@ namespace MinimalContainer
             // local function
             void GetOrAddRegistration()
             {
-                if (registrations.TryGetValue(type, out reg))
+                if (Registrations.TryGetValue(type, out reg))
                     return;
                 var typeInfo = type.GetTypeInfo();
                 if (typeInfo.GetFuncArgumentType(out TypeInfo funcType))
                 {
                     isFunc = true;
                     typeInfo = funcType;
-                    if (registrations.TryGetValue(typeInfo.AsType(), out reg))
+                    if (Registrations.TryGetValue(typeInfo.AsType(), out reg))
                     {
                         if (reg.Lifestyle == Lifestyle.Singleton || reg.Lifestyle == Lifestyle.Instance)
                             throw new TypeAccessException($"Func argument type '{typeInfo.AsString()}' must be Transient or Factory.");
                         return;
                     }
                 }
-                if (defaultLifestyle == DefaultLifestyle.Undefined && !typeInfo.IsEnumerable())
+                if (DefaultLifestyle == DefaultLifestyle.Undefined && !typeInfo.IsEnumerable())
                     throw new TypeAccessException($"Cannot resolve unregistered type '{typeInfo.AsString()}'.");
                 reg = AddRegistration(typeInfo);
                 if (isFunc)
@@ -180,48 +170,49 @@ namespace MinimalContainer
         {
             if (dependent == null)
             {
-                typeStack.Clear();
+                TypeStack.Clear();
                 Log(() => $"Getting instance of type: '{reg.Type.AsString()}'.");
             }
             else if (reg.Lifestyle == Lifestyle.Undefined && (dependent?.Lifestyle == Lifestyle.Singleton || dependent?.Lifestyle == Lifestyle.Instance))
                 reg.Lifestyle = Lifestyle.Singleton;
 
-            typeStack.Push(reg.Type);
-            if (typeStack.Count(t => t.Equals(reg.Type)) != 1)
+            TypeStack.Push(reg.Type);
+            if (TypeStack.Count(t => t.Equals(reg.Type)) != 1)
                 throw new TypeAccessException("Recursive dependency.");
 
-            InitializeTypes(reg);
+            InitializeTypes();
 
             if ((dependent?.Lifestyle == Lifestyle.Singleton || dependent?.Lifestyle == Lifestyle.Instance)
                 && (reg.Lifestyle == Lifestyle.Transient || reg.Lifestyle == Lifestyle.Factory) && !isFunc)
                 throw new TypeAccessException($"Captive dependency: the singleton '{dependent.Type.AsString()}' depends on transient '{reg.Type.AsString()}'.");
 
-            typeStack.Pop();
-        }
+            TypeStack.Pop();
 
-        private void InitializeTypes(Registration reg)
-        {
-            if (reg.Type.IsEnumerable())
-                InitializeList(reg);
-            else
-                InitializeType(reg);
-
-            if (reg.Lifestyle == Lifestyle.Undefined)
-                reg.Lifestyle = (defaultLifestyle == DefaultLifestyle.Singleton)
-                    ? Lifestyle.Singleton : Lifestyle.Transient;
-
-            if (reg.Lifestyle == Lifestyle.Singleton)
+            // local function
+            void InitializeTypes()
             {
-                var instance = reg.Factory();
-                reg.Factory = () => instance;
-                reg.Expression = Expression.Constant(instance);
+                if (reg.Type.IsEnumerable())
+                    InitializeList(reg);
+                else
+                    InitializeType(reg);
+
+                if (reg.Lifestyle == Lifestyle.Undefined)
+                    reg.Lifestyle = (DefaultLifestyle == DefaultLifestyle.Singleton)
+                        ? Lifestyle.Singleton : Lifestyle.Transient;
+
+                if (reg.Lifestyle == Lifestyle.Singleton)
+                {
+                    var instance = reg.Factory();
+                    reg.Factory = () => instance;
+                    reg.Expression = Expression.Constant(instance);
+                }
             }
         }
 
         private void InitializeType(Registration reg)
         {
             if (reg.TypeConcrete == null)
-                reg.TypeConcrete = allTypesConcrete.Value.FindConcreteType(reg.Type);
+                reg.TypeConcrete = AllTypesConcrete.Value.FindConcreteType(reg.Type);
 
             var ctor = reg.TypeConcrete.GetConstructor();
 
@@ -236,13 +227,11 @@ namespace MinimalContainer
             // local function
             Expression GetValueOfParameter(ParameterInfo p)
             {
-
                 var type = p.ParameterType;
                 if (type.IsByRef) 
                 {
-                    var readOnly= p.GetCustomAttributes().Any(x => x.ToString().EndsWith("IsReadOnlyAttribute"));
-                    if (!readOnly)
-                        throw new TypeAccessException($"Invalid ref or out type '{type.Name}'.");
+                    if (!p.GetCustomAttributes().Any(x => x.ToString().EndsWith("IsReadOnlyAttribute")))
+                        throw new TypeAccessException($"Invalid ref or out parameter type '{type.Name}'.");
                     type = type.GetElementType(); // support 'In' parameter type only
                 }
 
@@ -256,56 +245,55 @@ namespace MinimalContainer
         private void InitializeList(Registration reg)
         {
             var genericType = reg.Type.GenericTypeArguments.Single().GetTypeInfo();
-            var assignableTypes = (defaultLifestyle == DefaultLifestyle.Undefined
-                ? registrations.Values.Select(r => r.Type) : allTypesConcrete.Value)
+
+            var assignableTypes = (DefaultLifestyle == DefaultLifestyle.Undefined
+                ? Registrations.Values.Select(r => r.Type) : AllTypesConcrete.Value)
                 .Where(t => genericType.IsAssignableFrom(t)).ToList();
+
             if (!assignableTypes.Any())
                 throw new TypeAccessException($"No types found assignable to generic type '{genericType.AsString()}'.");
+
             if (assignableTypes.Any(IsTransientRegistration))
             {
                 if (reg.Lifestyle == Lifestyle.Singleton || reg.Lifestyle == Lifestyle.Instance)
                     throw new TypeAccessException($"Captive dependency: the singleton list '{reg.Type.AsString()}' depends on one of more transient items.");
                 reg.Lifestyle = Lifestyle.Transient;
             }
+
             var expressions = assignableTypes.Select(t => GetOrAddExpression(t.AsType(), reg)).ToList();
             Log($"Constructing list of {expressions.Count} types assignable to '{genericType.AsString()}'.");
             reg.Expression = Expression.NewArrayInit(genericType.AsType(), expressions);
             reg.Factory = Expression.Lambda<Func<object>>(reg.Expression).Compile();
-        }
 
-        private bool IsTransientRegistration(TypeInfo type)
-            => (registrations.TryGetValue(type.AsType(), out Registration reg) ||
-                (type.GetFuncArgumentType(out TypeInfo funcType) && registrations.TryGetValue(funcType.AsType(), out reg)))
-                && (reg.Lifestyle == Lifestyle.Transient || reg.Lifestyle == Lifestyle.Factory);
+            // local function
+            bool IsTransientRegistration(TypeInfo type) =>
+                (Registrations.TryGetValue(type.AsType(), out Registration r) ||
+                (type.GetFuncArgumentType(out TypeInfo funcType) && Registrations.TryGetValue(funcType.AsType(), out r))) &&
+                (r.Lifestyle == Lifestyle.Transient || r.Lifestyle == Lifestyle.Factory);
+        }
 
         //////////////////////////////////////////////////////////////////////////////
 
         public override string ToString()
         {
-            var reg = registrations.Values.ToList();
+            var reg = Registrations.Values.ToList();
+
             return new StringBuilder()
-                .AppendLine($"Container: {defaultLifestyle}, {reg.Count} registered types:")
+                .AppendLine($"Container: {DefaultLifestyle}, {reg.Count} registered types:")
                 .AppendLine(reg.Select(x => x.ToString()).JoinStrings(Environment.NewLine))
                 .ToString();
         }
 
+        private void Log(Func<string> message) => Log(message?.Invoke());
+        private void Log(string s) => (LogAction != null && !string.IsNullOrEmpty(s)).Then(() => LogAction(s));
         public void Log() => Log(ToString());
-        private void Log(string message) => Log(() => message);
-        private void Log(Func<string> message)
-        {
-            if (log == null)
-                return;
-            var msg = message?.Invoke();
-            if (!string.IsNullOrEmpty(msg))
-                log(msg);
-        }
 
         /// <summary>
         /// Disposing the container disposes any registered disposable singletons and instances.
         /// </summary>
         public void Dispose()
         {
-            foreach (var disposable in registrations.Values
+            foreach (var disposable in Registrations.Values
                 .Where(r => r.Lifestyle == Lifestyle.Singleton || r.Lifestyle == Lifestyle.Instance)
                 .Where(r => r.Factory != null)
                 .Select(r => r.Factory())
@@ -315,7 +303,8 @@ namespace MinimalContainer
                 Log($"Disposing type '{disposable.GetType().AsString()}'.");
                 disposable.Dispose();
             }
-            registrations.Clear();
+
+            Registrations.Clear();
             Log("Container disposed.");
         }
     }

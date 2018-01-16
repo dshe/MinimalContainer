@@ -39,7 +39,7 @@ namespace MinimalContainer.Tests.Relative
         [Fact]
         public void T03_Registration_Concrete_Multiple()
         {
-            var container = new Container(log: Write);
+            var container = new Container(logAction: Write);
             container.RegisterSingleton<IMarker1, ClassA>();
             container.Resolve<IMarker1>();
             Assert.Throws<TypeAccessException>(() => container.Resolve<ClassA>()).WriteMessageTo(Write);

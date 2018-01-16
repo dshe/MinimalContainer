@@ -23,7 +23,7 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T01_Generic()
         {
-            var container = new Container(log: Write);
+            var container = new Container(logAction: Write);
             container.RegisterSingleton<Bar2>();
             container.RegisterSingleton<Bar1<Bar2>>();
             container.RegisterSingleton<Foo>();
@@ -34,7 +34,7 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T02_Generic_Auto()
         {
-            var container = new Container(log: Write, defaultLifestyle:DefaultLifestyle.Singleton);
+            var container = new Container(logAction: Write, defaultLifestyle:DefaultLifestyle.Singleton);
             container.Resolve<Foo>();
             Write(Environment.NewLine + container);
         }

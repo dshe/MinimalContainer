@@ -16,7 +16,7 @@ namespace MinimalContainer.Tests.Lifestyle
         [Fact]
         public void T01_Concrete()
         {
-            var container = new Container(log: Write);
+            var container = new Container(logAction: Write);
             var instance = new Foo();
             container.RegisterInstance(instance);
             var instance1 = container.Resolve<Foo>();
@@ -30,7 +30,7 @@ namespace MinimalContainer.Tests.Lifestyle
         [Fact]
         public void T02_Interface()
         {
-            var container = new Container(log: Write);
+            var container = new Container(logAction: Write);
             var instance = new Foo();
             container.RegisterInstance<IFoo>(instance);
             var instance1 = container.Resolve<IFoo>();

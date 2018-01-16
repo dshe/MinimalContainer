@@ -18,7 +18,7 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T01_Unregistered()
         {
-            var container = new Container(log: Write);
+            var container = new Container(logAction: Write);
             Assert.Throws<TypeAccessException>(() => container.Resolve<Foo>());
             Assert.Throws<TypeAccessException>(() => container.Resolve<Bar>());
             Assert.Throws<TypeAccessException>(() => container.Resolve<IBar>());
