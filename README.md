@@ -7,7 +7,7 @@
 - injection of instances, type factories and collections
 - transient and singleton lifestyles
 - captive and recursive dependency detection
-- C# 7.2 source supporting **.NET Standard 2.0**
+- C# 7 source supporting **.NET Standard 2.0**
 - fluent interface
 - tested
 - fast
