@@ -15,12 +15,13 @@
 public class Container : IDisposable
 {
     public Container(...);
-    public Container RegisterTransient(...);
-    public Container RegisterSingleton(...);
-    public Container RegisterInstance(...);
-    public Container RegisterFactory(...);
+    public Container RegisterTransient<T>();
+    public Container RegisterSingleton<T>();
+    public Container RegisterInstance(t);
+    public Container RegisterFactory(() => t);
     public T Resolve<T>();
-    public void Log(...);
+    public void Log();
+    public string ToString();
     public void Dispose();
 }
 ```
