@@ -11,7 +11,7 @@
 - fluent interface
 - tested
 - fast
-
+```csharp
 public class Container : IDisposable
 {
     public Container(...);
@@ -19,11 +19,11 @@ public class Container : IDisposable
     public Container RegisterSingleton(...);
     public Container RegisterInstance(...);
     public Container RegisterFactory(...);
-    public T Resolve<T>(...);
+    public T Resolve<T>();
     public void Log(...);
     public void Dispose();
 }
-
+```
 #### example
 ```csharp
 public interface IFoo {}
