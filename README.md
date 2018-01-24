@@ -53,6 +53,7 @@ container.RegisterFactory<IFoo>(() => new Foo());
 #### type resolution
 ```csharp
 T instance = container.Resolve<T>();
+T instance = container.Resolve(typeof(T));
 ```
 #### resolution of assignable types
 ```csharp
