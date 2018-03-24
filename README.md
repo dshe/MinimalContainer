@@ -7,11 +7,24 @@
 - injection of instances, type factories and collections
 - transient and singleton lifestyles
 - captive and recursive dependency detection
-- C# 7 source supporting **.NET Standard 2.0**
+- supports **.NET Standard 2.0**
 - fluent interface
 - tested
 - fast
-
+```csharp
+public class Container : IDisposable
+{
+    public Container(...);
+    public Container RegisterTransient<T>();
+    public Container RegisterSingleton<T>();
+    public Container RegisterInstance(t);
+    public Container RegisterFactory(() => t);
+    public T Resolve<T>();
+    public void Log();
+    public string ToString();
+    public void Dispose();
+}
+```
 #### example
 ```csharp
 public interface IFoo {}
@@ -41,6 +54,7 @@ container.RegisterFactory<IFoo>(() => new Foo());
 #### type resolution
 ```csharp
 T instance = container.Resolve<T>();
+T instance = container.Resolve(typeof(T));
 ```
 #### resolution of assignable types
 ```csharp
