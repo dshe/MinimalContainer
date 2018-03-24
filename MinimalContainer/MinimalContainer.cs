@@ -18,6 +18,12 @@ namespace MinimalContainer
         internal Func<object> Factory;
         internal Expression Expression;
         internal Delegate FuncDelegate;
+        internal Registration(TypeInfo type)
+        {
+                if (type.AsType() == typeof(string) || (!type.IsClass && !type.IsInterface))
+                    throw new TypeAccessException("Type is neither a class nor an interface.");
+                Type = type;
+        }
         public override string ToString() =>
             $"{(TypeConcrete == null || Equals(TypeConcrete, Type) ? "" : TypeConcrete.AsString() + "->")}{Type.AsString()}, {Lifestyle}.";
     }
@@ -88,18 +94,16 @@ namespace MinimalContainer
 
         private Registration AddRegistration(TypeInfo type)
         {
-            if (type.AsType() == typeof(string) || (!type.IsClass && !type.IsInterface))
-                throw new TypeAccessException("Type is neither a class nor an interface.");
-            var reg = new Registration { Type = type };
             try
             {
+                var reg = new Registration(type);
                 Registrations.Add(type.AsType(), reg);
+                return reg;
             }
             catch (ArgumentException ex)
             {
                 throw new TypeAccessException($"Type '{type.AsString()}' is already registered.", ex);
             }
-            return reg;
         }
 
         //////////////////////////////////////////////////////////////////////////////
@@ -276,11 +280,11 @@ namespace MinimalContainer
 
         public override string ToString()
         {
-            var reg = Registrations.Values.ToList();
+            var regs = Registrations.Values.Select(r => r.ToString()).ToList();
 
             return new StringBuilder()
-                .AppendLine($"Container: {DefaultLifestyle}, {reg.Count} registered types:")
-                .AppendLine(reg.Select(x => x.ToString()).JoinStrings(Environment.NewLine))
+                .AppendLine($"Container: {DefaultLifestyle}, {regs.Count} registered types:")
+                .AppendLine(regs.JoinStrings(Environment.NewLine))
                 .ToString();
         }
 
