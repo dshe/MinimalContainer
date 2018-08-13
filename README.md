@@ -8,6 +8,7 @@
 - transient and singleton lifestyles
 - captive and recursive dependency detection
 - supports **.NET Standard 2.0**
+- no dependencies
 - fluent interface
 - tested
 - fast
