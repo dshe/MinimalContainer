@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
+#nullable enable
+
 namespace MinimalContainer
 {
     /// <summary>
@@ -18,8 +20,6 @@ namespace MinimalContainer
     {
         internal static TypeInfo FindConcreteType(this List<TypeInfo> allTypesConcrete, TypeInfo type)
         {
-            if (type == null)
-                throw new ArgumentNullException(nameof(type));
             if (!type.IsAbstract && !type.IsInterface)
                 return type;
             // When a non-concrete type is indicated, the concrete type is determined automatically.
@@ -31,10 +31,8 @@ namespace MinimalContainer
             throw new TypeAccessException($"{assignableTypes.Count} concrete types found assignable to '{type.AsString()}': {types}.");
         }
 
-        internal static bool GetFuncArgumentType(this TypeInfo type, out TypeInfo funcType)
+        internal static bool GetFuncArgumentType(this TypeInfo type, out TypeInfo? funcType)
         {
-            if (type == null)
-                throw new ArgumentNullException(nameof(type));
             if (type.IsGenericType && !type.IsGenericTypeDefinition &&
                 typeof(Delegate).GetTypeInfo().IsAssignableFrom(type.BaseType?.GetTypeInfo()))
             {
@@ -47,9 +45,6 @@ namespace MinimalContainer
 
         internal static ConstructorInfo GetConstructor(this TypeInfo type)
         {
-            if (type == null)
-                throw new ArgumentNullException(nameof(type));
-
             var ctors = type.DeclaredConstructors.Where(c => !c.IsPrivate).ToList();
             if (ctors.Count == 1)
                 return ctors.Single();
@@ -72,8 +67,6 @@ namespace MinimalContainer
         internal static string AsString(this Type type) => type.GetTypeInfo().AsString();
         internal static string AsString(this TypeInfo type)
         {
-            if (type == null)
-                throw new ArgumentNullException(nameof(type));
             var name = type.Name;
             if (type.IsGenericParameter || !type.IsGenericType)
                 return name;
@@ -88,7 +81,7 @@ namespace MinimalContainer
 
         public static void Then(this bool b, Action action)
         {
-            if (b) action();
+             if (b) action();
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Diagnostics;
 /*
  1.0
  */
+#nullable enable
 
 namespace MinimalContainer.Tests.Utility
 {

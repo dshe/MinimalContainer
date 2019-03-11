@@ -58,7 +58,7 @@ namespace MinimalContainer.Tests.Constructor
 
         public class Class4
         {
-            public Class4(Class0 c0 = null) { }
+            public Class4(Class0 c0) { }
         }
         [Fact]
         public void T04_Ref_Type_Default()
@@ -78,7 +78,7 @@ namespace MinimalContainer.Tests.Constructor
 
         public class Class6
         {
-            public Class6(out Class0 c0) { c0 = null; }
+            public Class6(out Class0? c0) { c0 = null; }
         }
         [Fact]
         public void T06_Ref_Type_Out()

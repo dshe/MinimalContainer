@@ -19,12 +19,10 @@ namespace MinimalContainer.Tests.Other
         public void T00_Various_types()
         {
             var container = new Container(logAction: Write);
-            Assert.Throws<ArgumentNullException>(() => container.RegisterSingleton(null)).WriteMessageTo(Write);
             Assert.Throws<ArgumentNullException>(() => container.RegisterInstance(typeof(object), null)).WriteMessageTo(Write);
             Assert.Throws<TypeAccessException>(() => container.RegisterSingleton(typeof(int))).WriteMessageTo(Write);
             Assert.Throws<TypeAccessException>(() => container.RegisterSingleton(typeof(string))).WriteMessageTo(Write);
             Assert.Throws<TypeAccessException>(() => container.RegisterInstance(42)).WriteMessageTo(Write);
-            Assert.Throws<ArgumentNullException>(() => container.Resolve(null)).WriteMessageTo(Write);
         }
 
         [Fact]

@@ -1,4 +1,6 @@
-﻿namespace MinimalContainer.Tests.Examples
+﻿#nullable enable
+
+namespace MinimalContainer.Tests.Examples
 {
     public class Example1
     {

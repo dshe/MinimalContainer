@@ -1,31 +1,35 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Description>A simple and portable single file IoC (Inversion of Control) container which supports .NET Standard 2.0.</Description>
+    <Description>A simple and portable single file IoC (Inversion of Control) container supporting .NET Standard 2.0.</Description>
     <Company>DavidS</Company>
     <PackageProjectUrl>https://github.com/dshe/StandardContainer</PackageProjectUrl>
     <Authors>DavidS</Authors>
-    <Copyright>Copyright 2017 (c) DavidS.</Copyright>
+    <Copyright></Copyright>
     <PackageTags>IoC container inversion of control dependency injection portable netstandard  netcore source code</PackageTags>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageIconUrl>https://github.com/dshe.png</PackageIconUrl>
-    <RepositoryUrl>https://github.com/dshe/StandardContainer</RepositoryUrl>
-    <Version>2.13</Version>
-    <AssemblyVersion>2.1.0.0</AssemblyVersion>
-    <FileVersion>2.1.0.0</FileVersion>
-    <PackageLicenseUrl>https://opensource.org/licenses/Apache-2.0</PackageLicenseUrl>
+    <RepositoryUrl></RepositoryUrl>
+    <Version>2.50</Version>
+    <AssemblyVersion>2.5.0.0</AssemblyVersion>
+    <FileVersion>2.5.0.0</FileVersion>
+    <PackageLicenseUrl></PackageLicenseUrl>
     <PackageReleaseNotes></PackageReleaseNotes>
     <SignAssembly>False</SignAssembly>
     <AssemblyOriginatorKeyFile>TangentKeyPair.snk</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <LangVersion>latest</LangVersion>
+    <LangVersion>8</LangVersion>
+    <NullableContextOptions>enable</NullableContextOptions>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <LangVersion>latest</LangVersion>
+    <LangVersion>8</LangVersion>
+    <NullableContextOptions>enable</NullableContextOptions>
   </PropertyGroup>
 </Project>

@@ -1,5 +1,7 @@
 ﻿using System;
 
+#nullable enable
+
 namespace MinimalContainer.Tests.Utility
 {
     public static class Extensions

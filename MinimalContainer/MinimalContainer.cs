@@ -6,6 +6,8 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 
+#nullable enable
+
 namespace MinimalContainer
 {
     public enum DefaultLifestyle { Undefined, Transient, Singleton }
@@ -13,11 +15,12 @@ namespace MinimalContainer
 
     internal sealed class Registration
     {
-        internal TypeInfo Type, TypeConcrete;
+        internal TypeInfo Type;
+        internal TypeInfo? TypeConcrete;
         internal Lifestyle Lifestyle;
-        internal Func<object> Factory;
-        internal Expression Expression;
-        internal Delegate FuncDelegate;
+        internal Func<object>? Factory;
+        internal Expression? Expression;
+        internal Delegate? FuncDelegate;
         internal Registration(TypeInfo type)
         {
                 if (type.AsType() == typeof(string) || (!type.IsClass && !type.IsInterface))
@@ -34,9 +37,9 @@ namespace MinimalContainer
         private readonly Lazy<List<TypeInfo>> AllTypesConcrete;
         private readonly Dictionary<Type, Registration> Registrations = new Dictionary<Type, Registration>();
         private readonly Stack<TypeInfo> TypeStack = new Stack<TypeInfo>();
-        private readonly Action<string> LogAction;
+        private readonly Action<string>? LogAction;
 
-        public Container(DefaultLifestyle defaultLifestyle = DefaultLifestyle.Undefined, Action<string> logAction = null, params Assembly[] assemblies)
+        public Container(DefaultLifestyle defaultLifestyle = DefaultLifestyle.Undefined, Action<string>? logAction = null, params Assembly[] assemblies)
         {
             DefaultLifestyle = defaultLifestyle;
             LogAction = logAction;
@@ -54,23 +57,20 @@ namespace MinimalContainer
 
         public Container RegisterTransient<T>() => RegisterTransient(typeof(T));
         public Container RegisterTransient<T, TConcrete>() where TConcrete : T => RegisterTransient(typeof(T), typeof(TConcrete));
-        public Container RegisterTransient(Type type, Type typeConcrete = null) => Register(type, typeConcrete, Lifestyle.Transient);
+        public Container RegisterTransient(Type type, Type? typeConcrete = null) => Register(type, typeConcrete, Lifestyle.Transient);
 
         public Container RegisterSingleton<T>() => RegisterSingleton(typeof(T));
         public Container RegisterSingleton<T, TConcrete>() where TConcrete : T => RegisterSingleton(typeof(T), typeof(TConcrete));
-        public Container RegisterSingleton(Type type, Type typeConcrete = null) => Register(type, typeConcrete, Lifestyle.Singleton);
+        public Container RegisterSingleton(Type type, Type? typeConcrete = null) => Register(type, typeConcrete, Lifestyle.Singleton);
 
         public Container RegisterInstance<T>(T instance) => RegisterInstance(typeof(T), instance);
-        public Container RegisterInstance(Type type, object instance) => Register(type, null, Lifestyle.Instance, instance);
+        public Container RegisterInstance(Type type, object? instance) => Register(type, null, Lifestyle.Instance, instance);
 
         public Container RegisterFactory<T>(Func<T> factory) where T : class => RegisterFactory(typeof(T), factory);
         public Container RegisterFactory(Type type, Func<object> factory) => Register(type, null, Lifestyle.Factory, null, factory);
 
-        private Container Register(Type type, Type typeConcrete, Lifestyle lifestyle, object instance = null, Func<object> factory = null, [CallerMemberName] string caller = null)
+        private Container Register(Type type, Type? typeConcrete, Lifestyle lifestyle, object? instance = null, Func<object>? factory = null, [CallerMemberName] string? caller = null)
         {
-            if (type == null)
-                throw new ArgumentNullException(nameof(type));
-
             var reg = AddRegistration(type.GetTypeInfo());
             reg.TypeConcrete = typeConcrete?.GetTypeInfo();
             reg.Lifestyle = lifestyle;
@@ -78,12 +78,15 @@ namespace MinimalContainer
             {
                 if (instance == null)
                     throw new ArgumentNullException(nameof(instance));
-                reg.Factory = () => instance;
+                object notNullInstance = instance;
+                reg.Factory = () => notNullInstance;
                 reg.Expression = Expression.Constant(instance);
             }
             else if (lifestyle == Lifestyle.Factory)
             {
-                reg.Factory = factory ?? throw new ArgumentNullException(nameof(factory));
+                if (factory == null)
+                    throw new ArgumentNullException(nameof(factory));
+                reg.Factory = factory;
                 reg.Expression = Expression.Call(Expression.Constant(factory.Target), factory.GetMethodInfo());
             }
             Log(() => $"{caller}: {reg}");
@@ -112,13 +115,14 @@ namespace MinimalContainer
 
         public object Resolve(in Type type)
         {
-            if (type == null)
-                throw new ArgumentNullException(nameof(type));
             try
             {
                 (Registration reg, bool isFunc) = GetOrAddInitializeRegistration(type, null);
                 if (!isFunc)
-                    return reg.Factory();
+                {
+                    var factory = reg.Factory ?? throw new Exception("Factory is null.");
+                    return factory();
+                }
                 return reg.FuncDelegate ?? (reg.FuncDelegate = Expression.Lambda(reg.Expression).Compile());
             }
             catch (TypeAccessException ex)
@@ -133,10 +137,11 @@ namespace MinimalContainer
         private Expression GetOrAddExpression(in Type type, in Registration dependent)
         {
             (Registration reg, bool isFunc) = GetOrAddInitializeRegistration(type, dependent);
-            return isFunc ? Expression.Lambda(reg.Expression) : reg.Expression;
+            var expression = reg.Expression ?? throw new Exception("Expression is null.");
+            return isFunc ? Expression.Lambda(expression) : expression;
         }
 
-        private (Registration reg, bool isFunc) GetOrAddInitializeRegistration(Type type, in Registration dependent)
+        private (Registration reg, bool isFunc) GetOrAddInitializeRegistration(Type type, in Registration? dependent)
         {
             Registration reg;
             bool isFunc = false;
@@ -150,11 +155,11 @@ namespace MinimalContainer
             {
                 if (Registrations.TryGetValue(type, out reg))
                     return;
-                var typeInfo = type.GetTypeInfo();
-                if (typeInfo.GetFuncArgumentType(out TypeInfo funcType))
+                TypeInfo typeInfo = type.GetTypeInfo();
+                if (typeInfo.GetFuncArgumentType(out TypeInfo? funcType))
                 {
                     isFunc = true;
-                    typeInfo = funcType;
+                    typeInfo = funcType ?? throw new NullReferenceException();
                     if (Registrations.TryGetValue(typeInfo.AsType(), out reg))
                     {
                         if (reg.Lifestyle == Lifestyle.Singleton || reg.Lifestyle == Lifestyle.Instance)
@@ -170,7 +175,7 @@ namespace MinimalContainer
             }
         }
 
-        private void Initialize(Registration reg, Registration dependent, bool isFunc)
+        private void Initialize(Registration reg, Registration? dependent, bool isFunc)
         {
             if (dependent == null)
             {
@@ -188,7 +193,7 @@ namespace MinimalContainer
 
             if ((dependent?.Lifestyle == Lifestyle.Singleton || dependent?.Lifestyle == Lifestyle.Instance)
                 && (reg.Lifestyle == Lifestyle.Transient || reg.Lifestyle == Lifestyle.Factory) && !isFunc)
-                throw new TypeAccessException($"Captive dependency: the singleton '{dependent.Type.AsString()}' depends on transient '{reg.Type.AsString()}'.");
+                throw new TypeAccessException($"Captive dependency: the singleton '{dependent?.Type.AsString()}' depends on transient '{reg.Type.AsString()}'.");
 
             TypeStack.Pop();
 
@@ -206,6 +211,8 @@ namespace MinimalContainer
 
                 if (reg.Lifestyle == Lifestyle.Singleton)
                 {
+                    if (reg.Factory == null)
+                        throw new Exception("Factory is null.");
                     var instance = reg.Factory();
                     reg.Factory = () => instance;
                     reg.Expression = Expression.Constant(instance);
@@ -272,7 +279,7 @@ namespace MinimalContainer
             // local function
             bool IsTransientRegistration(TypeInfo type) =>
                 (Registrations.TryGetValue(type.AsType(), out Registration r) ||
-                (type.GetFuncArgumentType(out TypeInfo funcType) && Registrations.TryGetValue(funcType.AsType(), out r))) &&
+                (type.GetFuncArgumentType(out TypeInfo? funcType) && funcType != null && Registrations.TryGetValue(funcType.AsType(), out r))) &&
                 (r.Lifestyle == Lifestyle.Transient || r.Lifestyle == Lifestyle.Factory);
         }
 
@@ -289,7 +296,11 @@ namespace MinimalContainer
         }
 
         private void Log(Func<string> message) => Log(message?.Invoke());
-        private void Log(string s) => (LogAction != null && !string.IsNullOrEmpty(s)).Then(() => LogAction(s));
+        private void Log(string s)
+        {
+           if (LogAction != null && !string.IsNullOrEmpty(s))
+                LogAction(s);
+        }
         public void Log() => Log(ToString());
 
         /// <summary>
@@ -299,8 +310,10 @@ namespace MinimalContainer
         {
             foreach (var disposable in Registrations.Values
                 .Where(r => r.Lifestyle == Lifestyle.Singleton || r.Lifestyle == Lifestyle.Instance)
-                .Where(r => r.Factory != null)
-                .Select(r => r.Factory())
+                .Select(r => r.Factory)
+                .Where(f => f != null)
+                .Select(f => new Func<object>(f))
+                .Select(f => f())
                 .Where(i => i != null && i != this)
                 .OfType<IDisposable>())
             {

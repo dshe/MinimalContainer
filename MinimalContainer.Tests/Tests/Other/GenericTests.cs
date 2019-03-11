@@ -109,7 +109,6 @@ namespace MinimalContainer.Tests.Other
         {
             var container = new Container(DefaultLifestyle.Singleton, Write);
             var b = container.Resolve<ObsConcrete>();
-            Assert.Throws<NotImplementedException>(() => b.Subscribe(null));
 
             var x = container.Resolve<Test>();
             Write(Environment.NewLine + container);
