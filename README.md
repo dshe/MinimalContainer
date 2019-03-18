@@ -1,8 +1,4 @@
-## MinimalContainer&nbsp;&nbsp;
-[![Build status](https://ci.appveyor.com/api/projects/status/xig5mmbk9lqus99h?svg=true)](https://ci.appveyor.com/project/dshe/StandardContainer)
-[![NuGet](https://img.shields.io/nuget/vpre/StandardContainer.svg)](https://www.nuget.org/packages/StandardContainer/)
-[![License](https://img.shields.io/badge/license-Apache%202.0-7755BB.svg)](https://opensource.org/licenses/Apache-2.0)
-
+## MinimalContainer&nbsp;&nbsp;[![Build status](https://ci.appveyor.com/api/projects/status/xig5mmbk9lqus99h?svg=true)](https://ci.appveyor.com/project/dshe/StandardContainer)[![NuGet](https://img.shields.io/nuget/vpre/StandardContainer.svg)](https://www.nuget.org/packages/StandardContainer/)[![License](https://img.shields.io/badge/license-Apache%202.0-7755BB.svg)](https://opensource.org/licenses/Apache-2.0)
 ***A minimal IoC (Inversion of Control) container.***
 - automatic and/or explicit type registration
 - public and **internal** constructor injection
