@@ -1,5 +1,7 @@
 ﻿#nullable enable
 
+using Xunit;
+
 namespace MinimalContainer.Tests.Examples
 {
     public class Example1
@@ -7,6 +9,7 @@ namespace MinimalContainer.Tests.Examples
         public interface IFoo {}
         public class Foo : IFoo {}
 
+        [Fact]
         public static void Mainx()
         {
             var container = new Container();

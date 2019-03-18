@@ -3,20 +3,13 @@ using Xunit;
 using Xunit.Abstractions;
 using MinimalContainer.Tests.Utility;
 
-/*             Value Type    Value Type Default        Reference Type    null
- * none        throw         ok                        ok                ok
- * in          throw         ok                        ok                ok
- * ref         throw         -                         throw!            -
- * out         throw         -                         throw!            -
- */
-
 namespace MinimalContainer.Tests.Constructor
 {
     public class ConstructorArgumentTests
     {
         public class Class0 { }
 
-        private Container Container;
+        private readonly Container Container;
         protected readonly Action<string> Write;
         public ConstructorArgumentTests(ITestOutputHelper output)
         {

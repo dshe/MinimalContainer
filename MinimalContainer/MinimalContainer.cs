@@ -23,9 +23,11 @@ namespace MinimalContainer
         internal Delegate? FuncDelegate;
         internal Registration(TypeInfo type)
         {
-                if (type.AsType() == typeof(string) || (!type.IsClass && !type.IsInterface))
-                    throw new TypeAccessException("Type is neither a class nor an interface.");
-                Type = type;
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+            if (type.AsType() == typeof(string) || (!type.IsClass && !type.IsInterface))
+                throw new TypeAccessException("Type is neither a class nor an interface.");
+            Type = type;
         }
         public override string ToString() =>
             $"{(TypeConcrete == null || Equals(TypeConcrete, Type) ? "" : TypeConcrete.AsString() + "->")}{Type.AsString()}, {Lifestyle}.";
@@ -41,6 +43,9 @@ namespace MinimalContainer
 
         public Container(DefaultLifestyle defaultLifestyle = DefaultLifestyle.Undefined, Action<string>? logAction = null, params Assembly[] assemblies)
         {
+            if (assemblies == null)
+                throw new ArgumentNullException(nameof(assemblies));
+
             DefaultLifestyle = defaultLifestyle;
             LogAction = logAction;
             Log("Creating Container.");
@@ -71,6 +76,9 @@ namespace MinimalContainer
 
         private Container Register(Type type, Type? typeConcrete, Lifestyle lifestyle, object? instance = null, Func<object>? factory = null, [CallerMemberName] string? caller = null)
         {
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+
             var reg = AddRegistration(type.GetTypeInfo());
             reg.TypeConcrete = typeConcrete?.GetTypeInfo();
             reg.Lifestyle = lifestyle;
@@ -115,6 +123,8 @@ namespace MinimalContainer
 
         public object Resolve(in Type type)
         {
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
             try
             {
                 (Registration reg, bool isFunc) = GetOrAddInitializeRegistration(type, null);
