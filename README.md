@@ -6,7 +6,7 @@
 - transient and singleton lifestyles
 - captive and recursive dependency detection
 - supports **.NET Standard 2.0**
-- no dependencies
+- dependency: Microsoft.Extensions.Logging.Abstractions
 - fluent interface
 - tested
 - fast
@@ -126,16 +126,18 @@ internal class Root
 }
 ```
 The complete object graph is created by simply resolving the compositional root. 
+#### logging
+```csharp
+using Microsoft.Extensions.Logging;
+...
+var container = new Container(ILoggerFactory:loggerFactory);
+```
+#### diagnosis
+```csharp
+Debug.WriteLine(container.ToString());
+```
 #### disposal
 ```csharp
 container.Dispose();
 ```
 Disposing the container disposes any registered disposable singletons.
-#### logging
-```csharp
-var container = new Container(log:Debug.WriteLine);
-```
-#### diagnostic
-```csharp
-Debug.WriteLine(container.ToString());
-```
