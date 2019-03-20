@@ -5,10 +5,9 @@ using MinimalContainer.Tests.Utility;
 
 namespace MinimalContainer.Tests.Constructor
 {
-    public class ConstructorSelectionTests
+    public class ConstructorSelectionTests : TestBase
     {
-        protected readonly Action<string> Write;
-        public ConstructorSelectionTests(ITestOutputHelper output) => Write = output.WriteLine;
+        public ConstructorSelectionTests(ITestOutputHelper output) : base(output) { }
 
         public class ClassA
         {
@@ -19,7 +18,7 @@ namespace MinimalContainer.Tests.Constructor
         [Fact]
         public void T01_Class_With_Multiple_Constructors()
         {
-            var container = new Container(DefaultLifestyle.Singleton, Write);
+            var container = new Container(DefaultLifestyle.Singleton, LoggerFactory);
             var instance = container.Resolve<ClassA>();
             Assert.True(instance.Ok);
         }
@@ -34,7 +33,7 @@ namespace MinimalContainer.Tests.Constructor
         [Fact]
         public void T02_Class_With_Attribute_Constructor()
         {
-            var container = new Container(DefaultLifestyle.Singleton, Write);
+            var container = new Container(DefaultLifestyle.Singleton, LoggerFactory);
             var instance = container.Resolve<ClassB>();
             Assert.True(instance.Ok);
         }
@@ -49,10 +48,8 @@ namespace MinimalContainer.Tests.Constructor
         [Fact]
         public void T03_Class_With_Multiple_Attributes()
         {
-            var container = new Container(DefaultLifestyle.Singleton, Write);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassC>()).WriteMessageTo(Write);
+            var container = new Container(DefaultLifestyle.Singleton, LoggerFactory);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassC>()).WriteMessageTo(Logger);
         }
-
     }
-
 }

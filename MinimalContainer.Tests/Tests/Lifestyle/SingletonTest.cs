@@ -2,41 +2,42 @@
 using Xunit;
 using Xunit.Abstractions;
 using MinimalContainer.Tests.Utility;
+using Microsoft.Extensions.Logging;
+using Divergic.Logging.Xunit;
 
 namespace MinimalContainer.Tests.Lifestyle
 {
-    public class SingletonTest
+    public class SingletonTest : TestBase
     {
         public interface IFoo { }
         public class Foo : IFoo { }
 
-        private readonly Action<string> Write;
-        public SingletonTest(ITestOutputHelper output) => Write = output.WriteLine;
+        public SingletonTest(ITestOutputHelper output) : base(output) { }
 
         [Fact]
         public void T01_Concrete()
         {
-            var container = new Container(logAction: Write);
+            var container = new Container(loggerFactory: LoggerFactory);
             container.RegisterSingleton<Foo>();
-            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<Foo>()).WriteMessageTo(Write);
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<Foo>()).WriteMessageTo(Logger);
             Assert.Equal(container.Resolve<Foo>(), container.Resolve<Foo>());
-            Assert.Throws<TypeAccessException>(() => container.Resolve<IFoo>()).WriteMessageTo(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<IFoo>()).WriteMessageTo(Logger);
         }
 
         [Fact]
         public void T02_Interface()
         {
-            var container = new Container(logAction: Write);
+            var container = new Container(loggerFactory: LoggerFactory);
             container.RegisterSingleton<IFoo>();
-            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<IFoo>()).WriteMessageTo(Write);
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<IFoo>()).WriteMessageTo(Logger);
             Assert.Equal(container.Resolve<IFoo>(), container.Resolve<IFoo>());
-            Assert.Throws<TypeAccessException>(() => container.Resolve<Foo>()).WriteMessageTo(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<Foo>()).WriteMessageTo(Logger);
         }
 
         [Fact]
         public void T03_Concrete_Interface()
         {
-            var container = new Container(logAction: Write);
+            var container = new Container(loggerFactory: LoggerFactory);
             container.RegisterSingleton<IFoo>();
             container.RegisterSingleton<Foo>();
             Assert.NotEqual(container.Resolve<Foo>(), container.Resolve<IFoo>());
@@ -45,9 +46,9 @@ namespace MinimalContainer.Tests.Lifestyle
         [Fact]
         public void T04_Register_Singleton()
         {
-            var container = new Container(logAction: Write);
+            var container = new Container(loggerFactory: LoggerFactory);
             container.RegisterSingleton<IFoo, Foo>();
-            Assert.Throws<TypeAccessException>(() => container.Resolve<Foo>()).WriteMessageTo(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<Foo>()).WriteMessageTo(Logger);
             container.RegisterSingleton<Foo>();
             Assert.NotEqual(container.Resolve<IFoo>(), container.Resolve<Foo>());
         }
@@ -55,7 +56,7 @@ namespace MinimalContainer.Tests.Lifestyle
         [Fact]
         public void T05_Register_Singleton_Auto()
         {
-            var container = new Container(DefaultLifestyle.Singleton, Write);
+            var container = new Container(DefaultLifestyle.Singleton, loggerFactory: LoggerFactory);
             Assert.NotEqual(container.Resolve<IFoo>(), container.Resolve<Foo>());
         }
 

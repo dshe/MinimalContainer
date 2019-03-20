@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using Xunit;
 using Xunit.Abstractions;
@@ -7,7 +8,7 @@ using MinimalContainer.Tests.Utility;
 namespace MinimalContainer.Tests.Performance
 {
     [Trait("Category", "Performance")]
-    public class TestPerformance
+    public class TestPerformance : TestBase
     {
         public interface IFoo { }
 
@@ -16,14 +17,10 @@ namespace MinimalContainer.Tests.Performance
             public Foo() { }
         }
 
-        private readonly Action<string> Write;
         private readonly Perf perf;
 
-        public TestPerformance(ITestOutputHelper output)
-        {
-            Write = output.WriteLine;
-            perf = new Perf(Write);
-        }
+        public TestPerformance(ITestOutputHelper output) : base(output)
+            => perf = new Perf(Logger);
 
         [Fact]
         public void Test_Performance()

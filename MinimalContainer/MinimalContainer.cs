@@ -5,6 +5,8 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 #nullable enable
 
@@ -39,16 +41,16 @@ namespace MinimalContainer
         private readonly Lazy<List<TypeInfo>> AllTypesConcrete;
         private readonly Dictionary<Type, Registration> Registrations = new Dictionary<Type, Registration>();
         private readonly Stack<TypeInfo> TypeStack = new Stack<TypeInfo>();
-        private readonly Action<string>? LogAction;
+        private readonly ILogger Logger;
 
-        public Container(DefaultLifestyle defaultLifestyle = DefaultLifestyle.Undefined, Action<string>? logAction = null, params Assembly[] assemblies)
+        public Container(DefaultLifestyle defaultLifestyle = DefaultLifestyle.Undefined, ILoggerFactory? loggerFactory = null, params Assembly[] assemblies)
         {
             if (assemblies == null)
                 throw new ArgumentNullException(nameof(assemblies));
 
             DefaultLifestyle = defaultLifestyle;
-            LogAction = logAction;
-            Log("Creating Container.");
+            Logger = loggerFactory?.CreateLogger(GetType().Name) ?? NullLogger.Instance;
+            Logger.LogInformation("Constructing Container.");
 
             var assemblyList = assemblies.ToList();
             if (!assemblyList.Any())
@@ -80,6 +82,7 @@ namespace MinimalContainer
                 throw new ArgumentNullException(nameof(type));
 
             var reg = AddRegistration(type.GetTypeInfo());
+            Logger.LogInformation($"Registering {caller}: {reg},");
             reg.TypeConcrete = typeConcrete?.GetTypeInfo();
             reg.Lifestyle = lifestyle;
             if (lifestyle == Lifestyle.Instance)
@@ -97,7 +100,6 @@ namespace MinimalContainer
                 reg.Factory = factory;
                 reg.Expression = Expression.Call(Expression.Constant(factory.Target), factory.GetMethodInfo());
             }
-            Log(() => $"{caller}: {reg}");
             return this;
         }
 
@@ -190,7 +192,7 @@ namespace MinimalContainer
             if (dependent == null)
             {
                 TypeStack.Clear();
-                Log(() => $"Getting instance of type: '{reg.Type.AsString()}'.");
+                Logger.LogDebug($"Getting instance of type: '{reg.Type.AsString()}'.");
             }
             else if (reg.Lifestyle == Lifestyle.Undefined && (dependent?.Lifestyle == Lifestyle.Singleton || dependent?.Lifestyle == Lifestyle.Instance))
                 reg.Lifestyle = Lifestyle.Singleton;
@@ -241,7 +243,7 @@ namespace MinimalContainer
                 .Select(GetValueOfParameter)
                 .ToArray();
 
-            Log($"Constructing type '{reg.TypeConcrete.AsString()}({parameters.Select(p => p?.Type.AsString()).JoinStrings(", ")})'.");
+            Logger.LogDebug($"Constructing type '{reg.TypeConcrete.AsString()}({parameters.Select(p => p?.Type.AsString()).JoinStrings(", ")})'.");
             reg.Expression = Expression.New(ctor, parameters);
             reg.Factory = Expression.Lambda<Func<object>>(reg.Expression).Compile();
 
@@ -282,7 +284,7 @@ namespace MinimalContainer
             }
 
             var expressions = assignableTypes.Select(t => GetOrAddExpression(t.AsType(), reg)).ToList();
-            Log($"Constructing list of {expressions.Count} types assignable to '{genericType.AsString()}'.");
+            Logger.LogDebug($"Constructing list of {expressions.Count} types assignable to '{genericType.AsString()}'.");
             reg.Expression = Expression.NewArrayInit(genericType.AsType(), expressions);
             reg.Factory = Expression.Lambda<Func<object>>(reg.Expression).Compile();
 
@@ -305,13 +307,7 @@ namespace MinimalContainer
                 .ToString();
         }
 
-        private void Log(Func<string> message) => Log(message?.Invoke());
-        private void Log(string s)
-        {
-           if (LogAction != null && !string.IsNullOrEmpty(s))
-                LogAction(s);
-        }
-        public void Log() => Log(ToString());
+        public void Log() => Logger.LogInformation(ToString());
 
         /// <summary>
         /// Disposing the container disposes any registered disposable singletons and instances.
@@ -327,12 +323,12 @@ namespace MinimalContainer
                 .Where(i => i != null && i != this)
                 .OfType<IDisposable>())
             {
-                Log($"Disposing type '{disposable.GetType().AsString()}'.");
+                Logger.LogTrace($"Disposing type '{disposable.GetType().AsString()}'.");
                 disposable.Dispose();
             }
 
             Registrations.Clear();
-            Log("Container disposed.");
+            Logger.LogTrace("Container disposed.");
         }
     }
 

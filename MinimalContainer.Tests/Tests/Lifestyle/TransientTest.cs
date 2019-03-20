@@ -2,36 +2,37 @@
 using Xunit;
 using Xunit.Abstractions;
 using MinimalContainer.Tests.Utility;
+using Microsoft.Extensions.Logging;
+using Divergic.Logging.Xunit;
 
 namespace MinimalContainer.Tests.Lifestyle
 {
-    public class TransientTest
+    public class TransientTest : TestBase
     {
         public interface IFoo { }
         public class Foo : IFoo { }
 
-        private readonly Action<string> Write;
-        public TransientTest(ITestOutputHelper output) => Write = output.WriteLine;
+        public TransientTest(ITestOutputHelper output) : base(output) { }
 
         [Fact]
         public void T00_Not_Registered()
         {
-            var container = new Container(logAction: Write);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<IFoo>()).WriteMessageTo(Write);
+            var container = new Container(loggerFactory: LoggerFactory);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<IFoo>()).WriteMessageTo(Logger);
         }
 
         [Fact]
         public void T01_Already_Registered()
         {
-            var container = new Container(logAction: Write);
+            var container = new Container(loggerFactory: LoggerFactory);
             container.RegisterTransient<Foo>();
-            Assert.Throws<TypeAccessException>(() => container.RegisterTransient<Foo>()).WriteMessageTo(Write);
+            Assert.Throws<TypeAccessException>(() => container.RegisterTransient<Foo>()).WriteMessageTo(Logger);
         }
 
         [Fact]
         public void T02_Concrete()
         {
-            var container = new Container(logAction: Write);
+            var container = new Container(loggerFactory: LoggerFactory);
             container.RegisterTransient<Foo>();
             var instance1 = container.Resolve<Foo>();
             var instance2 = container.Resolve<Foo>();
@@ -41,19 +42,19 @@ namespace MinimalContainer.Tests.Lifestyle
         [Fact]
         public void T03_Interface()
         {
-            var container = new Container(logAction: Write);
+            var container = new Container(loggerFactory: LoggerFactory);
             container.RegisterTransient<IFoo>();
-            Assert.Throws<TypeAccessException>(() => container.RegisterTransient<IFoo>()).WriteMessageTo(Write);
+            Assert.Throws<TypeAccessException>(() => container.RegisterTransient<IFoo>()).WriteMessageTo(Logger);
             var instance3 = container.Resolve<IFoo>();
             var instance4 = container.Resolve<IFoo>();
             Assert.NotEqual(instance3, instance4);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<Foo>()).WriteMessageTo(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<Foo>()).WriteMessageTo(Logger);
         }
 
         [Fact]
         public void T04_Concrete_Interface()
         {
-            var container = new Container(logAction: Write);
+            var container = new Container(loggerFactory: LoggerFactory);
             container.RegisterTransient<IFoo>();
             container.RegisterTransient<Foo>();
             var instance5 = container.Resolve<Foo>();

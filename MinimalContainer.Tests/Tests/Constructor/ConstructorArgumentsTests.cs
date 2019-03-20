@@ -5,17 +5,14 @@ using MinimalContainer.Tests.Utility;
 
 namespace MinimalContainer.Tests.Constructor
 {
-    public class ConstructorArgumentTests
+    public class ConstructorArgumentTests : TestBase
     {
         public class Class0 { }
 
         private readonly Container Container;
-        protected readonly Action<string> Write;
-        public ConstructorArgumentTests(ITestOutputHelper output)
-        {
-            Write = output.WriteLine;
-            Container = new Container(DefaultLifestyle.Singleton, Write);
-        }
+
+        public ConstructorArgumentTests(ITestOutputHelper output) : base(output)
+             => Container = new Container(DefaultLifestyle.Singleton, LoggerFactory);
 
         public class Class1
         {
@@ -24,7 +21,7 @@ namespace MinimalContainer.Tests.Constructor
         [Fact]
         public void T01_Value_Type()
         {
-            Assert.Throws<TypeAccessException>(() => Container.Resolve<Class1>()).WriteMessageTo(Write);
+            Assert.Throws<TypeAccessException>(() => Container.Resolve<Class1>()).WriteMessageTo(Logger);
         }
 
         public class Class2
@@ -66,7 +63,7 @@ namespace MinimalContainer.Tests.Constructor
         [Fact]
         public void T05_Ref_Type_Ref()
         {
-            Assert.Throws<TypeAccessException>(() => Container.Resolve<Class5>()).WriteMessageTo(Write);
+            Assert.Throws<TypeAccessException>(() => Container.Resolve<Class5>()).WriteMessageTo(Logger);
         }
 
         public class Class6
@@ -76,7 +73,8 @@ namespace MinimalContainer.Tests.Constructor
         [Fact]
         public void T06_Ref_Type_Out()
         {
-            Assert.Throws<TypeAccessException>(() => Container.Resolve<Class6>()).WriteMessageTo(Write);
+            Assert.Throws<TypeAccessException>(() => Container.Resolve<Class6>()).WriteMessageTo(Logger);
         }
     }
 }
+

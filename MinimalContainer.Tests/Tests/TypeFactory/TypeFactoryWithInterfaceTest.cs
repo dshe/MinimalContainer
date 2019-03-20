@@ -1,10 +1,11 @@
-﻿using System;
+﻿using MinimalContainer.Tests.Utility;
+using System;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace MinimalContainer.Tests.TypeFactory
 {
-    public class TypeFactoryWithInterfaceTest
+    public class TypeFactoryWithInterfaceTest : TestBase
     {
         public interface IFoo { }
         public interface IBar { }
@@ -15,8 +16,7 @@ namespace MinimalContainer.Tests.TypeFactory
             public Bar(Func<IFoo> factory) { }
         }
 
-        private readonly Action<string> Write;
-        public TypeFactoryWithInterfaceTest(ITestOutputHelper output) => Write = output.WriteLine;
+        public TypeFactoryWithInterfaceTest(ITestOutputHelper output) : base(output) { }
 
         [Fact]
         public void T01_transient_factory()

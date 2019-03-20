@@ -5,7 +5,7 @@ using MinimalContainer.Tests.Utility;
 
 namespace MinimalContainer.Tests.Relative
 {
-    public class CaptiveDependencyTests
+    public class CaptiveDependencyTests : TestBase
     {
         public class Foo
         {
@@ -14,22 +14,21 @@ namespace MinimalContainer.Tests.Relative
 
         public class Bar { }
 
-        private readonly Action<string> Write;
-        public CaptiveDependencyTests(ITestOutputHelper output) => Write = output.WriteLine;
+        public CaptiveDependencyTests(ITestOutputHelper output) : base(output) { }
 
         [Fact]
         public void Test_CaptiveDependency_Singleton_Transient()
         {
-            var container = new Container(logAction: Write);
+            var container = new Container(loggerFactory: LoggerFactory);
             container.RegisterSingleton<Foo>();
             container.RegisterTransient<Bar>();
-            Assert.Throws<TypeAccessException>(() => container.Resolve<Foo>()).WriteMessageTo(Write);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<Foo>()).WriteMessageTo(Logger);
         }
 
         [Fact]
         public void Test_CaptiveDependency_Transient_Singleton()
         {
-            var container = new Container(logAction: Write);
+            var container = new Container(loggerFactory: LoggerFactory);
             container.RegisterTransient<Foo>();
             container.RegisterSingleton<Bar>();
             container.Resolve<Foo>();
@@ -38,7 +37,7 @@ namespace MinimalContainer.Tests.Relative
         [Fact]
         public void Test_CaptiveDependency_Singleton_Singleton()
         {
-            var container = new Container(logAction: Write);
+            var container = new Container(loggerFactory: LoggerFactory);
             container.RegisterSingleton<Foo>();
             container.RegisterSingleton<Bar>();
             container.Resolve<Foo>();
@@ -47,7 +46,7 @@ namespace MinimalContainer.Tests.Relative
         [Fact]
         public void Test_CaptiveDependency_Transient_Transient()
         {
-            var container = new Container(logAction: Write);
+            var container = new Container(loggerFactory: LoggerFactory);
             container.RegisterTransient<Foo>();
             container.RegisterTransient<Bar>();
             container.Resolve<Foo>();

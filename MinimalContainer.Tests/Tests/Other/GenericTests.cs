@@ -1,11 +1,13 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using MinimalContainer.Tests.Utility;
+using System;
 using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace MinimalContainer.Tests.Other
 {
-    public class GenericTests1
+    public class GenericTests1 : TestBase
     {
         public class Bar2 { }
         public class Bar1<T>
@@ -17,26 +19,27 @@ namespace MinimalContainer.Tests.Other
             public Foo(Bar1<Bar2> generic) { }
         }
 
-        private readonly Action<string> Write;
-        public GenericTests1(ITestOutputHelper output) => Write = output.WriteLine;
+        public GenericTests1(ITestOutputHelper output) : base(output) { }
 
         [Fact]
         public void T01_Generic()
         {
-            var container = new Container(logAction: Write);
+            var container = new Container(loggerFactory: LoggerFactory);
             container.RegisterSingleton<Bar2>();
             container.RegisterSingleton<Bar1<Bar2>>();
             container.RegisterSingleton<Foo>();
             container.Resolve<Foo>();
-            Write(Environment.NewLine + container);
+            //Write(Environment.NewLine + container);
+            //Logger.Log("test");
+
         }
 
         [Fact]
         public void T02_Generic_Auto()
         {
-            var container = new Container(logAction: Write, defaultLifestyle:DefaultLifestyle.Singleton);
+            var container = new Container(loggerFactory: LoggerFactory, defaultLifestyle:DefaultLifestyle.Singleton);
             container.Resolve<Foo>();
-            Write(Environment.NewLine + container);
+            Logger.LogWarning(Environment.NewLine + container);
         }
 
         [Fact]
@@ -51,7 +54,7 @@ namespace MinimalContainer.Tests.Other
 
     }
 
-    public class GenericTests2
+    public class GenericTests2 : TestBase
     {
         internal interface IClassA { }
         internal class ClassA : IClassA { }
@@ -70,23 +73,22 @@ namespace MinimalContainer.Tests.Other
             public ClassD(ClassB<IClassA> ba) { }
         }
 
-        private readonly Action<string> Write;
-        public GenericTests2(ITestOutputHelper output) => Write = output.WriteLine;
+        public GenericTests2(ITestOutputHelper output) : base(output) { }
 
         [Fact]
         public void T01_class()
         {
-            var container = new Container(DefaultLifestyle.Singleton, Write);
+            var container = new Container(DefaultLifestyle.Singleton, LoggerFactory);
             container.Resolve<ClassC>();
-            Write(Environment.NewLine + container);
+            Logger.LogDebug(Environment.NewLine + container);
         }
 
         [Fact]
         public void T02_interface()
         {
-            var container = new Container(DefaultLifestyle.Singleton, Write);
+            var container = new Container(DefaultLifestyle.Singleton, LoggerFactory);
             container.Resolve<ClassD>();
-            Write(Environment.NewLine + container);
+            Logger.LogDebug(Environment.NewLine + container);
         }
 
         ////////////////////////////////////////////////////////////////////////////////
@@ -107,11 +109,11 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T10_parm()
         {
-            var container = new Container(DefaultLifestyle.Singleton, Write);
+            var container = new Container(DefaultLifestyle.Singleton, LoggerFactory);
             var b = container.Resolve<ObsConcrete>();
 
             var x = container.Resolve<Test>();
-            Write(Environment.NewLine + container);
+            Logger.LogDebug(Environment.NewLine + container);
         }
     }
 

@@ -1,10 +1,13 @@
-﻿using System;
+﻿using Divergic.Logging.Xunit;
+using Microsoft.Extensions.Logging;
+using MinimalContainer.Tests.Utility;
+using System;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace MinimalContainer.Tests.Other
 {
-    public class DisposeTest
+    public class DisposeTest : TestBase
     {
         public class Foo : IDisposable
         {
@@ -12,13 +15,12 @@ namespace MinimalContainer.Tests.Other
             public void Dispose() => IsDisposed = true;
         }
 
-        private readonly Action<string> Write;
-        public DisposeTest(ITestOutputHelper output) => Write = output.WriteLine;
+        public DisposeTest(ITestOutputHelper output) : base(output) { }
 
         [Fact]
         public void T01_Dispose_Singleton()
         {
-            var container = new Container(DefaultLifestyle.Singleton, Write);
+            var container = new Container(DefaultLifestyle.Singleton, loggerFactory: LoggerFactory);
             container.RegisterSingleton<Foo>();
             var instance = container.Resolve<Foo>();
             container.Dispose();
@@ -28,7 +30,7 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T02_Dispose_Instance()
         {
-            var container = new Container(DefaultLifestyle.Singleton, Write);
+            var container = new Container(DefaultLifestyle.Singleton, LoggerFactory);
             var instance = new Foo();
             container.RegisterInstance(instance);
             container.Dispose();
@@ -38,7 +40,7 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T03_Dispose_Other()
         {
-            var container = new Container(DefaultLifestyle.Singleton, Write);
+            var container = new Container(DefaultLifestyle.Singleton, LoggerFactory);
             container.RegisterTransient<Foo>();
             var instance = container.Resolve<Foo>();
             container.Dispose();

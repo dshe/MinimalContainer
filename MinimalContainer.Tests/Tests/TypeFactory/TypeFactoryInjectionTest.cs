@@ -1,10 +1,11 @@
-﻿using System;
+﻿using MinimalContainer.Tests.Utility;
+using System;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace MinimalContainer.Tests.TypeFactory
 {
-    public class TypeFactoryInjectionTest
+    public class TypeFactoryInjectionTest : TestBase
     {
         public class Foo { }
 
@@ -14,8 +15,7 @@ namespace MinimalContainer.Tests.TypeFactory
             public Bar(Func<Foo> factory) => Factory = factory;
         }
 
-        private readonly Action<string> Write;
-        public TypeFactoryInjectionTest(ITestOutputHelper output) => Write = output.WriteLine;
+        public TypeFactoryInjectionTest(ITestOutputHelper output) : base(output) { }
 
         [Fact]
         public void T00_injection()

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 
 #nullable enable
 
@@ -6,12 +7,12 @@ namespace MinimalContainer.Tests.Utility
 {
     public static class Extensions
     {
-        public static Exception WriteMessageTo(this Exception ex, Action<string> write)
+        public static Exception WriteMessageTo(this Exception ex, ILogger logger)
         {
-            write(ex.Message);
+            logger.LogDebug(ex.Message);
             if (ex.InnerException != null)
-                write(ex.InnerException.Message);
-            write("");
+                logger.LogDebug(ex.InnerException.Message);
+            logger.LogDebug("");
             return ex;
         }
     }
