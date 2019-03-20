@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 
 namespace MinimalContainer.Tests.Other
 {
-    public class DisposeTest : TestBase
+    public class DisposeTest : UnitTestBase
     {
         public class Foo : IDisposable
         {
@@ -20,7 +20,7 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T01_Dispose_Singleton()
         {
-            var container = new Container(DefaultLifestyle.Singleton, loggerFactory: LoggerFactory);
+            var container = new Container(DefaultLifestyle.Singleton, logger: Logger);
             container.RegisterSingleton<Foo>();
             var instance = container.Resolve<Foo>();
             container.Dispose();
@@ -30,7 +30,7 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T02_Dispose_Instance()
         {
-            var container = new Container(DefaultLifestyle.Singleton, LoggerFactory);
+            var container = new Container(DefaultLifestyle.Singleton, Logger);
             var instance = new Foo();
             container.RegisterInstance(instance);
             container.Dispose();
@@ -40,7 +40,7 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T03_Dispose_Other()
         {
-            var container = new Container(DefaultLifestyle.Singleton, LoggerFactory);
+            var container = new Container(DefaultLifestyle.Singleton, Logger);
             container.RegisterTransient<Foo>();
             var instance = container.Resolve<Foo>();
             container.Dispose();

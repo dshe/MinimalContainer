@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 
 namespace MinimalContainer.Tests.Other
 {
-    public class LogTest : TestBase
+    public class LogTest : UnitTestBase
     {
         public interface IFoo { }
         public class Foo : IFoo { }
@@ -17,7 +17,7 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T01()
         {
-            var container = new Container(DefaultLifestyle.Singleton,LoggerFactory, typeof(string).GetTypeInfo().Assembly);
+            var container = new Container(DefaultLifestyle.Singleton,Logger, typeof(string).GetTypeInfo().Assembly);
             container.RegisterSingleton<IFoo, Foo>();
             Logger.LogDebug("");
             Logger.LogDebug(container.ToString());
@@ -26,7 +26,7 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T02()
         {
-            var container = new Container(DefaultLifestyle.Singleton, LoggerFactory, typeof(string).GetTypeInfo().Assembly);
+            var container = new Container(DefaultLifestyle.Singleton, Logger, typeof(string).GetTypeInfo().Assembly);
             container.RegisterSingleton<IFoo, Foo>();
             Logger.LogDebug("");
             container.Log();

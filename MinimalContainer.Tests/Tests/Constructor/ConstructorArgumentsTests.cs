@@ -5,14 +5,14 @@ using MinimalContainer.Tests.Utility;
 
 namespace MinimalContainer.Tests.Constructor
 {
-    public class ConstructorArgumentTests : TestBase
+    public class ConstructorArgumentTests : UnitTestBase
     {
         public class Class0 { }
 
         private readonly Container Container;
 
         public ConstructorArgumentTests(ITestOutputHelper output) : base(output)
-             => Container = new Container(DefaultLifestyle.Singleton, LoggerFactory);
+             => Container = new Container(DefaultLifestyle.Singleton, Logger);
 
         public class Class1
         {

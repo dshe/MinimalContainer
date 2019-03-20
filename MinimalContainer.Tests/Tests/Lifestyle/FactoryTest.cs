@@ -7,7 +7,7 @@ using Divergic.Logging.Xunit;
 
 namespace MinimalContainer.Tests.Lifestyle
 {
-    public class FactoryTest : TestBase
+    public class FactoryTest : UnitTestBase
     {
         public interface ISomeClass { }
         public class SomeClass : ISomeClass { }
@@ -33,7 +33,7 @@ namespace MinimalContainer.Tests.Lifestyle
         [Fact]
         public void T01_Concrete()
         {
-            var container = new Container(loggerFactory: LoggerFactory);
+            var container = new Container(logger: Logger);
             container.RegisterFactory(_factory1);
             Assert.Throws<TypeAccessException>(() => container.RegisterFactory(_factory1)).WriteMessageTo(Logger);
             var instance1 = container.Resolve<SomeClass>();
@@ -46,7 +46,7 @@ namespace MinimalContainer.Tests.Lifestyle
         [Fact]
         public void T02_Register_Factory()
         {
-            var container = new Container(loggerFactory: LoggerFactory);
+            var container = new Container(logger: Logger);
             container.RegisterFactory<ISomeClass>(_factory1);
             var instance1 = container.Resolve<ISomeClass>();
             Assert.Equal(1, _counter1);
@@ -59,7 +59,7 @@ namespace MinimalContainer.Tests.Lifestyle
         [Fact]
         public void T03_Register_Factory_Both()
         {
-            var container = new Container(loggerFactory: LoggerFactory);
+            var container = new Container(logger: Logger);
             container.RegisterFactory(_factory1);
             container.RegisterFactory<ISomeClass>(_factory2);
             container.Resolve<SomeClass>();
@@ -71,7 +71,7 @@ namespace MinimalContainer.Tests.Lifestyle
         [Fact]
         public void T04_Register_Auto()
         {
-            var container = new Container(loggerFactory: LoggerFactory, defaultLifestyle: DefaultLifestyle.Singleton);
+            var container = new Container(logger: Logger, defaultLifestyle: DefaultLifestyle.Singleton);
             container.RegisterFactory(_factory1);
             container.Resolve<SomeClass>();
             Assert.Equal(container.Resolve<ISomeClass>(), container.Resolve<ISomeClass>());

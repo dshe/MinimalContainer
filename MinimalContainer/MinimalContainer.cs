@@ -43,15 +43,15 @@ namespace MinimalContainer
         private readonly Stack<TypeInfo> TypeStack = new Stack<TypeInfo>();
         private readonly ILogger Logger;
 
-        public Container(DefaultLifestyle defaultLifestyle = DefaultLifestyle.Undefined, ILoggerFactory? loggerFactory = null, params Assembly[] assemblies)
+        public Container(DefaultLifestyle defaultLifestyle = DefaultLifestyle.Undefined, ILogger<Container>? logger = null, params Assembly[] assemblies)
         {
-            if (assemblies == null)
-                throw new ArgumentNullException(nameof(assemblies));
-
-            DefaultLifestyle = defaultLifestyle;
-            Logger = loggerFactory?.CreateLogger(GetType().Name) ?? NullLogger.Instance;
+            Logger = logger ?? NullLogger<Container>.Instance;
             Logger.LogInformation("Constructing Container.");
 
+            DefaultLifestyle = defaultLifestyle;
+
+            if (assemblies == null)
+                throw new ArgumentNullException(nameof(assemblies));
             var assemblyList = assemblies.ToList();
             if (!assemblyList.Any())
                 assemblyList.Add(Assembly.GetCallingAssembly());
@@ -331,5 +331,4 @@ namespace MinimalContainer
             Logger.LogTrace("Container disposed.");
         }
     }
-
 }

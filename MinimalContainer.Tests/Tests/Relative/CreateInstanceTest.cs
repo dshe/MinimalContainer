@@ -5,7 +5,7 @@ using MinimalContainer.Tests.Utility;
 
 namespace MinimalContainer.Tests.Relative
 {
-    public class CreateInstanceTest :TestBase
+    public class CreateInstanceTest :UnitTestBase
     {
         public class ClassX
         {
@@ -27,7 +27,7 @@ namespace MinimalContainer.Tests.Relative
         [Fact]
         public void Test_Cannot_Create_Dependency()
         {
-            var container = new Container(DefaultLifestyle.Singleton, loggerFactory:LoggerFactory);
+            var container = new Container(DefaultLifestyle.Singleton, logger:Logger);
             Assert.Throws<TypeAccessException>(() => container.Resolve<ClassZ>()).WriteMessageTo(Logger);
             Assert.Throws<TypeAccessException>(() => container.Resolve<ClassY>()).WriteMessageTo(Logger);
             Assert.Throws<TypeAccessException>(() => container.Resolve<ClassX>()).WriteMessageTo(Logger);

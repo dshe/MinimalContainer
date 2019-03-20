@@ -8,7 +8,7 @@ using MinimalContainer.Tests.Utility;
 namespace MinimalContainer.Tests.Performance
 {
     [Trait("Category", "Performance")]
-    public class TestPerformance : TestBase
+    public class TestPerformance : UnitTestBase
     {
         public interface IFoo { }
 

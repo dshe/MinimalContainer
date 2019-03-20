@@ -5,7 +5,7 @@ using MinimalContainer.Tests.Utility;
 
 namespace MinimalContainer.Tests.Relative
 {
-    public class UniqueConcreteTest : TestBase
+    public class UniqueConcreteTest : UnitTestBase
     {
         public interface IMarker1 { }
         public interface IMarker2 { }
@@ -19,7 +19,7 @@ namespace MinimalContainer.Tests.Relative
         [Fact]
         public void T01_Duplicate_Registration()
         {
-            var container = new Container(DefaultLifestyle.Singleton, LoggerFactory);
+            var container = new Container(DefaultLifestyle.Singleton, Logger);
 
             container.RegisterSingleton<ClassA>();
             Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<ClassA>()).WriteMessageTo(Logger);
@@ -31,14 +31,14 @@ namespace MinimalContainer.Tests.Relative
         [Fact]
         public void T02_Registration_Duplicate_Marker()
         {
-            var container = new Container(DefaultLifestyle.Singleton, LoggerFactory);
+            var container = new Container(DefaultLifestyle.Singleton, Logger);
             Assert.Throws<TypeAccessException>(() => container.Resolve<IMarker1>()).WriteMessageTo(Logger);
         }
 
         [Fact]
         public void T03_Registration_Concrete_Multiple()
         {
-            var container = new Container(loggerFactory: LoggerFactory);
+            var container = new Container(logger: Logger);
             container.RegisterSingleton<IMarker1, ClassA>();
             container.Resolve<IMarker1>();
             Assert.Throws<TypeAccessException>(() => container.Resolve<ClassA>()).WriteMessageTo(Logger);

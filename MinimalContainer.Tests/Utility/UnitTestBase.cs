@@ -4,15 +4,13 @@ using Xunit.Abstractions;
 
 namespace MinimalContainer.Tests.Utility
 {
-    public abstract class TestBase
+    public abstract class UnitTestBase
     {
-        protected readonly ILogger Logger;
-        protected readonly ILoggerFactory LoggerFactory;
+        protected readonly ILogger<Container> Logger;
 
-        public TestBase(ITestOutputHelper output)
+        public UnitTestBase(ITestOutputHelper output)
         {
-            Logger = output.BuildLogger("TestBase"); // Divergic.Logging.Xunit
-            LoggerFactory = LogFactory.Create(output); // Divergic.Logging.Xunit
+            Logger = output.BuildLoggerFor<Container>(); // Divergic.Logging.Xunit
         }
     }
 }

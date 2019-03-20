@@ -5,7 +5,7 @@ using Xunit.Abstractions;
 
 namespace MinimalContainer.Tests.TypeFactory
 {
-    public class TypeFactoryWithInterfaceTest : TestBase
+    public class TypeFactoryWithInterfaceTest : UnitTestBase
     {
         public interface IFoo { }
         public interface IBar { }

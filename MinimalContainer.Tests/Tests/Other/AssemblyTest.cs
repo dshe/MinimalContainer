@@ -9,7 +9,7 @@ using Divergic.Logging.Xunit;
 
 namespace MinimalContainer.Tests.Other
 {
-    public class AssemblyTest : TestBase
+    public class AssemblyTest : UnitTestBase
     {
         public interface IFoo { }
         public class Bar { }
@@ -19,7 +19,7 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T01_No_Assembly_Register()
         {
-            var container = new Container(DefaultLifestyle.Singleton, LoggerFactory, typeof(string).GetTypeInfo().Assembly);
+            var container = new Container(DefaultLifestyle.Singleton, Logger, typeof(string).GetTypeInfo().Assembly);
             container.Resolve<Bar>();
             Assert.Throws<TypeAccessException>(() => container.Resolve<IFoo>()).WriteMessageTo(Logger);
         }
@@ -27,7 +27,7 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T03_No_Assembly_GetInstance_List()
         {
-            var container = new Container(DefaultLifestyle.Singleton, LoggerFactory, typeof(string).GetTypeInfo().Assembly);
+            var container = new Container(DefaultLifestyle.Singleton, Logger, typeof(string).GetTypeInfo().Assembly);
             Assert.Throws<TypeAccessException>(() => container.Resolve<IList<Bar>>()).WriteMessageTo(Logger);
         }
 

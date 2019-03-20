@@ -7,7 +7,7 @@ using Divergic.Logging.Xunit;
 
 namespace MinimalContainer.Tests.Lifestyle
 {
-    public class SingletonTest : TestBase
+    public class SingletonTest : UnitTestBase
     {
         public interface IFoo { }
         public class Foo : IFoo { }
@@ -17,7 +17,7 @@ namespace MinimalContainer.Tests.Lifestyle
         [Fact]
         public void T01_Concrete()
         {
-            var container = new Container(loggerFactory: LoggerFactory);
+            var container = new Container(logger: Logger);
             container.RegisterSingleton<Foo>();
             Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<Foo>()).WriteMessageTo(Logger);
             Assert.Equal(container.Resolve<Foo>(), container.Resolve<Foo>());
@@ -27,7 +27,7 @@ namespace MinimalContainer.Tests.Lifestyle
         [Fact]
         public void T02_Interface()
         {
-            var container = new Container(loggerFactory: LoggerFactory);
+            var container = new Container(logger: Logger);
             container.RegisterSingleton<IFoo>();
             Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<IFoo>()).WriteMessageTo(Logger);
             Assert.Equal(container.Resolve<IFoo>(), container.Resolve<IFoo>());
@@ -37,7 +37,7 @@ namespace MinimalContainer.Tests.Lifestyle
         [Fact]
         public void T03_Concrete_Interface()
         {
-            var container = new Container(loggerFactory: LoggerFactory);
+            var container = new Container(logger: Logger);
             container.RegisterSingleton<IFoo>();
             container.RegisterSingleton<Foo>();
             Assert.NotEqual(container.Resolve<Foo>(), container.Resolve<IFoo>());
@@ -46,7 +46,7 @@ namespace MinimalContainer.Tests.Lifestyle
         [Fact]
         public void T04_Register_Singleton()
         {
-            var container = new Container(loggerFactory: LoggerFactory);
+            var container = new Container(logger: Logger);
             container.RegisterSingleton<IFoo, Foo>();
             Assert.Throws<TypeAccessException>(() => container.Resolve<Foo>()).WriteMessageTo(Logger);
             container.RegisterSingleton<Foo>();
@@ -56,7 +56,7 @@ namespace MinimalContainer.Tests.Lifestyle
         [Fact]
         public void T05_Register_Singleton_Auto()
         {
-            var container = new Container(DefaultLifestyle.Singleton, loggerFactory: LoggerFactory);
+            var container = new Container(DefaultLifestyle.Singleton, logger: Logger);
             Assert.NotEqual(container.Resolve<IFoo>(), container.Resolve<Foo>());
         }
 

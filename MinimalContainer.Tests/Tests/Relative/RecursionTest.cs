@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace MinimalContainer.Tests.Relative
 {
-    public class RecursionTest : TestBase
+    public class RecursionTest : UnitTestBase
     {
         public class Class1
         {
@@ -28,7 +28,7 @@ namespace MinimalContainer.Tests.Relative
         [Fact]
         public void Test_Recursive_Dependency()
         {
-            var container = new Container(DefaultLifestyle.Singleton, LoggerFactory);
+            var container = new Container(DefaultLifestyle.Singleton, Logger);
             Assert.Throws<TypeAccessException>(() => container.Resolve<Class1>()).WriteMessageTo(Logger);
             Assert.Throws<TypeAccessException>(() => container.Resolve<Class2>()).WriteMessageTo(Logger);
             Assert.Throws<TypeAccessException>(() => container.Resolve<Class3>()).WriteMessageTo(Logger);

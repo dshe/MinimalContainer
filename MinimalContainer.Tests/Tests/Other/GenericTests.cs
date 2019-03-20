@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 
 namespace MinimalContainer.Tests.Other
 {
-    public class GenericTests1 : TestBase
+    public class GenericTests1 : UnitTestBase
     {
         public class Bar2 { }
         public class Bar1<T>
@@ -24,7 +24,7 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T01_Generic()
         {
-            var container = new Container(loggerFactory: LoggerFactory);
+            var container = new Container(logger: Logger);
             container.RegisterSingleton<Bar2>();
             container.RegisterSingleton<Bar1<Bar2>>();
             container.RegisterSingleton<Foo>();
@@ -37,7 +37,7 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T02_Generic_Auto()
         {
-            var container = new Container(loggerFactory: LoggerFactory, defaultLifestyle:DefaultLifestyle.Singleton);
+            var container = new Container(logger: Logger, defaultLifestyle:DefaultLifestyle.Singleton);
             container.Resolve<Foo>();
             Logger.LogWarning(Environment.NewLine + container);
         }
@@ -54,7 +54,7 @@ namespace MinimalContainer.Tests.Other
 
     }
 
-    public class GenericTests2 : TestBase
+    public class GenericTests2 : UnitTestBase
     {
         internal interface IClassA { }
         internal class ClassA : IClassA { }
@@ -78,7 +78,7 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T01_class()
         {
-            var container = new Container(DefaultLifestyle.Singleton, LoggerFactory);
+            var container = new Container(DefaultLifestyle.Singleton, Logger);
             container.Resolve<ClassC>();
             Logger.LogDebug(Environment.NewLine + container);
         }
@@ -86,7 +86,7 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T02_interface()
         {
-            var container = new Container(DefaultLifestyle.Singleton, LoggerFactory);
+            var container = new Container(DefaultLifestyle.Singleton, Logger);
             container.Resolve<ClassD>();
             Logger.LogDebug(Environment.NewLine + container);
         }
@@ -109,7 +109,7 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T10_parm()
         {
-            var container = new Container(DefaultLifestyle.Singleton, LoggerFactory);
+            var container = new Container(DefaultLifestyle.Singleton, Logger);
             var b = container.Resolve<ObsConcrete>();
 
             var x = container.Resolve<Test>();

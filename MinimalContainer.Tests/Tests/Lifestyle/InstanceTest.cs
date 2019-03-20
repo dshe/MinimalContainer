@@ -7,7 +7,7 @@ using Divergic.Logging.Xunit;
 
 namespace MinimalContainer.Tests.Lifestyle
 {
-    public class InstanceTest : TestBase
+    public class InstanceTest : UnitTestBase
     {
         public interface IFoo { }
         public class Foo : IFoo { }
@@ -17,7 +17,7 @@ namespace MinimalContainer.Tests.Lifestyle
         [Fact]
         public void T01_Concrete()
         {
-            var container = new Container(loggerFactory: LoggerFactory);
+            var container = new Container(logger: Logger);
             var instance = new Foo();
             container.RegisterInstance(instance);
             var instance1 = container.Resolve<Foo>();
@@ -31,7 +31,7 @@ namespace MinimalContainer.Tests.Lifestyle
         [Fact]
         public void T02_Interface()
         {
-            var container = new Container(loggerFactory: LoggerFactory);
+            var container = new Container(logger: Logger);
             var instance = new Foo();
             container.RegisterInstance<IFoo>(instance);
             var instance1 = container.Resolve<IFoo>();
