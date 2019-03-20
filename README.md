@@ -6,7 +6,7 @@
 - transient and singleton lifestyles
 - captive and recursive dependency detection
 - supports **.NET Standard 2.0**
-- dependency: Microsoft.Extensions.Logging.Abstractions
+- no dependencies
 - fluent interface
 - tested
 - fast
@@ -130,7 +130,7 @@ The complete object graph is created by simply resolving the compositional root.
 ```csharp
 using Microsoft.Extensions.Logging;
 ...
-var container = new Container(ILoggerFactory:loggerFactory);
+var container = new Container(ILogger: logger);
 ```
 #### diagnosis
 ```csharp
