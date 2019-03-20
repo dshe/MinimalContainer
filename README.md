@@ -1,4 +1,4 @@
-## MinimalContainer&nbsp;&nbsp; [![Build status](https://ci.appveyor.com/api/projects/status/xig5mmbk9lqus99h?svg=true)](https://ci.appveyor.com/project/dshe/StandardContainer) [![NuGet](https://img.shields.io/nuget/vpre/StandardContainer.svg)](https://www.nuget.org/packages/StandardContainer/) [![License](https://img.shields.io/badge/license-Apache%202.0-7755BB.svg)](https://opensource.org/licenses/Apache-2.0)
+## MinimalContainer&nbsp;&nbsp; [![Build status](https://ci.appveyor.com/api/projects/status/xig5mmbk9lqus99h?svg=true)](https://ci.appveyor.com/project/dshe/MinimalContainer) [![NuGet](https://img.shields.io/nuget/vpre/MinimalContainer.svg)](https://www.nuget.org/packages/MinimalContainer/) [![License](https://img.shields.io/badge/license-Apache%202.0-7755BB.svg)](https://opensource.org/licenses/Apache-2.0)
 ***A minimal IoC (Inversion of Control) container.***
 - automatic and/or explicit type registration
 - public and **internal** constructor injection
@@ -126,16 +126,18 @@ internal class Root
 }
 ```
 The complete object graph is created by simply resolving the compositional root. 
+#### logging
+```csharp
+using Microsoft.Extensions.Logging;
+...
+var container = new Container(ILogger: logger);
+```
+#### diagnosis
+```csharp
+Debug.WriteLine(container.ToString());
+```
 #### disposal
 ```csharp
 container.Dispose();
 ```
 Disposing the container disposes any registered disposable singletons.
-#### logging
-```csharp
-var container = new Container(log:Debug.WriteLine);
-```
-#### diagnostic
-```csharp
-Debug.WriteLine(container.ToString());
-```
