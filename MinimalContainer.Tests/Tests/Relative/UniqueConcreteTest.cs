@@ -5,7 +5,7 @@ using MinimalContainer.Tests.Utility;
 
 namespace MinimalContainer.Tests.Relative
 {
-    public class UniqueConcreteTest : UnitTestBase
+    public class UniqueConcreteTest : BaseUnitTest
     {
         public interface IMarker1 { }
         public interface IMarker2 { }

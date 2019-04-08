@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 
 namespace MinimalContainer.Tests.Other
 {
-    public class LogTest : UnitTestBase
+    public class LogTest : BaseUnitTest
     {
         public interface IFoo { }
         public class Foo : IFoo { }

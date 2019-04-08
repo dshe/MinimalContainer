@@ -5,7 +5,7 @@ using MinimalContainer.Tests.Utility;
 
 namespace MinimalContainer.Tests.Relative
 {
-    public class CaptiveDependencyTests : UnitTestBase
+    public class CaptiveDependencyTests : BaseUnitTest
     {
         public class Foo
         {

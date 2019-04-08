@@ -5,7 +5,7 @@ using Xunit.Abstractions;
 
 namespace MinimalContainer.Tests.TypeFactory
 {
-    public class TypeFactoryInjectionTest : UnitTestBase
+    public class TypeFactoryInjectionTest : BaseUnitTest
     {
         public class Foo { }
 

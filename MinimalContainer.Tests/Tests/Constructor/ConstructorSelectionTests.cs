@@ -5,7 +5,7 @@ using MinimalContainer.Tests.Utility;
 
 namespace MinimalContainer.Tests.Constructor
 {
-    public class ConstructorSelectionTests : UnitTestBase
+    public class ConstructorSelectionTests : BaseUnitTest
     {
         public ConstructorSelectionTests(ITestOutputHelper output) : base(output) { }
 

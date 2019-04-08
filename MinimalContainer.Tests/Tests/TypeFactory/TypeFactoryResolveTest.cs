@@ -8,7 +8,7 @@ using Divergic.Logging.Xunit;
 
 namespace MinimalContainer.Tests.TypeFactory
 {
-    public class TypeFactoryResolveTest : UnitTestBase
+    public class TypeFactoryResolveTest : BaseUnitTest
     {
         public class Foo { }
 

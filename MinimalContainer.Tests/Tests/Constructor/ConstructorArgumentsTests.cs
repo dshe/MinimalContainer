@@ -5,7 +5,7 @@ using MinimalContainer.Tests.Utility;
 
 namespace MinimalContainer.Tests.Constructor
 {
-    public class ConstructorArgumentTests : UnitTestBase
+    public class ConstructorArgumentTests : BaseUnitTest
     {
         public class Class0 { }
 

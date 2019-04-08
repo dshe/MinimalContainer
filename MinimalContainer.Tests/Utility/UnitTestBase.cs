@@ -4,11 +4,11 @@ using Xunit.Abstractions;
 
 namespace MinimalContainer.Tests.Utility
 {
-    public abstract class UnitTestBase
+    public abstract class BaseUnitTest
     {
         protected readonly ILogger<Container> Logger;
 
-        public UnitTestBase(ITestOutputHelper output)
+        public BaseUnitTest(ITestOutputHelper output)
         {
             Logger = output.BuildLoggerFor<Container>(); // Divergic.Logging.Xunit
         }

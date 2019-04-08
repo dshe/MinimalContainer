@@ -6,7 +6,7 @@ using MinimalContainer.Tests.Utility;
 
 namespace MinimalContainer.Tests.Other
 {
-    public class RegisterErrorTest : UnitTestBase
+    public class RegisterErrorTest : BaseUnitTest
     {
         public interface INoClass { }
         public interface ISomeClass { }

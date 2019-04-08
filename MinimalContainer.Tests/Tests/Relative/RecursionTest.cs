@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace MinimalContainer.Tests.Relative
 {
-    public class RecursionTest : UnitTestBase
+    public class RecursionTest : BaseUnitTest
     {
         public class Class1
         {

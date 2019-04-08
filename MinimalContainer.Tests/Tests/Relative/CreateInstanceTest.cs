@@ -5,7 +5,7 @@ using MinimalContainer.Tests.Utility;
 
 namespace MinimalContainer.Tests.Relative
 {
-    public class CreateInstanceTest :UnitTestBase
+    public class CreateInstanceTest :BaseUnitTest
     {
         public class ClassX
         {

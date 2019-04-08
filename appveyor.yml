@@ -3,13 +3,12 @@ image: Visual Studio 2019 Preview
 configuration: Release
 before_build:
 - ps: dotnet restore
-after_build:
-- ps: dotnet pack -c release
 build:
   verbosity: minimal
+after_build:
+- ps: dotnet pack -c release
 test_script:
 - ps: dotnet test .\MinimalContainer.Tests\MinimalContainer.Tests.csproj
 artifacts:
 - path: '**\*.nupkg'
-nuget:
-  account_feed: true
+  

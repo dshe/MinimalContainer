@@ -9,7 +9,7 @@ using Divergic.Logging.Xunit;
 
 namespace MinimalContainer.Tests.Other
 {
-    public class AssemblyTest : UnitTestBase
+    public class AssemblyTest : BaseUnitTest
     {
         public interface IFoo { }
         public class Bar { }

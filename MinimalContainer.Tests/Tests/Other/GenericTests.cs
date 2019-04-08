@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 
 namespace MinimalContainer.Tests.Other
 {
-    public class GenericTests1 : UnitTestBase
+    public class GenericTests1 : BaseUnitTest
     {
         public class Bar2 { }
         public class Bar1<T>
@@ -54,7 +54,7 @@ namespace MinimalContainer.Tests.Other
 
     }
 
-    public class GenericTests2 : UnitTestBase
+    public class GenericTests2 : BaseUnitTest
     {
         internal interface IClassA { }
         internal class ClassA : IClassA { }

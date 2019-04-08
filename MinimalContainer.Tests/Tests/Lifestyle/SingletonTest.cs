@@ -7,7 +7,7 @@ using Divergic.Logging.Xunit;
 
 namespace MinimalContainer.Tests.Lifestyle
 {
-    public class SingletonTest : UnitTestBase
+    public class SingletonTest : BaseUnitTest
     {
         public interface IFoo { }
         public class Foo : IFoo { }

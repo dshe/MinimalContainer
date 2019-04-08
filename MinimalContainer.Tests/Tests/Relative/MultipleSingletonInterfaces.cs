@@ -5,7 +5,7 @@ using Xunit.Abstractions;
 
 namespace MinimalContainer.Tests.Relative
 {
-    public class MultipleSingletonInterfaces : UnitTestBase
+    public class MultipleSingletonInterfaces : BaseUnitTest
     {
         public interface IFoo1 { }
         public interface IFoo2 { }

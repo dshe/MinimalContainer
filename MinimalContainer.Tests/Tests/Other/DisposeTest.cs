@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 
 namespace MinimalContainer.Tests.Other
 {
-    public class DisposeTest : UnitTestBase
+    public class DisposeTest : BaseUnitTest
     {
         public class Foo : IDisposable
         {
