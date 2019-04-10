@@ -19,7 +19,6 @@ public class Container : IDisposable
     public Container RegisterInstance(t);
     public Container RegisterFactory(() => t);
     public T Resolve<T>();
-    public void Log();
     public string ToString();
     public void Dispose();
 }
