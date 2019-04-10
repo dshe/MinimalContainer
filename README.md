@@ -134,7 +134,7 @@ var container = new Container(ILogger: logger);
 ```
 #### diagnosis
 ```csharp
-Debug.WriteLine(container.ToString());
+Logger.LogDebug(container.ToString());
 ```
 #### disposal
 ```csharp
