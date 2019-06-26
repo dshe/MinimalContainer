@@ -25,7 +25,6 @@ public class Container : IDisposable
 ```
 #### example
 ```csharp
-using Xunit;
 using MinimalContainer;
 
 public interface IFoo {}
@@ -100,6 +99,8 @@ Foo1 foo1 = new Container()
 ```
 #### example
 ```csharp
+using MinimalContainer;
+
 internal interface IFoo {}
 internal interface IBar {}
 internal class Foo : IFoo {}
