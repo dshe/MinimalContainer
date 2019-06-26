@@ -6,7 +6,7 @@
 - transient and singleton lifestyles
 - captive and recursive dependency detection
 - supports **.NET Standard 2.0**
-- no dependencies
+- dependencies: Microsoft.Extensions.Logging.Abstractions
 - fluent interface
 - tested
 - fast
@@ -19,22 +19,25 @@ public class Container : IDisposable
     public Container RegisterInstance(t);
     public Container RegisterFactory(() => t);
     public T Resolve<T>();
-    public void Log();
     public string ToString();
     public void Dispose();
 }
 ```
 #### example
 ```csharp
+using MinimalContainer;
+
 public interface IFoo {}
 public class Foo : IFoo {}
 
-public static void Main()
+public class Example
 {
-    Container container = new Container();
-    container.RegisterTransient<IFoo, Foo>();
-    IFoo foo = container.Resolve<IFoo>();
-    ...
+   public static void Main()
+   {
+       Container container = new Container();
+       container.RegisterTransient<IFoo, Foo>();
+       IFoo foo = container.Resolve<IFoo>();
+       ...
 ```
 #### registration
 ```csharp
@@ -96,6 +99,8 @@ Foo1 foo1 = new Container()
 ```
 #### example
 ```csharp
+using MinimalContainer;
+
 internal interface IFoo {}
 internal interface IBar {}
 internal class Foo : IFoo {}
@@ -134,7 +139,7 @@ var container = new Container(ILogger: logger);
 ```
 #### diagnosis
 ```csharp
-Debug.WriteLine(container.ToString());
+Logger.LogDebug(container.ToString());
 ```
 #### disposal
 ```csharp
