@@ -29,7 +29,7 @@ namespace MinimalContainer.Tests.Other
             var container = new Container(DefaultLifestyle.Singleton, Logger, typeof(string).GetTypeInfo().Assembly);
             container.RegisterSingleton<IFoo, Foo>();
             Logger.LogDebug("");
-            container.Log();
+            Logger.LogDebug(container.ToString());
         }
 
     }

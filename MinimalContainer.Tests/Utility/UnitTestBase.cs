@@ -1,5 +1,5 @@
-﻿using Divergic.Logging.Xunit;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using MXLogger;
 using Xunit.Abstractions;
 
 namespace MinimalContainer.Tests.Utility
@@ -10,7 +10,8 @@ namespace MinimalContainer.Tests.Utility
 
         public BaseUnitTest(ITestOutputHelper output)
         {
-            Logger = output.BuildLoggerFor<Container>(); // Divergic.Logging.Xunit
+            var factory = new LoggerFactory().AddMXLogger(output.WriteLine);
+            Logger = factory.CreateLogger<Container>();
         }
     }
 }

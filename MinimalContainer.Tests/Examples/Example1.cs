@@ -1,8 +1,9 @@
-﻿#nullable enable
+﻿using Xunit;
+using MinimalContainer;
 
-using Xunit;
+#nullable enable
 
-namespace MinimalContainer.Tests.Examples
+namespace MinimalContainerTests
 {
     public class Example1
     {

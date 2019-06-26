@@ -3,6 +3,8 @@ using Xunit;
 using Xunit.Abstractions;
 using MinimalContainer.Tests.Utility;
 
+#nullable enable
+
 namespace MinimalContainer.Tests.Constructor
 {
     public class ConstructorArgumentTests : BaseUnitTest

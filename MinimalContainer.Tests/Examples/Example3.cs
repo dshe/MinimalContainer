@@ -1,9 +1,10 @@
 ﻿using System;
 using Xunit;
+using MinimalContainer;
 
 #nullable enable
 
-namespace MinimalContainer.Tests.Examples
+namespace MinimalContainerTests
 {
     internal interface IBar { }
     internal class Bar : IBar { }

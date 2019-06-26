@@ -2,8 +2,6 @@
 using Xunit;
 using Xunit.Abstractions;
 using MinimalContainer.Tests.Utility;
-using Microsoft.Extensions.Logging;
-using Divergic.Logging.Xunit;
 
 namespace MinimalContainer.Tests.Lifestyle
 {

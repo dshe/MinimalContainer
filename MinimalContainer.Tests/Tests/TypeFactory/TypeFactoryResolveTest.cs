@@ -2,9 +2,7 @@
 using Xunit;
 using Xunit.Abstractions;
 using MinimalContainer.Tests.Utility;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Logging;
-using Divergic.Logging.Xunit;
 
 namespace MinimalContainer.Tests.TypeFactory
 {
@@ -92,7 +90,7 @@ namespace MinimalContainer.Tests.TypeFactory
             Assert.NotEqual(f(), factory());
 
             Logger.LogInformation("");
-            container.Log();
+            Logger.LogInformation(container.ToString());
         }
 
     }

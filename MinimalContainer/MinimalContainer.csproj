@@ -10,9 +10,9 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageIconUrl>https://github.com/dshe.png</PackageIconUrl>
     <RepositoryUrl></RepositoryUrl>
-    <Version>2.50</Version>
-    <AssemblyVersion>2.5.0.0</AssemblyVersion>
-    <FileVersion>2.5.0.0</FileVersion>
+    <Version>2.52</Version>
+    <AssemblyVersion>2.5.2.0</AssemblyVersion>
+    <FileVersion>2.5.2.0</FileVersion>
     <PackageLicenseUrl></PackageLicenseUrl>
     <PackageReleaseNotes></PackageReleaseNotes>
     <SignAssembly>False</SignAssembly>

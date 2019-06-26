@@ -43,7 +43,7 @@ namespace MinimalContainer
         private readonly Stack<TypeInfo> TypeStack = new Stack<TypeInfo>();
         private readonly ILogger Logger;
 
-        public Container(DefaultLifestyle defaultLifestyle = DefaultLifestyle.Undefined, ILogger<Container>? logger = null, params Assembly[] assemblies)
+        public Container(DefaultLifestyle defaultLifestyle = DefaultLifestyle.Undefined, ILogger<Container>? logger = null, params Assembly[]? assemblies)
         {
             Logger = logger ?? NullLogger<Container>.Instance;
             Logger.LogInformation("Constructing Container.");
@@ -95,9 +95,7 @@ namespace MinimalContainer
             }
             else if (lifestyle == Lifestyle.Factory)
             {
-                if (factory == null)
-                    throw new ArgumentNullException(nameof(factory));
-                reg.Factory = factory;
+                reg.Factory = factory ?? throw new ArgumentNullException(nameof(factory));
                 reg.Expression = Expression.Call(Expression.Constant(factory.Target), factory.GetMethodInfo());
             }
             return this;
@@ -243,7 +241,9 @@ namespace MinimalContainer
                 .Select(GetValueOfParameter)
                 .ToArray();
 
-            Logger.LogDebug($"Constructing type '{reg.TypeConcrete.AsString()}({parameters.Select(p => p?.Type.AsString()).JoinStrings(", ")})'.");
+            Logger.LogDebug($"Constructing type '{reg.TypeConcrete.AsString()}" +
+                $"({parameters.Select(p => (p == null ? "" : p.Type.AsString())).JoinStrings(", ")})'.");
+
             reg.Expression = Expression.New(ctor, parameters);
             reg.Factory = Expression.Lambda<Func<object>>(reg.Expression).Compile();
 
@@ -306,8 +306,6 @@ namespace MinimalContainer
                 .AppendLine(regs.JoinStrings(Environment.NewLine))
                 .ToString();
         }
-
-        public void Log() => Logger.LogInformation(ToString());
 
         /// <summary>
         /// Disposing the container disposes any registered disposable singletons and instances.

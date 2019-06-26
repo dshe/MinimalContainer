@@ -1,8 +1,9 @@
 ﻿using System;
+using MinimalContainer;
 
 #nullable enable
 
-namespace MinimalContainer.Tests.Examples
+namespace MinimalContainerTests
 {
     public class Example2
     {
