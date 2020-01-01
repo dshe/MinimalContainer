@@ -1,8 +1,6 @@
 ﻿using Xunit;
 using MinimalContainer;
 
-#nullable enable
-
 namespace MinimalContainerTests
 {
     public class Example1

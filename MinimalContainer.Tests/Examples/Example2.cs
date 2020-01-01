@@ -1,8 +1,6 @@
 ﻿using System;
 using MinimalContainer;
 
-#nullable enable
-
 namespace MinimalContainerTests
 {
     public class Example2

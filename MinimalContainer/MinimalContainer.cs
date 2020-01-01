@@ -8,8 +8,6 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-#nullable enable
-
 namespace MinimalContainer
 {
     public enum DefaultLifestyle { Undefined, Transient, Singleton }
@@ -316,7 +314,7 @@ namespace MinimalContainer
                 .Where(r => r.Lifestyle == Lifestyle.Singleton || r.Lifestyle == Lifestyle.Instance)
                 .Select(r => r.Factory)
                 .Where(f => f != null)
-                .Select(f => new Func<object>(f))
+                .Select(f => new Func<object>(f!))
                 .Select(f => f())
                 .Where(i => i != null && i != this)
                 .OfType<IDisposable>())

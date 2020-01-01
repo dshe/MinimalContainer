@@ -2,8 +2,6 @@
 using Xunit;
 using MinimalContainer;
 
-#nullable enable
-
 namespace MinimalContainerTests
 {
     internal interface IBar { }
