@@ -130,7 +130,7 @@ internal class Root
     }
 }
 ```
-The complete object graph is created by simply resolving the compositional root. 
+The complete object graph is created by resolving the compositional root. 
 #### logging
 ```csharp
 using Microsoft.Extensions.Logging;
@@ -139,7 +139,7 @@ var container = new Container(ILogger: logger);
 ```
 #### diagnosis
 ```csharp
-Logger.LogDebug(container.ToString());
+container.ToString();
 ```
 #### disposal
 ```csharp
