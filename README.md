@@ -7,9 +7,6 @@
 - captive and recursive dependency detection
 - supports **.NET Standard 2.0**
 - dependencies: Microsoft.Extensions.Logging.Abstractions
-- fluent interface
-- tested
-- fast
 ```csharp
 public class Container : IDisposable
 {
