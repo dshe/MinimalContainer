@@ -131,7 +131,7 @@ namespace MinimalContainer
                     var factory = reg.Factory ?? throw new Exception("Factory is null.");
                     return factory();
                 }
-                return reg.FuncDelegate ?? (reg.FuncDelegate = Expression.Lambda(reg.Expression).Compile());
+                return reg.FuncDelegate ??= Expression.Lambda(reg.Expression).Compile();
             }
             catch (TypeAccessException ex)
             {

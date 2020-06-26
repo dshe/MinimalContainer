@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 
-
-
 namespace MinimalContainer.Tests.Utility
 {
     public static class Extensions

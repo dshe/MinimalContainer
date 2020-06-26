@@ -1,10 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
-/*
- 1.0
- */
-
 
 namespace MinimalContainer.Tests.Utility
 {

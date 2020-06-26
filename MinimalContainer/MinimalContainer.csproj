@@ -10,13 +10,13 @@
     <Description>A simple and portable single file IoC (Inversion of Control) container supporting .NET Standard 2.0.</Description>
     <Authors>DavidS</Authors>
     <Company>DavidS</Company>
-    <Version>1.0.0</Version>
-    <AssemblyVersion>1.0.0</AssemblyVersion>
-    <FileVersion>1.0.0</FileVersion>
+    <Version>2.70.3</Version>
+    <AssemblyVersion>2.70.3</AssemblyVersion>
+    <FileVersion>2.70.3</FileVersion>
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.5" />
   </ItemGroup>
   
 </Project>
