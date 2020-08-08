@@ -19,29 +19,29 @@ namespace MinimalContainer.Tests.Relative
         [Fact]
         public void T01_Duplicate_Registration()
         {
-            var container = new Container(DefaultLifestyle.Singleton, Logger);
+            var container = new Container(DefaultLifestyle.Singleton, Log);
 
             container.RegisterSingleton<ClassA>();
-            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<ClassA>()).WriteMessageTo(Logger);
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<ClassA>()).WriteMessageTo(Log);
 
             container.RegisterSingleton<IMarker1, ClassB>();
-            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<IMarker1, ClassB>()).WriteMessageTo(Logger);
+            Assert.Throws<TypeAccessException>(() => container.RegisterSingleton<IMarker1, ClassB>()).WriteMessageTo(Log);
         }
 
         [Fact]
         public void T02_Registration_Duplicate_Marker()
         {
-            var container = new Container(DefaultLifestyle.Singleton, Logger);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<IMarker1>()).WriteMessageTo(Logger);
+            var container = new Container(DefaultLifestyle.Singleton, Log);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<IMarker1>()).WriteMessageTo(Log);
         }
 
         [Fact]
         public void T03_Registration_Concrete_Multiple()
         {
-            var container = new Container(logger: Logger);
+            var container = new Container(log: Log);
             container.RegisterSingleton<IMarker1, ClassA>();
             container.Resolve<IMarker1>();
-            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassA>()).WriteMessageTo(Logger);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassA>()).WriteMessageTo(Log);
         }
     }
 }

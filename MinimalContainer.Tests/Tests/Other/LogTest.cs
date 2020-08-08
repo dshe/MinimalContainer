@@ -17,19 +17,19 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T01()
         {
-            var container = new Container(DefaultLifestyle.Singleton,Logger, typeof(string).GetTypeInfo().Assembly);
+            var container = new Container(DefaultLifestyle.Singleton, Log, typeof(string).GetTypeInfo().Assembly);
             container.RegisterSingleton<IFoo, Foo>();
-            Logger.LogDebug("");
-            Logger.LogDebug(container.ToString());
+            Log("");
+            Log(container.ToString());
         }
 
         [Fact]
         public void T02()
         {
-            var container = new Container(DefaultLifestyle.Singleton, Logger, typeof(string).GetTypeInfo().Assembly);
+            var container = new Container(DefaultLifestyle.Singleton, Log, typeof(string).GetTypeInfo().Assembly);
             container.RegisterSingleton<IFoo, Foo>();
-            Logger.LogDebug("");
-            Logger.LogDebug(container.ToString());
+            Log("");
+            Log(container.ToString());
         }
 
     }

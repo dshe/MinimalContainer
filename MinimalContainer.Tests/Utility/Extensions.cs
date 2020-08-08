@@ -5,12 +5,12 @@ namespace MinimalContainer.Tests.Utility
 {
     public static class Extensions
     {
-        public static Exception WriteMessageTo(this Exception ex, ILogger logger)
+        public static Exception WriteMessageTo(this Exception ex, Action<string> log)
         {
-            logger.LogDebug(ex.Message);
+            log.Invoke(ex.Message);
             if (ex.InnerException != null)
-                logger.LogDebug(ex.InnerException.Message);
-            logger.LogDebug("");
+                log.Invoke(ex.InnerException.Message);
+            log.Invoke("");
             return ex;
         }
     }

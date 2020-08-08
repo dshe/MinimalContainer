@@ -6,8 +6,8 @@ namespace MinimalContainer.Tests.Utility
 {
     public class Perf
     {
-        private readonly ILogger Logger;
-        public Perf(ILogger logger) => Logger = logger;
+        private readonly Action<string> Log;
+        public Perf(Action<string> log) => Log = log;
 
         private static double MeasureTicks(Action action)
         {
@@ -27,14 +27,14 @@ namespace MinimalContainer.Tests.Utility
         public void MeasureRate(Action action, string label)
         {
             var frequency = Stopwatch.Frequency / MeasureTicks(action);
-            Logger.LogDebug($"{frequency,12:##,###,###} {label}");
+            Log($"{frequency,12:##,###,###} {label}");
         }
 
         public void MeasureDuration(Action action, long iterations, string label)
         {
             var ticks = (long)(MeasureTicks(action) * iterations);
             var ts = TimeSpan.FromTicks(ticks);
-            Logger.LogDebug($"{ts} {label}");
+            Log($"{ts} {label}");
         }
     }
 }

@@ -27,10 +27,10 @@ namespace MinimalContainer.Tests.Relative
         [Fact]
         public void Test_Cannot_Create_Dependency()
         {
-            var container = new Container(DefaultLifestyle.Singleton, logger:Logger);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassZ>()).WriteMessageTo(Logger);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassY>()).WriteMessageTo(Logger);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassX>()).WriteMessageTo(Logger);
+            var container = new Container(DefaultLifestyle.Singleton, Log);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassZ>()).WriteMessageTo(Log);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassY>()).WriteMessageTo(Log);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassX>()).WriteMessageTo(Log);
         }
     }
 }

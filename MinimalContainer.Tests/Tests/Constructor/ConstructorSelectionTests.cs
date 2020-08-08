@@ -18,7 +18,7 @@ namespace MinimalContainer.Tests.Constructor
         [Fact]
         public void T01_Class_With_Multiple_Constructors()
         {
-            var container = new Container(DefaultLifestyle.Singleton, Logger);
+            var container = new Container(DefaultLifestyle.Singleton, Log);
             var instance = container.Resolve<ClassA>();
             Assert.True(instance.Ok);
         }
@@ -33,7 +33,7 @@ namespace MinimalContainer.Tests.Constructor
         [Fact]
         public void T02_Class_With_Attribute_Constructor()
         {
-            var container = new Container(DefaultLifestyle.Singleton, Logger);
+            var container = new Container(DefaultLifestyle.Singleton, Log);
             var instance = container.Resolve<ClassB>();
             Assert.True(instance.Ok);
         }
@@ -48,8 +48,8 @@ namespace MinimalContainer.Tests.Constructor
         [Fact]
         public void T03_Class_With_Multiple_Attributes()
         {
-            var container = new Container(DefaultLifestyle.Singleton, Logger);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassC>()).WriteMessageTo(Logger);
+            var container = new Container(DefaultLifestyle.Singleton, Log);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<ClassC>()).WriteMessageTo(Log);
         }
     }
 }

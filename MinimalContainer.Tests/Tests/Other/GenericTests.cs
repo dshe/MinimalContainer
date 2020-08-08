@@ -24,7 +24,7 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T01_Generic()
         {
-            var container = new Container(logger: Logger);
+            var container = new Container(log: Log);
             container.RegisterSingleton<Bar2>();
             container.RegisterSingleton<Bar1<Bar2>>();
             container.RegisterSingleton<Foo>();
@@ -37,9 +37,9 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T02_Generic_Auto()
         {
-            var container = new Container(logger: Logger, defaultLifestyle:DefaultLifestyle.Singleton);
+            var container = new Container(DefaultLifestyle.Singleton, Log);
             container.Resolve<Foo>();
-            Logger.LogWarning(Environment.NewLine + container);
+            Log(Environment.NewLine + container);
         }
 
         [Fact]
@@ -78,17 +78,17 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T01_class()
         {
-            var container = new Container(DefaultLifestyle.Singleton, Logger);
+            var container = new Container(DefaultLifestyle.Singleton, Log);
             container.Resolve<ClassC>();
-            Logger.LogDebug(Environment.NewLine + container);
+            Log(Environment.NewLine + container);
         }
 
         [Fact]
         public void T02_interface()
         {
-            var container = new Container(DefaultLifestyle.Singleton, Logger);
+            var container = new Container(DefaultLifestyle.Singleton, Log);
             container.Resolve<ClassD>();
-            Logger.LogDebug(Environment.NewLine + container);
+            Log.Invoke(Environment.NewLine + container);
         }
 
         ////////////////////////////////////////////////////////////////////////////////
@@ -109,11 +109,11 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T10_parm()
         {
-            var container = new Container(DefaultLifestyle.Singleton, Logger);
+            var container = new Container(DefaultLifestyle.Singleton, Log);
             var b = container.Resolve<ObsConcrete>();
 
             var x = container.Resolve<Test>();
-            Logger.LogDebug(Environment.NewLine + container);
+            Log(Environment.NewLine + container);
         }
     }
 

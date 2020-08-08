@@ -18,7 +18,7 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T01_Dispose_Singleton()
         {
-            var container = new Container(DefaultLifestyle.Singleton, logger: Logger);
+            var container = new Container(DefaultLifestyle.Singleton, Log);
             container.RegisterSingleton<Foo>();
             var instance = container.Resolve<Foo>();
             container.Dispose();
@@ -28,7 +28,7 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T02_Dispose_Instance()
         {
-            var container = new Container(DefaultLifestyle.Singleton, Logger);
+            var container = new Container(DefaultLifestyle.Singleton, Log);
             var instance = new Foo();
             container.RegisterInstance(instance);
             container.Dispose();
@@ -38,7 +38,7 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T03_Dispose_Other()
         {
-            var container = new Container(DefaultLifestyle.Singleton, Logger);
+            var container = new Container(DefaultLifestyle.Singleton, Log);
             container.RegisterTransient<Foo>();
             var instance = container.Resolve<Foo>();
             container.Dispose();

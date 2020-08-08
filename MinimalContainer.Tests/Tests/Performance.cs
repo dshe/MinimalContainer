@@ -20,7 +20,7 @@ namespace MinimalContainer.Tests.Performance
         private readonly Perf perf;
 
         public TestPerformance(ITestOutputHelper output) : base(output)
-            => perf = new Perf(Logger);
+            => perf = new Perf(Log);
 
         [Fact]
         public void Test_Performance()

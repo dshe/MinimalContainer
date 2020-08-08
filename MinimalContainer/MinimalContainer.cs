@@ -5,8 +5,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace MinimalContainer
 {
@@ -39,13 +37,12 @@ namespace MinimalContainer
         private readonly Lazy<List<TypeInfo>> AllTypesConcrete;
         private readonly Dictionary<Type, Registration> Registrations = new Dictionary<Type, Registration>();
         private readonly Stack<TypeInfo> TypeStack = new Stack<TypeInfo>();
-        private readonly ILogger Logger;
+        private readonly Action<string>? Log;
 
-        public Container(DefaultLifestyle defaultLifestyle = DefaultLifestyle.Undefined, ILogger<Container>? logger = null, params Assembly[]? assemblies)
+        public Container(DefaultLifestyle defaultLifestyle = DefaultLifestyle.Undefined, Action<string>? log = null, params Assembly[]? assemblies)
         {
-            Logger = logger ?? NullLogger<Container>.Instance;
-            Logger.LogInformation("Constructing Container.");
-
+            Log = log;
+            Log?.Invoke("Constructing Container.");
             DefaultLifestyle = defaultLifestyle;
 
             if (assemblies == null)
@@ -80,7 +77,8 @@ namespace MinimalContainer
                 throw new ArgumentNullException(nameof(type));
 
             var reg = AddRegistration(type.GetTypeInfo());
-            Logger.LogInformation($"Registering {caller}: {reg},");
+            Log?.Invoke($"Registering {caller}: {reg},");
+
             reg.TypeConcrete = typeConcrete?.GetTypeInfo();
             reg.Lifestyle = lifestyle;
             if (lifestyle == Lifestyle.Instance)
@@ -188,7 +186,7 @@ namespace MinimalContainer
             if (dependent == null)
             {
                 TypeStack.Clear();
-                Logger.LogDebug($"Getting instance of type: '{reg.Type.AsString()}'.");
+                Log?.Invoke($"Getting instance of type: '{reg.Type.AsString()}'.");
             }
             else if (reg.Lifestyle == Lifestyle.Undefined && (dependent?.Lifestyle == Lifestyle.Singleton || dependent?.Lifestyle == Lifestyle.Instance))
                 reg.Lifestyle = Lifestyle.Singleton;
@@ -239,7 +237,7 @@ namespace MinimalContainer
                 .Select(GetValueOfParameter)
                 .ToArray();
 
-            Logger.LogDebug($"Constructing type '{reg.TypeConcrete.AsString()}" +
+            Log?.Invoke($"Constructing type '{reg.TypeConcrete.AsString()}" +
                 $"({parameters.Select(p => (p == null ? "" : p.Type.AsString())).JoinStrings(", ")})'.");
 
             reg.Expression = Expression.New(ctor, parameters);
@@ -282,7 +280,7 @@ namespace MinimalContainer
             }
 
             var expressions = assignableTypes.Select(t => GetOrAddExpression(t.AsType(), reg)).ToList();
-            Logger.LogDebug($"Constructing list of {expressions.Count} types assignable to '{genericType.AsString()}'.");
+            Log?.Invoke($"Constructing list of {expressions.Count} types assignable to '{genericType.AsString()}'.");
             reg.Expression = Expression.NewArrayInit(genericType.AsType(), expressions);
             reg.Factory = Expression.Lambda<Func<object>>(reg.Expression).Compile();
 
@@ -319,12 +317,12 @@ namespace MinimalContainer
                 .Where(i => i != null && i != this)
                 .OfType<IDisposable>())
             {
-                Logger.LogTrace($"Disposing type '{disposable.GetType().AsString()}'.");
+                Log?.Invoke($"Disposing type '{disposable.GetType().AsString()}'.");
                 disposable.Dispose();
             }
 
             Registrations.Clear();
-            Logger.LogTrace("Container disposed.");
+            Log?.Invoke("Container disposed.");
         }
     }
 }

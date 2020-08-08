@@ -24,14 +24,14 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T00_Not_Registered()
         {
-            var container = new Container(logger: Logger);
-            Assert.Throws<TypeAccessException>(() => container.Resolve<IEnumerable<SomeClass1>>()).WriteMessageTo(Logger);
+            var container = new Container(log: Log);
+            Assert.Throws<TypeAccessException>(() => container.Resolve<IEnumerable<SomeClass1>>()).WriteMessageTo(Log);
         }
 
         [Fact]
         public void T01_Registered()
         {
-            var container = new Container(logger: Logger);
+            var container = new Container(log: Log);
             container.RegisterSingleton<SomeClass1>();
             Assert.Single(container.Resolve<IList<SomeClass1>>());
         }
@@ -39,14 +39,14 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T02_DefaultLifestyle()
         {
-            var container = new Container(DefaultLifestyle.Singleton, logger: Logger);
+            var container = new Container(DefaultLifestyle.Singleton, Log);
             Assert.Single(container.Resolve<IList<SomeClass1>>());
         }
 
         [Fact]
         public void T03_List()
         {
-            var container = new Container(DefaultLifestyle.Singleton, logger: Logger);
+            var container = new Container(DefaultLifestyle.Singleton, Log);
             Assert.Single(container.Resolve<IList<SomeClass1>>());
             Assert.Equal(2, container.Resolve<IList<IMarker>>().Count());
         }
@@ -54,7 +54,7 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T04_List_Auto()
         {
-            var container = new Container(logger: Logger, defaultLifestyle:DefaultLifestyle.Singleton);
+            var container = new Container(DefaultLifestyle.Singleton, Log);
             Assert.Single(container.Resolve<IList<SomeClass1>>());
             Assert.Equal(2, container.Resolve<IList<IMarker>>().Count());
         }
@@ -62,7 +62,7 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T05_Get_List_Types()
         {
-            var container = new Container(logger: Logger, defaultLifestyle: DefaultLifestyle.Singleton);
+            var container = new Container(DefaultLifestyle.Singleton, Log);
             Assert.Equal(2, container.Resolve<IEnumerable<IMarker>>().Count());
             Assert.Equal(2, container.Resolve<ICollection<IMarker>>().Count);
             Assert.Equal(2, container.Resolve<IReadOnlyCollection<IMarker>>().Count);
@@ -75,7 +75,7 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T06_Register_List()
         {
-            var container = new Container(logger: Logger);
+            var container = new Container(log: Log);
             var list = new List<SomeClass1> {new SomeClass1()};
             container.RegisterInstance(list);
             var instance = container.Resolve<List<SomeClass1>>();
@@ -85,7 +85,7 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T07_Injection()
         {
-            var container = new Container(logger: Logger);
+            var container = new Container(log: Log);
             container.RegisterSingleton<SomeClass1>();
             container.RegisterSingleton<SomeClass2>();
             container.RegisterSingleton<SomeClass3>();
@@ -97,7 +97,7 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T08_Injection_Auto()
         {
-            var container = new Container(logger: Logger, defaultLifestyle: DefaultLifestyle.Singleton);
+            var container = new Container(DefaultLifestyle.Singleton, Log);
             var instance = container.Resolve<SomeClass3>();
             Assert.Equal(2, instance.List.Count());
         }
@@ -105,7 +105,7 @@ namespace MinimalContainer.Tests.Other
         [Fact]
         public void T09_Combo()
         {
-            var container = new Container(logger: Logger, defaultLifestyle: DefaultLifestyle.Singleton);
+            var container = new Container(DefaultLifestyle.Singleton, Log);
             var instance = container.Resolve<Func<IList<IMarker>>>();
             Assert.Equal(2, instance().Count());
         }
