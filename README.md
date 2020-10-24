@@ -6,7 +6,7 @@
 - transient and singleton lifestyles
 - captive and recursive dependency detection
 - supports **.NET Standard 2.0**
-- dependencies: Microsoft.Extensions.Logging.Abstractions
+- dependencies: none
 ```csharp
 public class Container : IDisposable
 {
@@ -130,9 +130,8 @@ internal class Root
 The complete object graph is created by resolving the compositional root. 
 #### logging
 ```csharp
-using Microsoft.Extensions.Logging;
-...
-var container = new Container(ILogger: logger);
+Action<string> log;
+var container = new Container(Log: log);
 ```
 #### diagnosis
 ```csharp
