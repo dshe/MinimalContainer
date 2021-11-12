@@ -1,0 +1,10 @@
+
+/*             Value Type    Value Type Default        Reference Type    null
+ * none        throw         ok                        ok                ok
+ * in          throw         ok                        ok                ok
+ * ref         throw         -                         throw!            -
+ * out         throw         -                         throw!            -
+ */
+
+Debug.Write => Logger.Write
+or not Logger?

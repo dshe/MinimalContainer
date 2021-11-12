@@ -1,5 +1,4 @@
-﻿using MXLogger;
-using System;
+﻿using System;
 using Xunit.Abstractions;
 
 namespace MinimalContainer.Tests.Utility
