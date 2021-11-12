@@ -1,12 +1,12 @@
-## MinimalContainer&nbsp;&nbsp; [![Build status](https://ci.appveyor.com/api/projects/status/xig5mmbk9lqus99h?svg=true)](https://ci.appveyor.com/project/dshe/MinimalContainer) [![NuGet](https://img.shields.io/nuget/vpre/MinimalContainer.svg)](https://www.nuget.org/packages/MinimalContainer/) [![License](https://img.shields.io/badge/license-Apache%202.0-7755BB.svg)](https://opensource.org/licenses/Apache-2.0)
+## MinimalContainer&nbsp;&nbsp; [![Build status](https://ci.appveyor.com/api/projects/status/xig5mmbk9lqus99h?svg=true)](https://ci.appveyor.com/project/dshe/MinimalContainer) [![NuGet](https://img.shields.io/nuget/vpre/MinimalContainer.svg)](https://www.nuget.org/packages/MinimalContainer/) [![NuGet](https://img.shields.io/nuget/dt/MinimalContainer?color=orange)](https://www.nuget.org/packages/MinimalContainer/) [![License](https://img.shields.io/badge/license-Apache%202.0-7755BB.svg)](https://opensource.org/licenses/Apache-2.0)
 ***A minimal IoC (Inversion of Control) container.***
 - automatic and/or explicit type registration
 - public and **internal** constructor injection
-- injection of instances, type factories and collections
+- injection of instances, factories and collections
 - transient and singleton lifestyles
 - captive and recursive dependency detection
 - supports **.NET Standard 2.0**
-- dependencies: none
+- dependencies: **none**
 ```csharp
 public class Container : IDisposable
 {
@@ -20,7 +20,7 @@ public class Container : IDisposable
     public void Dispose();
 }
 ```
-#### example
+### example
 ```csharp
 using MinimalContainer;
 
@@ -36,7 +36,7 @@ public class Example
        IFoo foo = container.Resolve<IFoo>();
        ...
 ```
-#### registration
+### registration
 ```csharp
 container.RegisterSingleton<Foo>();
 container.RegisterSingleton<IFoo, Foo>();
@@ -50,22 +50,22 @@ container.RegisterInstance<IFoo>(new Foo());
 container.RegisterFactory(() => new Foo());
 container.RegisterFactory<IFoo>(() => new Foo());
 ```
-#### type resolution
+### type resolution
 ```csharp
 T instance = container.Resolve<T>();
 T instance = container.Resolve(typeof(T));
 ```
-#### resolution of assignable types
+### resolution of assignable types
 ```csharp
 IList<T> instances = container.Resolve<IList<T>>();
 ```
 A list of instances of registered types which are assignable to `T` is returned.
-#### resolution of type factories
+### resolution of type factories
 ```csharp
 Func<T> factory = container.Resolve<Func<T>>();
 T instance = factory();
 ```
-#### constructors
+### constructors
 The container can create instances of types using public and internal constructors. In case a type has more than one constructor, decorate the constructor to be used with the 'ContainerConstructor' attribute. Otherwise, the constructor with the smallest number of arguments is selected.
 ```csharp
 public class Foo
@@ -76,7 +76,7 @@ public class Foo
     public Foo(IBar bar) {}
 }
 ```
-#### automatic registration
+### automatic registration
 ```csharp
 public class T {}
 
@@ -85,7 +85,7 @@ var container = new Container(DefaultLifestyle.Singleton);
 T instance = container.Resolve<T>();
 ```
 To enable automatic registration, set the default lifestyle to singleton or transient when constructing the container. Note that the container will always register the dependencies of singleton instances as singletons. If automatic type resolution requires scanning assemblies other than the assembly where the container is created, include references to those assemblies in the container's constructor.
-#### fluency
+### fluency
 ```csharp
 Foo1 foo1 = new Container()
     .RegisterSingleton<Foo1>()
@@ -94,7 +94,7 @@ Foo1 foo1 = new Container()
     .RegisterFactory(() => new Foo4())
     .Resolve<Foo1>();
 ```
-#### example
+### example
 ```csharp
 using MinimalContainer;
 
@@ -128,16 +128,16 @@ internal class Root
 }
 ```
 The complete object graph is created by resolving the compositional root. 
-#### logging
+### logging
 ```csharp
 Action<string> log;
 var container = new Container(Log: log);
 ```
-#### diagnosis
+### diagnosis
 ```csharp
 container.ToString();
 ```
-#### disposal
+### disposal
 ```csharp
 container.Dispose();
 ```
