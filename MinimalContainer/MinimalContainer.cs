@@ -47,7 +47,7 @@ namespace MinimalContainer
 
             if (assemblies == null)
                 throw new ArgumentNullException(nameof(assemblies));
-            var assemblyList = assemblies.ToList();
+            List<Assembly> assemblyList = assemblies.ToList();
             if (!assemblyList.Any())
                 assemblyList.Add(Assembly.GetCallingAssembly());
 
@@ -76,7 +76,7 @@ namespace MinimalContainer
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
 
-            var reg = AddRegistration(type.GetTypeInfo());
+            Registration reg = AddRegistration(type.GetTypeInfo());
             Log?.Invoke($"Registering {caller}: {reg},");
 
             reg.TypeConcrete = typeConcrete?.GetTypeInfo();
@@ -103,7 +103,7 @@ namespace MinimalContainer
         {
             try
             {
-                var reg = new Registration(type);
+                Registration reg = new Registration(type);
                 Registrations.Add(type.AsType(), reg);
                 return reg;
             }
@@ -126,7 +126,7 @@ namespace MinimalContainer
                 (Registration reg, bool isFunc) = GetOrAddInitializeRegistration(type, null);
                 if (!isFunc)
                 {
-                    var factory = reg.Factory ?? throw new Exception("Factory is null.");
+                    Func<object> factory = reg.Factory ?? throw new InvalidOperationException("Factory is null.");
                     return factory();
                 }
                 return reg.FuncDelegate ??= Expression.Lambda(reg.Expression).Compile();
@@ -135,7 +135,7 @@ namespace MinimalContainer
             {
                 if (!TypeStack.Any())
                     TypeStack.Push(type.GetTypeInfo());
-                var typePath = TypeStack.Select(t => t.AsString()).JoinStrings("->");
+                string typePath = TypeStack.Select(t => t.AsString()).JoinStrings("->");
                 throw new TypeAccessException($"Could not get instance of type {typePath}. {ex.Message}", ex);
             }
         }
@@ -143,7 +143,7 @@ namespace MinimalContainer
         private Expression GetOrAddExpression(in Type type, in Registration dependent)
         {
             (Registration reg, bool isFunc) = GetOrAddInitializeRegistration(type, dependent);
-            var expression = reg.Expression ?? throw new Exception("Expression is null.");
+            Expression expression = reg.Expression ?? throw new InvalidOperationException("Expression is null.");
             return isFunc ? Expression.Lambda(expression) : expression;
         }
 
@@ -165,7 +165,7 @@ namespace MinimalContainer
                 if (typeInfo.GetFuncArgumentType(out TypeInfo? funcType))
                 {
                     isFunc = true;
-                    typeInfo = funcType ?? throw new NullReferenceException();
+                    typeInfo = funcType ?? throw new InvalidOperationException(nameof(funcType));
                     if (Registrations.TryGetValue(typeInfo.AsType(), out reg))
                     {
                         if (reg.Lifestyle == Lifestyle.Singleton || reg.Lifestyle == Lifestyle.Instance)
@@ -188,7 +188,7 @@ namespace MinimalContainer
                 TypeStack.Clear();
                 Log?.Invoke($"Getting instance of type: '{reg.Type.AsString()}'.");
             }
-            else if (reg.Lifestyle == Lifestyle.Undefined && (dependent?.Lifestyle == Lifestyle.Singleton || dependent?.Lifestyle == Lifestyle.Instance))
+            else if (reg.Lifestyle == Lifestyle.Undefined && (dependent.Lifestyle == Lifestyle.Singleton || dependent.Lifestyle == Lifestyle.Instance))
                 reg.Lifestyle = Lifestyle.Singleton;
 
             TypeStack.Push(reg.Type);
@@ -218,8 +218,8 @@ namespace MinimalContainer
                 if (reg.Lifestyle == Lifestyle.Singleton)
                 {
                     if (reg.Factory == null)
-                        throw new Exception("Factory is null.");
-                    var instance = reg.Factory();
+                        throw new InvalidOperationException("Factory is null.");
+                    object instance = reg.Factory();
                     reg.Factory = () => instance;
                     reg.Expression = Expression.Constant(instance);
                 }
@@ -231,9 +231,9 @@ namespace MinimalContainer
             if (reg.TypeConcrete == null)
                 reg.TypeConcrete = AllTypesConcrete.Value.FindConcreteType(reg.Type);
 
-            var ctor = reg.TypeConcrete.GetConstructor();
+            ConstructorInfo ctor = reg.TypeConcrete.GetConstructor();
 
-            var parameters = ctor.GetParameters()
+            Expression[] parameters = ctor.GetParameters()
                 .Select(GetValueOfParameter)
                 .ToArray();
 
@@ -246,10 +246,10 @@ namespace MinimalContainer
             // local function
             Expression GetValueOfParameter(ParameterInfo p)
             {
-                var type = p.ParameterType;
+                Type type = p.ParameterType;
                 if (type.IsByRef) 
                 {
-                    if (!p.GetCustomAttributes().Any(x => x.ToString().EndsWith("IsReadOnlyAttribute")))
+                    if (!p.GetCustomAttributes().Any(x => x.ToString().EndsWith("IsReadOnlyAttribute", StringComparison.Ordinal)))
                         throw new TypeAccessException($"Invalid ref or out parameter type '{type.Name}'.");
                     type = type.GetElementType(); // support 'In' parameter type only
                 }
@@ -263,9 +263,9 @@ namespace MinimalContainer
 
         private void InitializeList(Registration reg)
         {
-            var genericType = reg.Type.GenericTypeArguments.Single().GetTypeInfo();
+            TypeInfo genericType = reg.Type.GenericTypeArguments.Single().GetTypeInfo();
 
-            var assignableTypes = (DefaultLifestyle == DefaultLifestyle.Undefined
+            List<TypeInfo> assignableTypes = (DefaultLifestyle == DefaultLifestyle.Undefined
                 ? Registrations.Values.Select(r => r.Type) : AllTypesConcrete.Value)
                 .Where(t => genericType.IsAssignableFrom(t)).ToList();
 
@@ -279,7 +279,7 @@ namespace MinimalContainer
                 reg.Lifestyle = Lifestyle.Transient;
             }
 
-            var expressions = assignableTypes.Select(t => GetOrAddExpression(t.AsType(), reg)).ToList();
+            List<Expression> expressions = assignableTypes.Select(t => GetOrAddExpression(t.AsType(), reg)).ToList();
             Log?.Invoke($"Constructing list of {expressions.Count} types assignable to '{genericType.AsString()}'.");
             reg.Expression = Expression.NewArrayInit(genericType.AsType(), expressions);
             reg.Factory = Expression.Lambda<Func<object>>(reg.Expression).Compile();
@@ -295,7 +295,7 @@ namespace MinimalContainer
 
         public override string ToString()
         {
-            var regs = Registrations.Values.Select(r => r.ToString()).ToList();
+            List<string> regs = Registrations.Values.Select(r => r.ToString()).ToList();
 
             return new StringBuilder()
                 .AppendLine($"Container: {DefaultLifestyle}, {regs.Count} registered types:")
@@ -308,7 +308,7 @@ namespace MinimalContainer
         /// </summary>
         public void Dispose()
         {
-            foreach (var disposable in Registrations.Values
+            foreach (IDisposable disposable in Registrations.Values
                 .Where(r => r.Lifestyle == Lifestyle.Singleton || r.Lifestyle == Lifestyle.Instance)
                 .Select(r => r.Factory)
                 .Where(f => f != null)

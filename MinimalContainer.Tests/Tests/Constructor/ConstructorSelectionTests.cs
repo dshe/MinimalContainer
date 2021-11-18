@@ -27,7 +27,7 @@ namespace MinimalContainer.Tests.Constructor
         {
             public bool Ok;
             public ClassB() {}
-            [ContainerConstructor]
+            [ContainerConstructorAttribute]
             public ClassB(ClassA a) { Ok = true; }
         }
         [Fact]
@@ -40,9 +40,9 @@ namespace MinimalContainer.Tests.Constructor
 
         public class ClassC
         {
-            [ContainerConstructor]
+            [ContainerConstructorAttribute]
             public ClassC(int i) { }
-            [ContainerConstructor]
+            [ContainerConstructorAttribute]
             public ClassC() { }
         }
         [Fact]

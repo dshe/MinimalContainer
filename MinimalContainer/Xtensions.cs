@@ -12,20 +12,20 @@ namespace MinimalContainer
     /// Otherwise, the constructor with the smallest number of arguments is selected.
     /// </summary>
     [AttributeUsage(AttributeTargets.Constructor)]
-    public sealed class ContainerConstructor : Attribute { }
+    public sealed class ContainerConstructorAttribute: Attribute { }
 
-    internal static class MinimalContainerEx
+    internal static class Xtensions
     {
         internal static TypeInfo FindConcreteType(this List<TypeInfo> allTypesConcrete, TypeInfo type)
         {
             if (!type.IsAbstract && !type.IsInterface)
                 return type;
             // When a non-concrete type is indicated, the concrete type is determined automatically.
-            var assignableTypes = allTypesConcrete.Where(type.IsAssignableFrom).ToList(); // slow
+            List<TypeInfo> assignableTypes = allTypesConcrete.Where(type.IsAssignableFrom).ToList(); // slow
             // The non-concrete type must be assignable to exactly one concrete type.
             if (assignableTypes.Count == 1)
                 return assignableTypes.Single();
-            var types = assignableTypes.Select(t => t.FullName).JoinStrings(", ");
+            string types = assignableTypes.Select(t => t.FullName).JoinStrings(", ");
             throw new TypeAccessException($"{assignableTypes.Count} concrete types found assignable to '{type.AsString()}': {types}.");
         }
 
@@ -43,17 +43,17 @@ namespace MinimalContainer
 
         internal static ConstructorInfo GetConstructor(this TypeInfo type)
         {
-            var ctors = type.DeclaredConstructors.Where(c => !c.IsPrivate).ToList();
+            List<ConstructorInfo> ctors = type.DeclaredConstructors.Where(c => !c.IsPrivate).ToList();
             if (ctors.Count == 1)
                 return ctors.Single();
             if (!ctors.Any())
                 throw new TypeAccessException($"Type '{type.AsString()}' has no public or internal constructor.");
 
-            var ctorsWithAttribute = ctors.Where(c => c.GetCustomAttribute<ContainerConstructor>() != null).ToList();
+            List<ConstructorInfo> ctorsWithAttribute = ctors.Where(c => c.GetCustomAttribute<ContainerConstructorAttribute>() != null).ToList();
             if (ctorsWithAttribute.Count == 1)
                 return ctorsWithAttribute.Single();
             if (ctorsWithAttribute.Count > 1)
-                throw new TypeAccessException($"Type '{type.AsString()}' has more than one constructor decorated with '{nameof(ContainerConstructor)}'.");
+                throw new TypeAccessException($"Type '{type.AsString()}' has more than one constructor decorated with '{nameof(ContainerConstructorAttribute)}'.");
 
              return ctors.OrderBy(c => c.GetParameters().Length).First();
         }
@@ -65,13 +65,13 @@ namespace MinimalContainer
         internal static string AsString(this Type type) => type.GetTypeInfo().AsString();
         internal static string AsString(this TypeInfo type)
         {
-            var name = type.Name;
+            string name = type.Name;
             if (type.IsGenericParameter || !type.IsGenericType)
                 return name;
-            var index = name.IndexOf("`", StringComparison.Ordinal);
+            int index = name.IndexOf("`", StringComparison.Ordinal);
             if (index >= 0)
                 name = name.Substring(0, index);
-            var args = type.GenericTypeArguments
+            string args = type.GenericTypeArguments
                 .Select(a => a.GetTypeInfo().AsString())
                 .JoinStrings(",");
             return $"{name}<{args}>";
