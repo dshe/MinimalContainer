@@ -80,7 +80,7 @@ public class Foo
 ```csharp
 public class T {}
 
-var container = new Container(DefaultLifestyle.Singleton);
+Container container = new Container(DefaultLifestyle.Singleton);
 
 T instance = container.Resolve<T>();
 ```
@@ -131,7 +131,7 @@ The complete object graph is created by resolving the compositional root.
 ### logging
 ```csharp
 Action<string> log;
-var container = new Container(Log: log);
+Container container = new Container(Log: log);
 ```
 ### diagnosis
 ```csharp
