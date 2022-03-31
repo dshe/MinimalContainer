@@ -9,9 +9,9 @@
     <Description>A simple and portable single file IoC (Inversion of Control) container supporting .NET Standard 2.0.</Description>
     <Authors>DavidS</Authors>
     <Company>DavidS</Company>
-    <Version>2.90.1</Version>
-    <AssemblyVersion>2.90.1</AssemblyVersion>
-    <FileVersion>2.90.1</FileVersion>
+    <Version>2.90.2</Version>
+    <AssemblyVersion>2.90.2</AssemblyVersion>
+    <FileVersion>2.90.2</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageIcon>worm64.png</PackageIcon>
     <DebugType>embedded</DebugType>
