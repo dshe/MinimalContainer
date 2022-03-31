@@ -1,11 +1,11 @@
 ## MinimalContainer&nbsp;&nbsp; [![Build status](https://ci.appveyor.com/api/projects/status/xig5mmbk9lqus99h?svg=true)](https://ci.appveyor.com/project/dshe/MinimalContainer) [![NuGet](https://img.shields.io/nuget/vpre/MinimalContainer.svg)](https://www.nuget.org/packages/MinimalContainer/) [![NuGet](https://img.shields.io/nuget/dt/MinimalContainer?color=orange)](https://www.nuget.org/packages/MinimalContainer/) [![License](https://img.shields.io/badge/license-Apache%202.0-7755BB.svg)](https://opensource.org/licenses/Apache-2.0)
 ***A minimal IoC (Inversion of Control) container.***
+- **.NET Standard 2.0** library
 - automatic and/or explicit type registration
 - public and **internal** constructor injection
 - injection of instances, factories and collections
 - transient and singleton lifestyles
 - captive and recursive dependency detection
-- supports **.NET Standard 2.0**
 - dependencies: **none**
 ```csharp
 public class Container : IDisposable
@@ -80,7 +80,7 @@ public class Foo
 ```csharp
 public class T {}
 
-var container = new Container(DefaultLifestyle.Singleton);
+Container container = new Container(DefaultLifestyle.Singleton);
 
 T instance = container.Resolve<T>();
 ```
@@ -131,7 +131,7 @@ The complete object graph is created by resolving the compositional root.
 ### logging
 ```csharp
 Action<string> log;
-var container = new Container(Log: log);
+Container container = new Container(Log: log);
 ```
 ### diagnosis
 ```csharp
