@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using MinimalContainer.Tests.Utility;
+﻿using MinimalContainer.Tests.Utility;
 using System;
 using System.Reflection;
 using Xunit;

@@ -55,7 +55,7 @@ namespace MinimalContainer
             if (ctorsWithAttribute.Count > 1)
                 throw new TypeAccessException($"Type '{type.AsString()}' has more than one constructor decorated with '{nameof(ContainerConstructorAttribute)}'.");
 
-             return ctors.OrderBy(c => c.GetParameters().Length).First();
+            return ctors.OrderBy(c => c.GetParameters().Length).First();
         }
 
         internal static bool IsEnumerable(this TypeInfo type) => typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(type);

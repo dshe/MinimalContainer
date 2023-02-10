@@ -21,14 +21,14 @@ namespace MinimalContainer
         internal Delegate? FuncDelegate;
         internal Registration(TypeInfo type)
         {
-            if (type == null)
+            if (type is null)
                 throw new ArgumentNullException(nameof(type));
-            if (type.AsType() == typeof(string) || (!type.IsClass && !type.IsInterface))
+            if (type.AsType() == typeof(string) || type is { IsClass: false, IsInterface: false })
                 throw new TypeAccessException("Type is neither a class nor an interface.");
             Type = type;
         }
         public override string ToString() =>
-            $"{(TypeConcrete == null || Equals(TypeConcrete, Type) ? "" : TypeConcrete.AsString() + "->")}{Type.AsString()}, {Lifestyle}.";
+            $"{(TypeConcrete is null || Equals(TypeConcrete, Type) ? "" : TypeConcrete.AsString() + "->")}{Type.AsString()}, {Lifestyle}.";
     }
 
     public sealed class Container : IDisposable
@@ -45,7 +45,7 @@ namespace MinimalContainer
             Log?.Invoke("Constructing Container.");
             DefaultLifestyle = defaultLifestyle;
 
-            if (assemblies == null)
+            if (assemblies is null)
                 throw new ArgumentNullException(nameof(assemblies));
             List<Assembly> assemblyList = assemblies.ToList();
             if (!assemblyList.Any())
@@ -73,7 +73,7 @@ namespace MinimalContainer
 
         private Container Register(Type type, Type? typeConcrete, Lifestyle lifestyle, object? instance = null, Func<object>? factory = null, [CallerMemberName] string? caller = null)
         {
-            if (type == null)
+            if (type is null)
                 throw new ArgumentNullException(nameof(type));
 
             Registration reg = AddRegistration(type.GetTypeInfo());
@@ -83,7 +83,7 @@ namespace MinimalContainer
             reg.Lifestyle = lifestyle;
             if (lifestyle == Lifestyle.Instance)
             {
-                if (instance == null)
+                if (instance is null)
                     throw new ArgumentNullException(nameof(instance));
                 object notNullInstance = instance;
                 reg.Factory = () => notNullInstance;
@@ -119,17 +119,15 @@ namespace MinimalContainer
 
         public object Resolve(in Type type)
         {
-            if (type == null)
+            if (type is null)
                 throw new ArgumentNullException(nameof(type));
             try
             {
                 (Registration reg, bool isFunc) = GetOrAddInitializeRegistration(type, null);
-                if (!isFunc)
-                {
-                    Func<object> factory = reg.Factory ?? throw new InvalidOperationException("Factory is null.");
-                    return factory();
-                }
-                return reg.FuncDelegate ??= Expression.Lambda(reg.Expression).Compile();
+                if (isFunc) 
+                    return reg.FuncDelegate ??= Expression.Lambda(reg.Expression).Compile();
+                Func<object> factory = reg.Factory ?? throw new InvalidOperationException("Factory is null.");
+                return factory();
             }
             catch (TypeAccessException ex)
             {
@@ -152,7 +150,7 @@ namespace MinimalContainer
             Registration reg;
             bool isFunc = false;
             GetOrAddRegistration();
-            if (reg.Expression == null)
+            if (reg.Expression is null)
                 Initialize(reg, dependent, isFunc);
             return (reg, isFunc);
 
@@ -183,7 +181,7 @@ namespace MinimalContainer
 
         private void Initialize(Registration reg, Registration? dependent, bool isFunc)
         {
-            if (dependent == null)
+            if (dependent is null)
             {
                 TypeStack.Clear();
                 Log?.Invoke($"Getting instance of type: '{reg.Type.AsString()}'.");
@@ -217,7 +215,7 @@ namespace MinimalContainer
 
                 if (reg.Lifestyle == Lifestyle.Singleton)
                 {
-                    if (reg.Factory == null)
+                    if (reg.Factory is null)
                         throw new InvalidOperationException("Factory is null.");
                     object instance = reg.Factory();
                     reg.Factory = () => instance;
@@ -228,7 +226,7 @@ namespace MinimalContainer
 
         private void InitializeType(Registration reg)
         {
-            if (reg.TypeConcrete == null)
+            if (reg.TypeConcrete is null)
                 reg.TypeConcrete = AllTypesConcrete.Value.FindConcreteType(reg.Type);
 
             ConstructorInfo ctor = reg.TypeConcrete.GetConstructor();
@@ -238,7 +236,7 @@ namespace MinimalContainer
                 .ToArray();
 
             Log?.Invoke($"Constructing type '{reg.TypeConcrete.AsString()}" +
-                $"({parameters.Select(p => (p == null ? "" : p.Type.AsString())).JoinStrings(", ")})'.");
+                $"({parameters.Select(p => (p is null ? "" : p.Type.AsString())).JoinStrings(", ")})'.");
 
             reg.Expression = Expression.New(ctor, parameters);
             reg.Factory = Expression.Lambda<Func<object>>(reg.Expression).Compile();
