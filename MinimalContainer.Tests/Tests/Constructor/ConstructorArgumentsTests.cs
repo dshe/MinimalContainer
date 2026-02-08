@@ -1,6 +1,6 @@
 ﻿using System;
 using Xunit;
-using Xunit.Abstractions;
+//using Xunit.Abstractions;
 using MinimalContainer.Tests.Utility;
 
 namespace MinimalContainer.Tests.Constructor

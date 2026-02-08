@@ -1,6 +1,5 @@
 ﻿using System;
 using Xunit;
-using Xunit.Abstractions;
 using MinimalContainer.Tests.Utility;
 
 namespace MinimalContainer.Tests.TypeFactory

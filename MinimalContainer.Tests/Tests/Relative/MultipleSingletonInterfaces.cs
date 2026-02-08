@@ -1,7 +1,5 @@
 ﻿using MinimalContainer.Tests.Utility;
-using System;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace MinimalContainer.Tests.Relative
 {

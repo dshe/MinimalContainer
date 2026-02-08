@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Xunit;
-using Xunit.Abstractions;
 using MinimalContainer.Tests.Utility;
 
 namespace MinimalContainer.Tests.Other

@@ -1,7 +1,6 @@
 ﻿using MinimalContainer.Tests.Utility;
 using System.Reflection;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace MinimalContainer.Tests.Other
 {
