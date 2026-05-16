@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="README.md" />
+    <File Path="~/notes.txt" />
+  </Folder>
+  <Project Path="MinimalContainer.Tests/MinimalContainer.Tests.csproj" />
+  <Project Path="MinimalContainer/MinimalContainer.csproj" />
+</Solution>
