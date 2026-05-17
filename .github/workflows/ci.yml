@@ -29,19 +29,19 @@ jobs:
       - name: Build
         run: |
           dotnet build MinimalContainer.slnx \
-          --configuration Release --no-restore
+            --configuration Release --no-restore
 
       - name: Test
         run: |
           dotnet test MinimalContainer.slnx \
-          --configuration Release --no-build
+            --configuration Release --no-build
 
       - name: Pack
         run: |
           dotnet pack MinimalContainer/MinimalContainer.csproj \
-          --configuration Release \
-          --no-restore --no-build \
-          -o ./artifacts
+            --configuration Release \
+            --no-restore --no-build \
+            -o ./artifacts
 
       - name: List artifacts
         run: ls ./artifacts
@@ -50,5 +50,5 @@ jobs:
         if: github.event.inputs.publish == 'true'
         run: |
           dotnet nuget push ./artifacts/*.nupkg \
-          --api-key ${{ secrets.NUGET_API_KEY }} \
-          --source https://api.nuget.org/v3/index.json
+            --api-key ${{ secrets.NUGET_API_KEY }} \
+            --source https://api.nuget.org/v3/index.json
