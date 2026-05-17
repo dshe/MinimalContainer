@@ -31,25 +31,24 @@ jobs:
 
       - name: Test
         run: dotnet test MinimalContainer.slnx --configuration Release --no-build --verbosity normal
+      
+      - name: Pack
+        run: dotnet pack MinimalContainer/MinimalContainer.csproj --configuration Release --no-build -o ./artifacts
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nuget-package
+          path: ./artifacts/*.nupkg
 
   publish:
     needs: build
     runs-on: windows-latest
     if: github.event.inputs.publish == 'true'
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup .NET 10
-        uses: actions/setup-dotnet@v4
+      - uses: actions/download-artifact@v4
         with:
-          dotnet-version: "10.0.x"
-
-      - name: Restore
-        run: dotnet restore MinimalContainer/MinimalContainer.csproj
-
-      - name: Pack
-        run: dotnet pack MinimalContainer/MinimalContainer.csproj --configuration Release -o ./artifacts
-
-      - name: Publish to NuGet
-        run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+          name: nuget-package
+          path: ./artifacts
+      - name: Publish to NuGet          
+        run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json    
