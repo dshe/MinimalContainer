@@ -27,13 +27,18 @@ jobs:
         run: dotnet restore MinimalContainer.slnx
 
       - name: Build
-        run: dotnet build MinimalContainer.slnx --configuration Release --no-restore
+        run: dotnet build MinimalContainer.slnx `
+          --configuration Release --no-restore
 
       - name: Test
-        run: dotnet test MinimalContainer.slnx --configuration Release --no-build
+        run: dotnet test MinimalContainer.slnx `
+          --configuration Release --no-build
 
       - name: Pack
-        run: dotnet pack MinimalContainer/MinimalContainer.csproj --configuration Release --no-restore --no-build -o ./artifacts
+        run: dotnet pack MinimalContainer/MinimalContainer.csproj `
+          --configuration Release `
+          --no-restore --no-build `
+          -o ./artifacts
 
       - name: List artifacts
         run: ls ./artifacts
