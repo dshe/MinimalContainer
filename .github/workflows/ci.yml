@@ -40,4 +40,8 @@ jobs:
 
       - name: Publish to NuGet
         if: github.event.inputs.publish == 'true'
-        run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+        run: |
+          $pkg = Get-ChildItem ./artifacts/*.nupkg | Select-Object -First 1
+          dotnet nuget push $pkg.FullName `
+            --api-key ${{ secrets.NUGET_API_KEY }} `
+            --source https://api.nuget.org/v3/index.json
