@@ -1,5 +1,5 @@
 ## MinimalContainer&nbsp;&nbsp;
-[![Build & Test](https://github.com/dshe/minimalcontainer/actions/workflows/ci.yml/badge.svg)](https://github.com/dshe/minimalcontainer/actions/workflows/ci.yml)
+[![Build, Test, Publish](https://github.com/dshe/MinimalContainer/actions/workflows/ci.yml/badge.svg)](https://github.com/dshe/MinimalContainer/actions/workflows/ci.yml)
 [![NuGet](https://img.shields.io/nuget/vpre/MinimalContainer.svg)](https://www.nuget.org/packages/MinimalContainer/)
 [![NuGet](https://img.shields.io/nuget/dt/MinimalContainer?color=orange)](https://www.nuget.org/packages/MinimalContainer/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-7755BB.svg)](https://opensource.org/licenses/Apache-2.0)
