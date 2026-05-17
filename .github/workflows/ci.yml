@@ -48,6 +48,9 @@ jobs:
       - name: Restore
         run: dotnet restore MinimalContainer/MinimalContainer.csproj
 
+      - name: Build
+        run: dotnet build MinimalContainer/MinimalContainer.csproj --configuration Release --no-restore
+
       - name: Pack
         run: dotnet pack MinimalContainer/MinimalContainer.csproj --configuration Release --no-build -o ./artifacts
 
