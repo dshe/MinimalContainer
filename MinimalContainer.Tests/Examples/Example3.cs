@@ -1,39 +1,34 @@
-﻿using System;
-using Xunit;
-using MinimalContainer;
+﻿namespace MinimalContainer.Examples;
 
-namespace MinimalContainerTests
+internal interface IBar { }
+internal class Bar : IBar { }
+
+internal interface IFoo
 {
-    internal interface IBar { }
-    internal class Bar : IBar { }
+    Func<IBar> BarFactory { get; }
+}
 
-    internal interface IFoo
+internal class Foo : IFoo
+{
+    public Func<IBar> BarFactory { get; }
+    internal Foo(Func<IBar> barFactory) => BarFactory = barFactory;
+}
+
+internal class Root
+{
+    private readonly IFoo _foo;
+    internal Root(IFoo foo) => _foo = foo;
+
+    private void StartApplication()
     {
-        Func<IBar> BarFactory { get; }
+        var bar = _foo.BarFactory();
+        Assert.IsType<Bar>(bar);
     }
 
-    internal class Foo : IFoo
+    public static void Mainx()
     {
-        public Func<IBar> BarFactory { get; }
-        internal Foo(Func<IBar> barFactory) => BarFactory = barFactory;
-    }
-
-    internal class Root
-    {
-        private readonly IFoo _foo;
-        internal Root(IFoo foo) => _foo = foo;
-
-        private void StartApplication()
-        {
-            var bar = _foo.BarFactory();
-            Assert.IsType<Bar>(bar);
-        }
-
-        public static void Mainx()
-        {
-            new Container(DefaultLifestyle.Transient)
-                .Resolve<Root>()
-                .StartApplication();
-        }
+        new Container(DefaultLifestyle.Transient)
+            .Resolve<Root>()
+            .StartApplication();
     }
 }

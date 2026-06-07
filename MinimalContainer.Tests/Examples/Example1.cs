@@ -1,21 +1,16 @@
-﻿using Xunit;
-using MinimalContainer;
+﻿namespace MinimalContainer.Examples;
 
-namespace MinimalContainerTests
+public class Example1
 {
-    public class Example1
+    public interface IFoo {}
+    public class Foo : IFoo {}
+
+    [Fact]
+    public static void Mainx()
     {
-        public interface IFoo {}
-        public class Foo : IFoo {}
-
-        [Fact]
-        public static void Mainx()
-        {
-            var container = new Container();
-            container.RegisterSingleton<IFoo, Foo>();
-            var foo = container.Resolve<IFoo>();
-            // ...
-        }
+        var container = new Container();
+        container.RegisterSingleton<IFoo, Foo>();
+        var foo = container.Resolve<IFoo>();
+        // ...
     }
-
 }

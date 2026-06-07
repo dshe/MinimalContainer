@@ -1,33 +1,29 @@
-﻿using MinimalContainer.Tests.Utility;
-using Xunit;
+﻿namespace MinimalContainer.Tests.Relative;
 
-namespace MinimalContainer.Tests.Relative
+public class MultipleSingletonInterfaces : BaseUnitTest
 {
-    public class MultipleSingletonInterfaces : BaseUnitTest
+    public interface IFoo1 { }
+    public interface IFoo2 { }
+
+    public class Foo : IFoo1, IFoo2 { }
+
+    public MultipleSingletonInterfaces(ITestOutputHelper output) : base(output) { }
+
+    [Fact]
+    public void Test_Multiple()
     {
-        public interface IFoo1 { }
-        public interface IFoo2 { }
+        var container = new Container(log: Log);
+        container.RegisterSingleton<IFoo1>();
+        container.RegisterSingleton<IFoo2>();
+        Assert.NotEqual((Foo)container.Resolve<IFoo1>(), (Foo)container.Resolve<IFoo2>());
+    }
 
-        public class Foo : IFoo1, IFoo2 { }
-
-        public MultipleSingletonInterfaces(ITestOutputHelper output) : base(output) { }
-
-        [Fact]
-        public void Test_Multiple()
-        {
-            var container = new Container(log: Log);
-            container.RegisterSingleton<IFoo1>();
-            container.RegisterSingleton<IFoo2>();
-            Assert.NotEqual((Foo)container.Resolve<IFoo1>(), (Foo)container.Resolve<IFoo2>());
-        }
-
-        [Fact]
-        public void Test_Multiple2()
-        {
-            var container = new Container(log: Log);
-            container.RegisterSingleton<Foo>();
-            container.RegisterSingleton<IFoo1>();
-            Assert.NotEqual(container.Resolve<Foo>(), container.Resolve<IFoo1>());
-        }
+    [Fact]
+    public void Test_Multiple2()
+    {
+        var container = new Container(log: Log);
+        container.RegisterSingleton<Foo>();
+        container.RegisterSingleton<IFoo1>();
+        Assert.NotEqual(container.Resolve<Foo>(), container.Resolve<IFoo1>());
     }
 }
