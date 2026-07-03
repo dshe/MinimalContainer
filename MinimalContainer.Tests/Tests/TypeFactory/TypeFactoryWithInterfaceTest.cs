@@ -16,9 +16,9 @@ public class TypeFactoryWithInterfaceTest : BaseUnitTest
     [Fact]
     public void T01_transient_factory()
     {
-        var container = new Container();
+        Container container = new();
         container.RegisterTransient<IFoo, Foo>();
-        var factory = container.Resolve<Func<IFoo>>();
+        Func<IFoo> factory = container.Resolve<Func<IFoo>>();
         Assert.IsType<Foo>(factory());
         Assert.NotEqual(factory(), factory());
     }
@@ -26,7 +26,7 @@ public class TypeFactoryWithInterfaceTest : BaseUnitTest
     [Fact]
     public void T02_singleton_factory()
     {
-        var container = new Container();
+        Container container = new();
         container.RegisterTransient<IFoo>();
         container.Resolve<Func<IFoo>>();
     }
@@ -34,14 +34,14 @@ public class TypeFactoryWithInterfaceTest : BaseUnitTest
     [Fact]
     public void T03_auto_singleton()
     {
-        var container = new Container(DefaultLifestyle.Singleton);
+        Container container = new(DefaultLifestyle.Singleton);
         container.Resolve<Func<IFoo>>();
     }
 
     [Fact]
     public void T04_auto_singleton_injection()
     {
-        var container = new Container(DefaultLifestyle.Singleton);
+        Container container = new(DefaultLifestyle.Singleton);
         container.Resolve<IBar>();
     }
 }

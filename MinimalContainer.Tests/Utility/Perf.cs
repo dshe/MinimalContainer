@@ -3,14 +3,14 @@ namespace MinimalContainer.Tests;
 
 public class Perf
 {
-    private readonly Action<string> Log;
-    public Perf(Action<string> log) => Log = log;
+    private readonly Action<string> _log;
+    public Perf(Action<string> log) => _log = log;
 
     private static double MeasureTicks(Action action)
     {
         action(); // prime
-        var counter = 1L;
-        var sw = new Stopwatch();
+        long counter = 1L;
+        Stopwatch sw = new();
         sw.Start();
         do
         {
@@ -23,14 +23,14 @@ public class Perf
 
     public void MeasureRate(Action action, string label)
     {
-        var frequency = Stopwatch.Frequency / MeasureTicks(action);
-        Log($"{frequency,12:##,###,###} {label}");
+        double frequency = Stopwatch.Frequency / MeasureTicks(action);
+        _log($"{frequency,12:##,###,###} {label}");
     }
 
     public void MeasureDuration(Action action, long iterations, string label)
     {
-        var ticks = (long)(MeasureTicks(action) * iterations);
-        var ts = TimeSpan.FromTicks(ticks);
-        Log($"{ts} {label}");
+        long ticks = (long)(MeasureTicks(action) * iterations);
+        TimeSpan ts = TimeSpan.FromTicks(ticks);
+        _log($"{ts} {label}");
     }
 }

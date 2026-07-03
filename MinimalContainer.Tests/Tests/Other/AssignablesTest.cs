@@ -17,14 +17,14 @@ public class AssignablesTest : BaseUnitTest
     [Fact]
     public void T00_Not_Registered()
     {
-        var container = new Container(log: Log);
+        Container container = new(log: Log);
         Assert.Throws<TypeAccessException>(() => container.Resolve<IEnumerable<SomeClass1>>()).WriteMessageTo(Log);
     }
 
     [Fact]
     public void T01_Registered()
     {
-        var container = new Container(log: Log);
+        Container container = new(log: Log);
         container.RegisterSingleton<SomeClass1>();
         Assert.Single(container.Resolve<IList<SomeClass1>>());
     }
@@ -32,14 +32,14 @@ public class AssignablesTest : BaseUnitTest
     [Fact]
     public void T02_DefaultLifestyle()
     {
-        var container = new Container(DefaultLifestyle.Singleton, Log);
+        Container container = new(DefaultLifestyle.Singleton, Log);
         Assert.Single(container.Resolve<IList<SomeClass1>>());
     }
 
     [Fact]
     public void T03_List()
     {
-        var container = new Container(DefaultLifestyle.Singleton, Log);
+        Container container = new(DefaultLifestyle.Singleton, Log);
         Assert.Single(container.Resolve<IList<SomeClass1>>());
         Assert.Equal(2, container.Resolve<IList<IMarker>>().Count());
     }
@@ -47,7 +47,7 @@ public class AssignablesTest : BaseUnitTest
     [Fact]
     public void T04_List_Auto()
     {
-        var container = new Container(DefaultLifestyle.Singleton, Log);
+        Container container = new(DefaultLifestyle.Singleton, Log);
         Assert.Single(container.Resolve<IList<SomeClass1>>());
         Assert.Equal(2, container.Resolve<IList<IMarker>>().Count());
     }
@@ -55,7 +55,7 @@ public class AssignablesTest : BaseUnitTest
     [Fact]
     public void T05_Get_List_Types()
     {
-        var container = new Container(DefaultLifestyle.Singleton, Log);
+        Container container = new(DefaultLifestyle.Singleton, Log);
         Assert.Equal(2, container.Resolve<IEnumerable<IMarker>>().Count());
         Assert.Equal(2, container.Resolve<ICollection<IMarker>>().Count);
         Assert.Equal(2, container.Resolve<IReadOnlyCollection<IMarker>>().Count);
@@ -68,38 +68,38 @@ public class AssignablesTest : BaseUnitTest
     [Fact]
     public void T06_Register_List()
     {
-        var container = new Container(log: Log);
-        var list = new List<SomeClass1> {new SomeClass1()};
+        Container container = new(log: Log);
+        List<SomeClass1> list = [new SomeClass1()];
         container.RegisterInstance(list);
-        var instance = container.Resolve<List<SomeClass1>>();
+        List<SomeClass1> instance = container.Resolve<List<SomeClass1>>();
         Assert.Single(instance);
     }
 
     [Fact]
     public void T07_Injection()
     {
-        var container = new Container(log: Log);
+        Container container = new(log: Log);
         container.RegisterSingleton<SomeClass1>();
         container.RegisterSingleton<SomeClass2>();
         container.RegisterSingleton<SomeClass3>();
         container.RegisterSingleton<IList<IMarker>>();
-        var instance = container.Resolve<SomeClass3>();
+        SomeClass3 instance = container.Resolve<SomeClass3>();
         Assert.Equal(2, instance.List.Count());
     }
 
     [Fact]
     public void T08_Injection_Auto()
     {
-        var container = new Container(DefaultLifestyle.Singleton, Log);
-        var instance = container.Resolve<SomeClass3>();
+        Container container = new(DefaultLifestyle.Singleton, Log);
+        SomeClass3 instance = container.Resolve<SomeClass3>();
         Assert.Equal(2, instance.List.Count());
     }
 
     [Fact]
     public void T09_Combo()
     {
-        var container = new Container(DefaultLifestyle.Singleton, Log);
-        var instance = container.Resolve<Func<IList<IMarker>>>();
-        Assert.Equal(2, instance().Count());
+        Container container = new(DefaultLifestyle.Singleton, Log);
+        Func<IList<IMarker>> instance = container.Resolve<Func<IList<IMarker>>>();
+        Assert.Equal(2, instance().Count);
     }
 }

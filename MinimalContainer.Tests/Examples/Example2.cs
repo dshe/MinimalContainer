@@ -10,12 +10,12 @@ public class Example2
 
     internal class Root
     {
-        private readonly IFoo foo;
-        private readonly Func<IBar> barFactory;
+        private readonly IFoo _foo;
+        private readonly Func<IBar> _barFactory;
         internal Root(IFoo foo, Func<IBar> barFactory)
         {
-            this.foo = foo;
-            this.barFactory = barFactory;
+            this._foo = foo;
+            this._barFactory = barFactory;
         }
 
         private void StartApplication()

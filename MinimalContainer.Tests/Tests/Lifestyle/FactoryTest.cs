@@ -26,12 +26,12 @@ public class FactoryTest : BaseUnitTest
     [Fact]
     public void T01_Concrete()
     {
-        var container = new Container(log: Log);
+        Container container = new(log: Log);
         container.RegisterFactory(_factory1);
         Assert.Throws<TypeAccessException>(() => container.RegisterFactory(_factory1)).WriteMessageTo(Log);
-        var instance1 = container.Resolve<SomeClass>();
+        SomeClass instance1 = container.Resolve<SomeClass>();
         Assert.Equal(1, _counter1);
-        var instance2 = container.Resolve<SomeClass>();
+        SomeClass instance2 = container.Resolve<SomeClass>();
         Assert.Equal(2, _counter1);
         Assert.NotEqual(instance1, instance2);
     }
@@ -39,11 +39,11 @@ public class FactoryTest : BaseUnitTest
     [Fact]
     public void T02_Register_Factory()
     {
-        var container = new Container(log: Log);
+        Container container = new(log: Log);
         container.RegisterFactory<ISomeClass>(_factory1);
-        var instance1 = container.Resolve<ISomeClass>();
+        ISomeClass instance1 = container.Resolve<ISomeClass>();
         Assert.Equal(1, _counter1);
-        var instance2 = container.Resolve<ISomeClass>();
+        ISomeClass instance2 = container.Resolve<ISomeClass>();
         Assert.Equal(2, _counter1);
         Assert.NotEqual(instance1, instance2);
 
@@ -52,7 +52,7 @@ public class FactoryTest : BaseUnitTest
     [Fact]
     public void T03_Register_Factory_Both()
     {
-        var container = new Container(log: Log);
+        Container container = new(log: Log);
         container.RegisterFactory(_factory1);
         container.RegisterFactory<ISomeClass>(_factory2);
         container.Resolve<SomeClass>();
@@ -64,7 +64,7 @@ public class FactoryTest : BaseUnitTest
     [Fact]
     public void T04_Register_Auto()
     {
-        var container = new Container(DefaultLifestyle.Singleton, Log);
+        Container container = new(DefaultLifestyle.Singleton, Log);
         container.RegisterFactory(_factory1);
         container.Resolve<SomeClass>();
         Assert.Equal(container.Resolve<ISomeClass>(), container.Resolve<ISomeClass>());

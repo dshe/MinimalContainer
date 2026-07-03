@@ -13,9 +13,9 @@ public class DisposeTest : BaseUnitTest
     [Fact]
     public void T01_Dispose_Singleton()
     {
-        var container = new Container(DefaultLifestyle.Singleton, Log);
+        Container container = new(DefaultLifestyle.Singleton, Log);
         container.RegisterSingleton<Foo>();
-        var instance = container.Resolve<Foo>();
+        Foo instance = container.Resolve<Foo>();
         container.Dispose();
         Assert.True(instance.IsDisposed);
     }
@@ -23,8 +23,8 @@ public class DisposeTest : BaseUnitTest
     [Fact]
     public void T02_Dispose_Instance()
     {
-        var container = new Container(DefaultLifestyle.Singleton, Log);
-        var instance = new Foo();
+        Container container = new(DefaultLifestyle.Singleton, Log);
+        Foo instance = new();
         container.RegisterInstance(instance);
         container.Dispose();
         Assert.True(instance.IsDisposed);
@@ -33,9 +33,9 @@ public class DisposeTest : BaseUnitTest
     [Fact]
     public void T03_Dispose_Other()
     {
-        var container = new Container(DefaultLifestyle.Singleton, Log);
+        Container container = new(DefaultLifestyle.Singleton, Log);
         container.RegisterTransient<Foo>();
-        var instance = container.Resolve<Foo>();
+        Foo instance = container.Resolve<Foo>();
         container.Dispose();
         Assert.False(instance.IsDisposed);
 

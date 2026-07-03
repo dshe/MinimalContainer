@@ -11,7 +11,7 @@ public class AssemblyTest : BaseUnitTest
     [Fact]
     public void T01_No_Assembly_Register()
     {
-        var container = new Container(DefaultLifestyle.Singleton, Log, typeof(string).GetTypeInfo().Assembly);
+        Container container = new(DefaultLifestyle.Singleton, Log, typeof(string).GetTypeInfo().Assembly);
         container.Resolve<Bar>();
         Assert.Throws<TypeAccessException>(() => container.Resolve<IFoo>()).WriteMessageTo(Log);
     }
@@ -19,7 +19,7 @@ public class AssemblyTest : BaseUnitTest
     [Fact]
     public void T03_No_Assembly_GetInstance_List()
     {
-        var container = new Container(DefaultLifestyle.Singleton, Log, typeof(string).GetTypeInfo().Assembly);
+        Container container = new(DefaultLifestyle.Singleton, Log, typeof(string).GetTypeInfo().Assembly);
         Assert.Throws<TypeAccessException>(() => container.Resolve<IList<Bar>>()).WriteMessageTo(Log);
     }
 

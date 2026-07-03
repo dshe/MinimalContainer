@@ -14,7 +14,7 @@ public class CaptiveDependencyTests : BaseUnitTest
     [Fact]
     public void Test_CaptiveDependency_Singleton_Transient()
     {
-        var container = new Container(log: Log);
+        Container container = new(log: Log);
         container.RegisterSingleton<Foo>();
         container.RegisterTransient<Bar>();
         Assert.Throws<TypeAccessException>(() => container.Resolve<Foo>()).WriteMessageTo(Log);
@@ -23,7 +23,7 @@ public class CaptiveDependencyTests : BaseUnitTest
     [Fact]
     public void Test_CaptiveDependency_Transient_Singleton()
     {
-        var container = new Container(log: Log);
+        Container container = new(log: Log);
         container.RegisterTransient<Foo>();
         container.RegisterSingleton<Bar>();
         container.Resolve<Foo>();
@@ -32,7 +32,7 @@ public class CaptiveDependencyTests : BaseUnitTest
     [Fact]
     public void Test_CaptiveDependency_Singleton_Singleton()
     {
-        var container = new Container(log: Log);
+        Container container = new(log: Log);
         container.RegisterSingleton<Foo>();
         container.RegisterSingleton<Bar>();
         container.Resolve<Foo>();
@@ -41,7 +41,7 @@ public class CaptiveDependencyTests : BaseUnitTest
     [Fact]
     public void Test_CaptiveDependency_Transient_Transient()
     {
-        var container = new Container(log: Log);
+        Container container = new(log: Log);
         container.RegisterTransient<Foo>();
         container.RegisterTransient<Bar>();
         container.Resolve<Foo>();

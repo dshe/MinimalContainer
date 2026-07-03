@@ -22,7 +22,7 @@ public class CreateInstanceTest :BaseUnitTest
     [Fact]
     public void Test_Cannot_Create_Dependency()
     {
-        var container = new Container(DefaultLifestyle.Singleton, Log);
+        Container container = new(DefaultLifestyle.Singleton, Log);
         Assert.Throws<TypeAccessException>(() => container.Resolve<ClassZ>()).WriteMessageTo(Log);
         Assert.Throws<TypeAccessException>(() => container.Resolve<ClassY>()).WriteMessageTo(Log);
         Assert.Throws<TypeAccessException>(() => container.Resolve<ClassX>()).WriteMessageTo(Log);

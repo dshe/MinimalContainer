@@ -18,20 +18,19 @@ public class GenericTests1 : BaseUnitTest
     [Fact]
     public void T01_Generic()
     {
-        var container = new Container(log: Log);
+        Container container = new(log: Log);
         container.RegisterSingleton<Bar2>();
         container.RegisterSingleton<Bar1<Bar2>>();
         container.RegisterSingleton<Foo>();
         container.Resolve<Foo>();
         //Write(Environment.NewLine + container);
         //Logger.Log("test");
-
     }
 
     [Fact]
     public void T02_Generic_Auto()
     {
-        var container = new Container(DefaultLifestyle.Singleton, Log);
+        Container container = new(DefaultLifestyle.Singleton, Log);
         container.Resolve<Foo>();
         Log(Environment.NewLine + container);
     }
@@ -72,7 +71,7 @@ public class GenericTests2 : BaseUnitTest
     [Fact]
     public void T01_class()
     {
-        var container = new Container(DefaultLifestyle.Singleton, Log);
+        Container container = new(DefaultLifestyle.Singleton, Log);
         container.Resolve<ClassC>();
         Log(Environment.NewLine + container);
     }
@@ -80,7 +79,7 @@ public class GenericTests2 : BaseUnitTest
     [Fact]
     public void T02_interface()
     {
-        var container = new Container(DefaultLifestyle.Singleton, Log);
+        Container container = new(DefaultLifestyle.Singleton, Log);
         container.Resolve<ClassD>();
         Log.Invoke(Environment.NewLine + container);
     }
@@ -103,10 +102,10 @@ public class GenericTests2 : BaseUnitTest
     [Fact]
     public void T10_parm()
     {
-        var container = new Container(DefaultLifestyle.Singleton, Log);
-        var b = container.Resolve<ObsConcrete>();
+        Container container = new(DefaultLifestyle.Singleton, Log);
+        ObsConcrete b = container.Resolve<ObsConcrete>();
 
-        var x = container.Resolve<Test>();
+        Test x = container.Resolve<Test>();
         Log(Environment.NewLine + container);
     }
 }

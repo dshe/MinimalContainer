@@ -10,26 +10,26 @@ public class InstanceTest : BaseUnitTest
     [Fact]
     public void T01_Concrete()
     {
-        var container = new Container(log: Log);
-        var instance = new Foo();
+        Container container = new(log: Log);
+        Foo instance = new();
         container.RegisterInstance(instance);
-        var instance1 = container.Resolve<Foo>();
+        Foo instance1 = container.Resolve<Foo>();
         Assert.Equal(instance, instance1);
-        var instance2 = container.Resolve<Foo>();
+        Foo instance2 = container.Resolve<Foo>();
         Assert.Equal(instance1, instance2);
-        Assert.Throws<TypeAccessException>(() => container.Resolve<IFoo>()).WriteMessageTo(Log);
+        Assert.Throws<TypeAccessException>(container.Resolve<IFoo>).WriteMessageTo(Log);
         Assert.Throws<TypeAccessException>(() => container.RegisterInstance(instance)).WriteMessageTo(Log);
     }
 
     [Fact]
     public void T02_Interface()
     {
-        var container = new Container(log: Log);
-        var instance = new Foo();
+        Container container = new(log: Log);
+        Foo instance = new();
         container.RegisterInstance<IFoo>(instance);
-        var instance1 = container.Resolve<IFoo>();
+        IFoo instance1 = container.Resolve<IFoo>();
         Assert.Equal(instance, instance1);
-        var instance2 = container.Resolve<IFoo>();
+        IFoo instance2 = container.Resolve<IFoo>();
         Assert.Equal(instance1, instance2);
         Assert.Throws<TypeAccessException>(() => container.Resolve<Foo>());
         Assert.Throws<TypeAccessException>(() => container.RegisterInstance<IFoo>(instance)).WriteMessageTo(Log);

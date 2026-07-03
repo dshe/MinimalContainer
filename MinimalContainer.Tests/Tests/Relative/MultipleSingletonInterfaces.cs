@@ -12,7 +12,7 @@ public class MultipleSingletonInterfaces : BaseUnitTest
     [Fact]
     public void Test_Multiple()
     {
-        var container = new Container(log: Log);
+        Container container = new(log: Log);
         container.RegisterSingleton<IFoo1>();
         container.RegisterSingleton<IFoo2>();
         Assert.NotEqual((Foo)container.Resolve<IFoo1>(), (Foo)container.Resolve<IFoo2>());
@@ -21,7 +21,7 @@ public class MultipleSingletonInterfaces : BaseUnitTest
     [Fact]
     public void Test_Multiple2()
     {
-        var container = new Container(log: Log);
+        Container container = new(log: Log);
         container.RegisterSingleton<Foo>();
         container.RegisterSingleton<IFoo1>();
         Assert.NotEqual(container.Resolve<Foo>(), container.Resolve<IFoo1>());

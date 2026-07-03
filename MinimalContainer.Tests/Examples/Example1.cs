@@ -8,9 +8,9 @@ public class Example1
     [Fact]
     public static void Mainx()
     {
-        var container = new Container();
+        Container container = new Container();
         container.RegisterSingleton<IFoo, Foo>();
-        var foo = container.Resolve<IFoo>();
+        IFoo foo = container.Resolve<IFoo>();
         // ...
     }
 }

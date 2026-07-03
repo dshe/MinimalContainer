@@ -22,7 +22,7 @@ public class RecursionTest : BaseUnitTest
     [Fact]
     public void Test_Recursive_Dependency()
     {
-        var container = new Container(DefaultLifestyle.Singleton, Log);
+        Container container = new(DefaultLifestyle.Singleton, Log);
         Assert.Throws<TypeAccessException>(() => container.Resolve<Class1>()).WriteMessageTo(Log);
         Assert.Throws<TypeAccessException>(() => container.Resolve<Class2>()).WriteMessageTo(Log);
         Assert.Throws<TypeAccessException>(() => container.Resolve<Class3>()).WriteMessageTo(Log);

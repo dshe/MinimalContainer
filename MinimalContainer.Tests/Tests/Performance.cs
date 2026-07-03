@@ -10,37 +10,37 @@ public class TestPerformance : BaseUnitTest
         public Foo() { }
     }
 
-    private readonly Perf perf;
+    private readonly Perf _perf;
 
     public TestPerformance(ITestOutputHelper output) : base(output)
-        => perf = new Perf(Log);
+        => _perf = new Perf(Log);
 
     [Fact]
     public void Test_Performance()
     {
-        var container = new Container().RegisterInstance<IFoo>(new Foo());
+        Container container = new Container().RegisterInstance<IFoo>(new Foo());
         Action action = () => container.Resolve<IFoo>();
-        perf.MeasureRate(action, "resolutions / second from RegisterInstance.");
+        _perf.MeasureRate(action, "resolutions / second from RegisterInstance.");
 
         container = new Container().RegisterSingleton<IFoo, Foo>();
         action = () => container.Resolve<IFoo>();
-        perf.MeasureRate(action, "resolutions / second from RegisterSingleton.");
+        _perf.MeasureRate(action, "resolutions / second from RegisterSingleton.");
 
         container = new Container().RegisterSingleton<IFoo, Foo>();
         action = () => container.Resolve<IEnumerable<IFoo>>();
-        perf.MeasureRate(action, "enumerable resolutions / second from RegisterSingleton.");
+        _perf.MeasureRate(action, "enumerable resolutions / second from RegisterSingleton.");
 
         container = new Container().RegisterTransient<IFoo, Foo>();
         action = () => container.Resolve<IFoo>();
-        perf.MeasureRate(action, "resolutions / second from RegisterTransient.");
+        _perf.MeasureRate(action, "resolutions / second from RegisterTransient.");
 
         container = new Container().RegisterFactory<IFoo>(() => new Foo());
         action = () => container.Resolve<IFoo>();
-        perf.MeasureRate(action, "resolutions / second from RegisterFactory.");
+        _perf.MeasureRate(action, "resolutions / second from RegisterFactory.");
 
         container = new Container().RegisterTransient<IFoo, Foo>();
         action = () => container.Resolve<IEnumerable<IFoo>>();
-        perf.MeasureRate(action, "enumerable resolutions / second from RegisterTransient.");
+        _perf.MeasureRate(action, "enumerable resolutions / second from RegisterTransient.");
 
         /*
         container = new Container().RegisterTransient<IFoo,Foo>();
@@ -54,11 +54,11 @@ public class TestPerformance : BaseUnitTest
 
         container = new Container().RegisterFactory<IFoo>(() => new Foo());
         action = () => container.Resolve<Func<IFoo>>()();
-        perf.MeasureRate(action, "factory resolutions / second from RegisterFactory.");
+        _perf.MeasureRate(action, "factory resolutions / second from RegisterFactory.");
 
         container = new Container().RegisterTransient<IFoo, Foo>();
         action = () => container.Resolve<Func<IFoo>>()();
-        perf.MeasureRate(action, "factory resolutions / second from RegisterTransient.");
+        _perf.MeasureRate(action, "factory resolutions / second from RegisterTransient.");
 
         /*
         container = new Container().RegisterSingleton<IFoo, Foo>();
@@ -68,12 +68,12 @@ public class TestPerformance : BaseUnitTest
 
         container = new Container().RegisterSingleton<IFoo>();
         action = () => container.Resolve<Func<IEnumerable<IFoo>>>()();
-        perf.MeasureRate(action, "factory enumerable resolutions / second from RegisterSingleton.");
+        _perf.MeasureRate(action, "factory enumerable resolutions / second from RegisterSingleton.");
 
 
         container = new Container().RegisterTransient<IFoo, Foo>();
         action = () => container.Resolve<Func<IEnumerable<IFoo>>>()();
-        perf.MeasureRate(action, "factory enumerable resolutions / second from RegisterTransient.");
+        _perf.MeasureRate(action, "factory enumerable resolutions / second from RegisterTransient.");
     }
 
 }

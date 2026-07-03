@@ -13,8 +13,8 @@ public class ConstructorSelectionTests : BaseUnitTest
     [Fact]
     public void T01_Class_With_Multiple_Constructors()
     {
-        var container = new Container(DefaultLifestyle.Singleton, Log);
-        var instance = container.Resolve<ClassA>();
+        Container container = new(DefaultLifestyle.Singleton, Log);
+        ClassA instance = container.Resolve<ClassA>();
         Assert.True(instance.Ok);
     }
 
@@ -22,14 +22,14 @@ public class ConstructorSelectionTests : BaseUnitTest
     {
         public bool Ok;
         public ClassB() {}
-        [ContainerConstructorAttribute]
+        [ContainerConstructor]
         public ClassB(ClassA a) { Ok = true; }
     }
     [Fact]
     public void T02_Class_With_Attribute_Constructor()
     {
-        var container = new Container(DefaultLifestyle.Singleton, Log);
-        var instance = container.Resolve<ClassB>();
+        Container container = new(DefaultLifestyle.Singleton, Log);
+        ClassB instance = container.Resolve<ClassB>();
         Assert.True(instance.Ok);
     }
 
@@ -43,7 +43,7 @@ public class ConstructorSelectionTests : BaseUnitTest
     [Fact]
     public void T03_Class_With_Multiple_Attributes()
     {
-        var container = new Container(DefaultLifestyle.Singleton, Log);
+        Container container = new(DefaultLifestyle.Singleton, Log);
         Assert.Throws<TypeAccessException>(() => container.Resolve<ClassC>()).WriteMessageTo(Log);
     }
 }

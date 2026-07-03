@@ -4,10 +4,10 @@ public class ConstructorArgumentTests : BaseUnitTest
 {
     public class Class0 { }
 
-    private readonly Container Container;
+    private readonly Container _container;
 
     public ConstructorArgumentTests(ITestOutputHelper output) : base(output)
-         => Container = new Container(DefaultLifestyle.Singleton, Log);
+         => _container = new Container(DefaultLifestyle.Singleton, Log);
 
     public class Class1
     {
@@ -16,7 +16,7 @@ public class ConstructorArgumentTests : BaseUnitTest
     [Fact]
     public void T01_Value_Type()
     {
-        Assert.Throws<TypeAccessException>(() => Container.Resolve<Class1>()).WriteMessageTo(Log);
+        Assert.Throws<TypeAccessException>(() => _container.Resolve<Class1>()).WriteMessageTo(Log);
     }
 
     public class Class2
@@ -26,7 +26,7 @@ public class ConstructorArgumentTests : BaseUnitTest
     [Fact]
     public void T02_Value_Type_Default()
     {
-        Container.Resolve<Class2>();
+        _container.Resolve<Class2>();
     }
 
     public class Class3
@@ -37,7 +37,7 @@ public class ConstructorArgumentTests : BaseUnitTest
     [Fact]
     public void T03_Ref_Type()
     {
-        var class3 = Container.Resolve<Class3>();
+        Class3 class3 = _container.Resolve<Class3>();
         Assert.NotNull(class3.class0);
     }
 
@@ -48,7 +48,7 @@ public class ConstructorArgumentTests : BaseUnitTest
     [Fact]
     public void T04_Ref_Type_Default()
     {
-        Container.Resolve<Class4>();
+        _container.Resolve<Class4>();
     }
 
     public class Class5
@@ -58,7 +58,7 @@ public class ConstructorArgumentTests : BaseUnitTest
     [Fact]
     public void T05_Ref_Type_Ref()
     {
-        Assert.Throws<TypeAccessException>(() => Container.Resolve<Class5>()).WriteMessageTo(Log);
+        Assert.Throws<TypeAccessException>(() => _container.Resolve<Class5>()).WriteMessageTo(Log);
     }
 
     public class Class6
@@ -68,7 +68,7 @@ public class ConstructorArgumentTests : BaseUnitTest
     [Fact]
     public void T06_Ref_Type_Out()
     {
-        Assert.Throws<TypeAccessException>(() => Container.Resolve<Class6>()).WriteMessageTo(Log);
+        Assert.Throws<TypeAccessException>(() => _container.Resolve<Class6>()).WriteMessageTo(Log);
     }
 }
 

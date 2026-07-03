@@ -11,7 +11,7 @@ public class LogTest : BaseUnitTest
     [Fact]
     public void T01()
     {
-        var container = new Container(DefaultLifestyle.Singleton, Log, typeof(string).GetTypeInfo().Assembly);
+        Container container = new(DefaultLifestyle.Singleton, Log, typeof(string).GetTypeInfo().Assembly);
         container.RegisterSingleton<IFoo, Foo>();
         Log("");
         Log(container.ToString());
@@ -20,7 +20,7 @@ public class LogTest : BaseUnitTest
     [Fact]
     public void T02()
     {
-        var container = new Container(DefaultLifestyle.Singleton, Log, typeof(string).GetTypeInfo().Assembly);
+        Container container = new(DefaultLifestyle.Singleton, Log, typeof(string).GetTypeInfo().Assembly);
         container.RegisterSingleton<IFoo, Foo>();
         Log("");
         Log(container.ToString());

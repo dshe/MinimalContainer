@@ -21,7 +21,7 @@ internal class Root
 
     private void StartApplication()
     {
-        var bar = _foo.BarFactory();
+        IBar bar = _foo.BarFactory();
         Assert.IsType<Bar>(bar);
     }
 
